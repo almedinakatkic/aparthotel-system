@@ -1,0 +1,15 @@
+const mongoose = require('mongoose');
+
+const propertyGroupSchema = new mongoose.Schema({
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+  name: { type: String, required: true },
+  location: { type: String, required: true },
+  address: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ['hotel', 'apartment_complex', 'standalone_apartment'],
+    required: true
+  }
+});
+
+module.exports = mongoose.model('PropertyGroup', propertyGroupSchema);

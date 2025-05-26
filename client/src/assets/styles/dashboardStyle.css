@@ -1,0 +1,148 @@
+.dashboard {
+  padding: 20px 30px 0 0;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: calc(100% - 70px); /* minus sidebar width*/
+  box-sizing: border-box; 
+}
+
+.overview {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
+  height: 100px;
+}
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 15px;
+  justify-items: center; 
+  font-size: 20px;
+
+}
+
+.overview span {
+  color: #4473be;
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+
+.room-status {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  height: 220px;
+  width: 99%;
+}
+
+.room-status h3 {
+  margin: 0 0 0px 0;
+  text-align: left;
+}
+
+.status-blocks-container {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 50px;
+}
+
+.status-block {
+  width: 45%;
+}
+
+.status-block p {
+  margin: 20px 0;
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  color: #797979;
+}
+
+#available-occupied-rooms{
+  color: #000;
+}
+
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 60px; 
+  bottom: 20px;
+  width: 1px;
+  background-color: #ccc;
+}
+
+.bottom-sections {
+  display: flex;
+  gap: 20px;
+  width: 102%;
+}
+
+.occupancy,
+.feedback {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  height: 400px;
+}
+
+.occupancy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.monthly-btn {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  width: 150px;
+  height: 35px;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.chart-placeholder {
+  height: 300px;
+  background: #db9534;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback ul {
+  list-style: none;
+  padding: 0;
+  
+}
+
+.feedback li {
+  margin-bottom: 10px;
+  padding: 8px 0; 
+  font-size: 20px;
+  margin-left: 30px;
+  font-weight: bold;
+  color: #323131;
+}
+
+.feedback hr {
+  margin: 14px 0; /* Povećajte gornji i donji margin za hr elemente */
+}
+
+.feedback p{
+  color: #323131;
+  margin-left: 30px;
+  font-size: 18px;
+}
