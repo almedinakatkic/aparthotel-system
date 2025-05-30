@@ -126,7 +126,6 @@ const UnitManagement = () => {
               <th>Floor</th>
               <th>Beds</th>
               <th>Price</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -152,15 +151,6 @@ const UnitManagement = () => {
                   <input name="pricePerNight" type="number" value={formData.pricePerNight} onChange={handleChange} />
                 ) : (
                   unit.pricePerNight ? `${unit.pricePerNight}€` : '-' 
-                )}</td>
-                <td>{editingUnit === unit._id ? (
-                  <select name="status" value={formData.status} onChange={handleChange}>
-                    <option value="vacant">Vacant</option>
-                    <option value="occupied">Occupied</option>
-                    <option value="maintenance">Maintenance</option>
-                  </select>
-                ) : (
-                  unit.status || '-' 
                 )}</td>
                 <td>
                   {editingUnit === unit._id ? (

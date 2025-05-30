@@ -9,15 +9,13 @@ const SidebarManager = () => (
         <li><Link to="/dashboard">Dashboard</Link></li>
         <li><Link to="/register-user">Register User</Link></li>
         <li><Link to="/financial-reports">Financial Reports</Link></li>
-        <li><Link to="/general-reports">Reports</Link></li>
+        <li><Link to="/general-reports">General Reports</Link></li>
+        <li><Link to="/owner-report">Owner Reports</Link></li>
         <li><Link to="/manage-properties">Manage Properties</Link></li>
         <li><Link to="/units/manage">Manage Units</Link></li>
-        <li><Link to="/units/manage">Guest Management</Link></li>
+        <li><Link to="/booking-management">Booking Management</Link></li>
       </ul>
     </nav>
-    <div className="sidebar-footer">
-      <button className="add-booking-btn">Add Booking</button>
-    </div>
   </div>
 );
 

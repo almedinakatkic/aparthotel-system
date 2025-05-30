@@ -17,12 +17,6 @@ const unitSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  status: {
-    type: String,
-    enum: ['vacant', 'occupied', 'maintenance'],
-    default: 'vacant',
-    required: true
-  },
   propertyGroupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PropertyGroup',

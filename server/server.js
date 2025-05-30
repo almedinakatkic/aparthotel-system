@@ -20,6 +20,8 @@ const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
 const unitRoutes = require('./routes/unitRoutes');
 app.use('/api/units', unitRoutes);
+const bookingRoutes = require('./routes/bookingRoutes');
+app.use('/api/bookings', bookingRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

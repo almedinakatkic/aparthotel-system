@@ -11,7 +11,6 @@ const CreateUnit = () => {
     floor: '',
     beds: '',
     pricePerNight: '',
-    status: 'vacant',
     propertyGroupId: ''
   });
   const [message, setMessage] = useState('');
@@ -50,7 +49,6 @@ const CreateUnit = () => {
         floor: '',
         beds: '',
         pricePerNight: '',
-        status: 'vacant',
         propertyGroupId: ''
       });
     } catch (err) {
@@ -71,7 +69,7 @@ const CreateUnit = () => {
         <div className="form-group">
           <label>Property Group</label>
           <select name="propertyGroupId" value={formData.propertyGroupId} onChange={handleChange} required>
-            <option value="">-- Select Property --</option>
+            <option value="">Select Property</option>
             {propertyGroups.map(pg => (
               <option key={pg._id} value={pg._id}>{pg.name}</option>
             ))}
@@ -96,15 +94,6 @@ const CreateUnit = () => {
         <div className="form-group">
           <label>Price per Night</label>
           <input name="pricePerNight" type="number" value={formData.pricePerNight} onChange={handleChange} required />
-        </div>
-
-        <div className="form-group">
-          <label>Status</label>
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="vacant">Vacant</option>
-            <option value="occupied">Occupied</option>
-            <option value="maintenance">Maintenance</option>
-          </select>
         </div>
 
         <button className="login-button" type="submit">Create Unit</button>

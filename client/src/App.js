@@ -8,8 +8,8 @@ import Dashboard from './pages/Dashboard';
 import FinancialReports from './pages/FinancialReports';
 import GeneralReports from './pages/GeneralReports';
 import OwnerReport from './pages/OwnerReport';
-import FrontDesk from './pages/FrontDesk';
-import Guests from './pages/Guests';
+import CreateBooking from './pages/CreateBooking';
+import BookingManagement from './pages/BookingManagemen';
 import RegisterUser from './pages/RegisterUser';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreatePropertyGroup from './pages/CreatePropertyGroup';
@@ -31,7 +31,7 @@ function AppContent() {
 
         <main className={`content-area ${!isAuthPage ? 'with-sidebar' : ''}`}>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route
@@ -67,18 +67,10 @@ function AppContent() {
               }
             />
             <Route
-              path="/front-desk"
+              path="/create-booking"
               element={
                 <ProtectedRoute>
-                  <FrontDesk />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/guests"
-              element={
-                <ProtectedRoute>
-                  <Guests />
+                  <CreateBooking />
                 </ProtectedRoute>
               }
             />
@@ -119,6 +111,14 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <PropertyGroupManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/booking-management"
+              element={
+                <ProtectedRoute>
+                  <BookingManagement />
                 </ProtectedRoute>
               }
             />

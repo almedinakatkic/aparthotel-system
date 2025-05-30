@@ -109,7 +109,7 @@ const RegisterUser = () => {
             onChange={handleChange}
             required
           >
-            <option value="">-- Select Property Group --</option>
+            <option value="">Select Property</option>
             {propertyGroups.map(pg => (
               <option key={pg._id} value={pg._id}>{pg.name}</option>
             ))}
