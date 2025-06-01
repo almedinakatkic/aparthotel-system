@@ -156,7 +156,7 @@ const PropertyGroupManagement = () => {
                   ) : (
                     <>
                       <button onClick={() => handleEdit(group)}>Edit</button>
-                      <button onClick={() => handleDelete(group._id)} style={{ marginLeft: '0.5rem', color: 'red' }}>Delete</button>
+                      <button onClick={() => handleDelete(group._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
                     </>
                   )}
                 </td>

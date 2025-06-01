@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/loginStyle.css';
+import '../assets/styles/ManageUnitsStyle.css';
 
 const UnitManagement = () => {
   const { user, token } = useAuth();
@@ -114,7 +114,7 @@ const UnitManagement = () => {
       <button className="login-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>Add a Unit</button>
 
       <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <label htmlFor="propertySelect" style={{ fontWeight: '600', color: 'white' }}>Filter by Property</label>
+        <label htmlFor="propertySelect" style={{ fontWeight: '600', color: 'black' }}>Filter by Property</label>
         <select
           id="propertySelect"
           className="login-input"
@@ -168,7 +168,7 @@ const UnitManagement = () => {
                       ) : (
                         <>
                           <button onClick={() => handleEdit(unit)}>Edit</button>
-                          <button onClick={() => handleDelete(unit._id)} style={{ marginLeft: '0.5rem', color: 'red' }}>Delete</button>
+                          <button onClick={() => handleDelete(unit._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
                         </>
                       )}
                     </td>
