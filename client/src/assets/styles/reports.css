@@ -52,7 +52,6 @@
   margin: 0;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .report-cards {
     grid-template-columns: 1fr;

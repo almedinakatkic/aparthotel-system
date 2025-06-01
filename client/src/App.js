@@ -60,7 +60,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/owner-report"
+              path="/owner-reports"
               element={
                 <ProtectedRoute>
                   <OwnerReport />

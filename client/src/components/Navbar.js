@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../assets/styles/navbar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faSearch, faTimes, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,11 @@ const Navbar = () => {
     'Monthly rentals'
   ]);
   const [filterOption, setFilterOption] = useState('recent');
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
   const searchRef = useRef(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleSearchClick = () => {
     if (searchQuery.trim()) {
@@ -39,14 +43,28 @@ const Navbar = () => {
 
   const handleRecentSearchClick = (term) => {
     setSearchQuery(term);
-    // You could perform the search immediately when clicking a recent term
   };
 
-  // Close dropdown when clicking outside
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/settings');
+    setShowProfileDropdown(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target) &&
+        !event.target.closest('.profile-dropdown') &&
+        !event.target.closest('.profile-icon')
+      ) {
         setShowSearchDropdown(false);
+        setShowProfileDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -59,7 +77,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-logo">
         <span className="logo-text block">APARTHOTEL</span>
-        <span className="logo-text-lowercase"><br/>Database Management System</span>
+        <span className="logo-text-lowercase"><br />Database Management System</span>
       </div>
 
       <div className="navbar-right-section">
@@ -74,17 +92,17 @@ const Navbar = () => {
                 className="search-input"
                 onFocus={() => setShowSearchDropdown(true)}
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="search-icon-button"
                 onClick={handleSearchClick}
               >
                 <FontAwesomeIcon icon={faSearch} className="search-icon" />
               </button>
               {searchQuery && (
-                <button 
-                  type="button" 
-                  className="clear-search" 
+                <button
+                  type="button"
+                  className="clear-search"
                   onClick={() => setSearchQuery('')}
                 >
                   <FontAwesomeIcon icon={faTimes} />
@@ -96,19 +114,19 @@ const Navbar = () => {
           {showSearchDropdown && (
             <div className="search-dropdown">
               <div className="search-filter-options">
-                <button 
+                <button
                   className={`filter-btn ${filterOption === 'recent' ? 'active' : ''}`}
                   onClick={() => setFilterOption('recent')}
                 >
                   Recent
                 </button>
-                <button 
+                <button
                   className={`filter-btn ${filterOption === 'location' ? 'active' : ''}`}
                   onClick={() => setFilterOption('location')}
                 >
                   By Location
                 </button>
-                <button 
+                <button
                   className={`filter-btn ${filterOption === 'alphabetical' ? 'active' : ''}`}
                   onClick={() => setFilterOption('alphabetical')}
                 >
@@ -131,7 +149,24 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-profile">
-          <FontAwesomeIcon icon={faCircleUser} className="profile-icon" />
+          <FontAwesomeIcon
+            icon={faCircleUser}
+            className="profile-icon"
+            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+          />
+          {showProfileDropdown && (
+            <div className="profile-dropdown">
+              <div className="profile-info">
+                <p className="profile-name">{user?.name || 'User'}</p>
+                <p className="profile-email">{user?.email || 'user@example.com'}</p>
+              </div>
+              <button className="settings-button" onClick={handleSettingsClick}>
+                <FontAwesomeIcon icon={faGear} className="settings-icon" />
+                <span className="settings-text">Settings</span>
+              </button>
+              <button className="logout-button" onClick={handleLogout}>Log out</button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
