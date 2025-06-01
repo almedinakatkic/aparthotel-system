@@ -1,3 +1,4 @@
+/* Sidebar Base */
 .sidebar {
     width: 280px;
     background-color: #ffffff;
@@ -8,74 +9,58 @@
     margin-right: -180px;
 }
 
-.sidebar-menu ul {
-    list-style: none;
-    padding: 0;
-    font-size: 20px;
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto; /* Allows content scrolling if needed */
 }
 
-.sidebar-menu li {
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 10px;
-    padding-left: 30px;
+/* Navigation Items */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 15px;
+  
 }
 
-.sidebar-menu li:hover {
-    background-color: #E7F0FF;
-    
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: #193A6F;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  
 }
 
-.sidebar-footer {
-    margin-top: auto;
-    padding: 20px;
+.nav-item:hover {
+  background-color: #E7F0FF;
 }
 
-.add-booking-btn {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 27px;
-    font-size: 18px;
-    background-color: #db9534;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
+.nav-item.active {
+  background-color: #E7F0FF;
+  color: #193A6F;
+  font-weight: 500;
 }
 
-.add-booking-btn:hover {
-    background-color: #2980b9;
+.nav-icon {
+  font-size: 1.2rem;
+  margin-right: 15px;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevents icon shrinking */
 }
 
-.add-booking-btn svg {
-    margin-right: 8px;
+.nav-text {
+  font-size: 0.95rem;
+  white-space: nowrap; /* Prevents text wrapping */
+  font-size: 18px;
 }
 
-.chart{
-    margin-right: 18px;
-    font-size: 1.2em;
-}
-
-.table{
-    margin-right: 18px;
-    font-size: 1.2em;
-}
-
-.people{
-    margin-right: 14px;
-    font-size: 1.2em;
-}
-
-.aparthotels{
-    margin-right: 18px;
-    font-size: 1.2em;
-}
 
