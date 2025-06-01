@@ -15,6 +15,7 @@
   position: fixed;
   flex-direction: column;
   height: 100%; 
+  width: 280px;
 }
 .sidebar-nav {
   flex: 1;
