@@ -27,7 +27,6 @@ exports.createBooking = async (req, res) => {
       return res.status(404).json({ message: 'Unit not found' });
     }
 
-    // Check for overlap
     const overlaps = await Booking.findOne({
       unitId,
       $or: [
@@ -39,7 +38,6 @@ exports.createBooking = async (req, res) => {
       return res.status(409).json({ message: 'This unit is already booked for the selected dates.' });
     }
 
-    // Check for guest-bed mismatch
     if (numGuests > unit.beds) {
       return res.status(400).json({ message: `This unit allows up to ${unit.beds} guest(s).` });
     }

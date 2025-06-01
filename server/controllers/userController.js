@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash('default123', 10); // You can later randomize or improve this
+    const hashedPassword = await bcrypt.hash('default123', 10); 
 
     const newUser = new User({
       name,

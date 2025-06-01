@@ -12,6 +12,9 @@ const PropertyGroupManagement = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [filterType, setFilterType] = useState('');
 
   const fetchGroups = async () => {
     try {
@@ -69,12 +72,51 @@ const PropertyGroupManagement = () => {
     }
   };
 
+  const filteredGroups = groups.filter(group =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (filterLocation === '' || group.location === filterLocation) &&
+    (filterType === '' || group.type === filterType)
+  );
+
   return (
     <div className="rooms-container">
       <h1 className="title">Manage Properties</h1>
       <button className="login-button" style={{ marginBottom: '1rem' }} onClick={() => navigate('/create-property-group')}>
         Add Property
       </button>
+
+      <input
+        type="text"
+        className="login-input"
+        placeholder="Search by name..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: '1rem', width: '100%' }}
+      />
+
+      <div className="form-group" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <select
+          className="login-input"
+          value={filterLocation}
+          onChange={(e) => setFilterLocation(e.target.value)}
+        >
+          <option value="">All Locations</option>
+          {[...new Set(groups.map(g => g.location))].map(loc => (
+            <option key={loc} value={loc}>{loc}</option>
+          ))}
+        </select>
+
+        <select
+          className="login-input"
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="">All Types</option>
+          <option value="hotel">Hotel</option>
+          <option value="apartment_complex">Apartment Complex</option>
+          <option value="standalone_apartment">Standalone Apartment</option>
+        </select>
+      </div>
 
       {error && <div className="error-message">{error}</div>}
       {message && <div className="success-message">{message}</div>}
@@ -91,7 +133,7 @@ const PropertyGroupManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {groups.map(group => (
+            {filteredGroups.map(group => (
               <tr key={group._id}>
                 <td>{editingId === group._id ? <input name="name" value={formData.name} onChange={handleChange} /> : group.name}</td>
                 <td>{editingId === group._id ? <input name="location" value={formData.location} onChange={handleChange} /> : group.location}</td>
