@@ -34,14 +34,14 @@ const SidebarManager = () => (
           <span className="nav-text">Register User</span>
         </NavLink>
         <NavLink 
-          to="/financial-reports" 
+          to="/reports" 
           className="nav-item"
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faFileInvoiceDollar} /></span>
-          <span className="nav-text">Financial Reports</span>
+          <span className="nav-text">Reports</span>
         </NavLink>
-        <NavLink 
+        {/* <NavLink 
           to="/general-reports" 
           className="nav-item"
           activeClassName="active-nav-item"
@@ -56,7 +56,7 @@ const SidebarManager = () => (
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faUserTie} /></span>
           <span className="nav-text">Owner Reports</span>
-        </NavLink>
+        </NavLink> */}
         <NavLink 
           to="/manage-properties" 
           className="nav-item"
@@ -81,6 +81,7 @@ const SidebarManager = () => (
           <span className="nav-icon"><FontAwesomeIcon icon={faCalendarCheck} /></span>
           <span className="nav-text">Booking Management</span>
         </NavLink>
+
       </nav>
     </div>
   </div>

@@ -1,91 +1,182 @@
+/* Navbar Base Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 50px 20px 50px;
+    padding: 20px 50px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: sticky;
+    position: fixed; 
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    height: 50px; 
 }
 
-.block {
-    display: block;
+body {
+    padding-top: 90px; 
+}
+
+/* Logo Styles */
+.navbar-logo {
+    display: flex;
+    flex-direction: column;
 }
 
 .logo-text {
     font-size: 30px;
-    font-weight: bolder;;
     font-weight: bold;
     color: #193A6F;
     letter-spacing: 1px;
-    margin-left: 15px;
     margin-bottom: -10px;
 }
 
 .logo-text-lowercase {
-    margin-left: -100px;
     color: #193A6F;
     font-weight: bold;
+    font-size: 14px;
 }
 
-.navbar-search {
+/* Right Section */
+.navbar-right-section {
     display: flex;
-    flex-grow: 1;
-    margin: 0 10px 0 100px;
-    
+    align-items: center;
+    gap: 20px;
+}
+
+/* Search Container */
+.navbar-search-container {
+    position: relative;
+}
+
+.search-form {
+    display: flex;
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .search-input {
-    background-color:#f0f0f0;
-    width: 80%;
-    height: 30px;
-    padding: 0.5rem 1rem;
-    border: 1px solid #aeaeae;
-    border-radius: 10px 0 0 10px;
-    font-size: 20px;
+    width: 250px;
+    padding: 10px 40px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 1rem;
     outline: none;
-    margin-left: 25px;
+    transition: all 0.3s ease;
 }
 
-.search-button {
-    padding: 5px;;
+.search-input:focus {
+    border-color: #193A6F;
+    box-shadow: 0 0 0 2px rgba(25, 58, 111, 0.2);
+}
+
+.search-icon-button {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #193A6F;
+    padding: 0;
+}
+
+.search-icon {
+    font-size: 1rem;
+}
+
+.clear-search {
+    position: absolute;
+    right: 35px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+}
+
+.clear-search:hover {
+    color: #666;
+}
+
+/* Search Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    margin-top: 5px;
+    z-index: 1001;
+}
+
+.search-filter-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-btn.active {
     background-color: #193A6F;
     color: white;
-    border: none;
-    border-radius: 0 4px 4px 0;
+    border-color: #193A6F;
+}
+
+.recent-searches h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.recent-searches ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recent-searches li {
+    padding: 8px 0;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    font-size: 18px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    transition: background-color 0.3s;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
 }
 
-.search-button:active{
-    background-color: #e69c2d;
+.recent-searches li:hover {
+    color: #193A6F;
+    background-color: #f9f9f9;
 }
 
-.navbar-profile {
-    display: flex;
-    align-items: center;
-}
-
+/* Profile Styles */
 .profile-icon {
-    font-size: 3.2rem;
+    font-size: 2.5rem;
     color: #193A6F;
     cursor: pointer;
-    margin-right: 50px;
-    margin-left: -10px;
+    transition: color 0.2s;
 }
 
 .profile-icon:hover {
     color: #e69c2d;
-    border-color: #e69c2d;
 }
 
 /* Responsive design */
@@ -93,14 +184,26 @@
     .navbar {
         flex-direction: column;
         padding: 1rem;
+        height: auto;
+    }
+    
+    body {
+        padding-top: 150px;
     }
 
-    .navbar-search {
+    .navbar-right-section {
         width: 100%;
-        margin: 1rem 0;
+        justify-content: flex-end;
+        margin-top: 10px;
     }
 
-    .navbar-logo {
-        margin-bottom: 0.5rem;
+    .search-input {
+        width: 200px;
+    }
+
+    .search-dropdown {
+        width: calc(100% - 30px);
+        left: 15px;
+        right: 15px;
     }
 }
