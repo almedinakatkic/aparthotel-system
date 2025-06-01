@@ -7,17 +7,15 @@
   flex-direction: column;
   padding: 20px 0;
   margin-right: -180px;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Dodajemo laganu senku */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); 
 }
 
 .sidebar-content {
   display: flex;
+  position: fixed;
   flex-direction: column;
-  height: 100%;
-  overflow-y: auto; /* Allows content scrolling if needed */
+  height: 100%; 
 }
-
-/* Navigation Items */
 .sidebar-nav {
   flex: 1;
   display: flex;
@@ -40,7 +38,6 @@
   background-color: #E7F0FF;
 }
 
-/* Stil za aktivni link - koristi se sa NavLink */
 .nav-item.active,
 .active-nav-item {
   background-color: #E7F0FF;
@@ -48,7 +45,6 @@
   position: relative;
 }
 
-/* Dodajemo indikator za aktivni link */
 .nav-item.active::before,
 .active-nav-item::before {
   content: '';
@@ -68,17 +64,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* Prevents icon shrinking */
+  flex-shrink: 0; 
 }
 
 .nav-text {
   font-size: 0.95rem;
-  white-space: nowrap; /* Prevents text wrapping */
+  white-space: nowrap; 
   font-size: 18px;
-  font-weight: inherit; /* Nasleđuje font-weight od parenta */
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
