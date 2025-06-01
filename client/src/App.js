@@ -17,6 +17,7 @@ import PropertyGroupManagement from './pages/PropertyGroupManagement';
 import CreateUnit from './pages/CreateUnit';
 import UnitManagement from './pages/UnitManagement';
 import Reports from './pages/Reports';
+import Settings from './pages/Settings';
 import './App.css';
 
 function AppContent() {
@@ -67,7 +68,14 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } 
+            />
             <Route
               path="/reports"
               element={

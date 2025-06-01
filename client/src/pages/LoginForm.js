@@ -21,7 +21,7 @@ const LoginForm = () => {
       const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
 
-      login(user, token); // save to context + localStorage
+      login(user, token); 
 
       if (user.firstLogin) {
         navigate('/change-password');
@@ -72,7 +72,7 @@ const LoginForm = () => {
         </div>
         
         <div className="forgot">
-          <a href="#" className="forgot-password">Forgot your password? Contact admin</a>
+          <a href="#" className="forgot-password">Forgot your password?</a>
         </div>
         
         <button type="submit" className="login-button" disabled={isLoading}>
