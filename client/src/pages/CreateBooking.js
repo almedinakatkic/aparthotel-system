@@ -63,12 +63,10 @@ const CreateBooking = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'propertyGroupId') {
-      setFormData(prev => ({
-        ...prev,
-        propertyGroupId: value,
-        unitId: ''
-      }));
+    if (['numGuests'].includes(name)) {
+      setFormData(prev => ({ ...prev, [name]: Number(value) }));
+    } else if (name === 'propertyGroupId') {
+      setFormData(prev => ({ ...prev, propertyGroupId: value, unitId: '' }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -106,15 +104,17 @@ const CreateBooking = () => {
 
   return (
     <div className="front-desk-page">
-      <form onSubmit={handleSubmit} className="booking-form">
-        <h2>Create Booking</h2>
+      <h1>Create Booking</h1>
 
-        <input type="text" name="guestName" value={formData.guestName} onChange={handleChange} placeholder="Guest Full Name" required />
-        <input type="email" name="guestEmail" value={formData.guestEmail} onChange={handleChange} placeholder="Guest Email" required />
+      <form onSubmit={handleSubmit} className="booking-form">
+        <h2>Guest Info</h2>
+        <input type="text" name="guestName" value={formData.guestName} onChange={handleChange} placeholder="Full Name" required />
+        <input type="email" name="guestEmail" value={formData.guestEmail} onChange={handleChange} placeholder="Email" required />
         <input type="text" name="guestId" value={formData.guestId} onChange={handleChange} placeholder="Guest ID" required />
-        <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" required />
+        <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" required />
         <input type="number" name="numGuests" value={formData.numGuests} onChange={handleChange} min="1" placeholder="Number of Guests" required />
 
+        <h2>Booking Info</h2>
         <select name="propertyGroupId" value={formData.propertyGroupId} onChange={handleChange} required>
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (
@@ -131,7 +131,7 @@ const CreateBooking = () => {
             })
             .map(unit => (
               <option key={unit._id} value={unit._id}>
-                {unit.unitNumber} (Floor {unit.floor})
+                {unit.unitNumber} (Floor {unit.floor}, {unit.beds} bed{unit.beds > 1 ? 's' : ''})
               </option>
             ))}
         </select>
@@ -139,7 +139,7 @@ const CreateBooking = () => {
         <input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange} required />
         <input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange} required />
 
-        <p><strong>Full Price:</strong> {fullPrice} KM</p>
+        <p><strong>Total Price:</strong> {fullPrice} KM</p>
 
         <button type="submit">Book</button>
         {message && <p style={{ color: 'green' }}>{message}</p>}
