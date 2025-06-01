@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/frontDeskCalendar.css';
+import '../assets/styles/createBooking.css';
 
 const CreateBooking = () => {
   const { user, token } = useAuth();

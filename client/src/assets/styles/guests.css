@@ -1,119 +1,107 @@
-.guests-container {
+/* Booking Management Styles */
+.guests-page {
   padding: 20px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  border-radius: 8px;
+
 }
 
-.guests-header {
+.guests-page h1 {
+  color: #193A6F;
+  margin-bottom: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.filter-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 20px 0;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
 }
 
-.date-filters {
-  display: flex;
-  gap: 15px;
+.filter-container label {
+  font-weight: 500;
+  color: #193A6F;
+  margin-right: 10px;
 }
 
-.date-input {
-  display: flex;
-  flex-direction: column;
+.filter-container select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+  background-color: white;
 }
 
-.date-input label {
-  margin-bottom: 5px;
+.login-button {
+  background-color: #193A6F;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #142d54;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-table th {
+  background-color: #193A6F;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
   font-weight: 500;
 }
 
-.date-input input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.bookings-table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.search-add {
-  display: flex;
-  gap: 15px;
-  align-items: center;
+.bookings-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.search-bar input {
-  padding: 8px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 200px;
+.bookings-table tr:hover {
+  background-color: #f1f5ff;
 }
 
-.add-booking-btn {
-  padding: 8px 15px;
-  background: #193A6F;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.guests-table-container {
-  overflow-x: auto;
+.guests-page p {
   margin-top: 20px;
+  color: #666;
+  font-style: italic;
 }
 
-.guests-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.guests-table th,
-.guests-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.guests-table th {
-  background-color: #193A6F;
-  color: white;
-  font-weight: 600;
-}
-
-.guests-table tr:hover {
-  background-color: #f5f5f5;
-}
-
-.booking-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 4px;
-  width: 500px;
-  max-width: 90%;
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .guests-header {
+  .filter-container {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  .search-add {
-    width: 100%;
+  .filter-container label {
+    margin-bottom: 5px;
   }
   
-  .search-bar input {
-    width: 100%;
+  .bookings-table {
+    display: block;
+    overflow-x: auto;
   }
 }
