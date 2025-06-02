@@ -9,7 +9,7 @@ import FinancialReports from './pages/FinancialReports';
 import GeneralReports from './pages/GeneralReports';
 import OwnerReport from './pages/OwnerReport';
 import CreateBooking from './pages/CreateBooking';
-import BookingManagement from './pages/BookingManagemen';
+import BookingManagement from './pages/BookingManagement';
 import RegisterUser from './pages/RegisterUser';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreatePropertyGroup from './pages/CreatePropertyGroup';

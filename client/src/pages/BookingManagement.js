@@ -3,6 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import '../assets/styles/guests.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const BookingManagement = () => {
   const { user, token } = useAuth();
@@ -46,6 +49,23 @@ const BookingManagement = () => {
     b.guestId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredBookings.map(b => ({
+      Guest: b.guestName,
+      Email: b.email,
+      Phone: b.phone,
+      'Guest ID': b.guestId,
+      Unit: b.unitNumber,
+      'Check-in': b.checkIn.split('T')[0],
+      'Check-out': b.checkOut.split('T')[0],
+      Guests: b.numGuests,
+      'Total (KM)': b.totalPrice
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
+    XLSX.writeFile(workbook, `bookings_${selectedProperty}.xlsx`);
+  };
+
   return (
     <div className="rooms-container">
       <h1>Booking Management</h1>
@@ -84,6 +104,19 @@ const BookingManagement = () => {
               minWidth: '240px'
             }}
           />
+          
+        )}
+
+              {selectedProperty && (
+          <>
+            <button onClick={exportToExcel} className="login-button" style={{ 
+              width: '150px', 
+              fontSize: '10px', 
+              height: '35px',
+              marginLeft: '0',
+              marginTop: '30px'
+              }}>Export to Excel</button>
+          </>
         )}
       </div>
 
@@ -99,7 +132,7 @@ const BookingManagement = () => {
               <th>Check-in</th>
               <th>Check-out</th>
               <th>Guests</th>
-              <th>Total (KM)</th>
+              <th>Total €</th>
             </tr>
           </thead>
           <tbody>
