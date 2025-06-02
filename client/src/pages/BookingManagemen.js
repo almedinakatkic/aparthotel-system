@@ -10,6 +10,7 @@ const BookingManagement = () => {
   const [propertyGroups, setPropertyGroups] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState('');
   const [bookings, setBookings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -40,20 +41,25 @@ const BookingManagement = () => {
     fetchBookings();
   }, [selectedProperty, token]);
 
+  const filteredBookings = bookings.filter(b =>
+    b.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    b.guestId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="rooms-container">
       <h1>Booking Management</h1>
 
       <button
-          className="login-button"
-          style={{ marginLeft: '0rem', marginTop: '1.5rem' }}
-          onClick={() => navigate('/create-booking')}
-        >
-          + Create New Booking
-        </button>
+        className="login-button"
+        style={{ marginLeft: '0rem', marginTop: '1.5rem' }}
+        onClick={() => navigate('/create-booking')}
+      >
+        + Create New Booking
+      </button>
 
-      <div className="filter-container">
-        <label htmlFor="propertySelect" style={{ fontWeight: 'bolder' }}>Filter by Property:</label>
+      <div className="filter-container" style={{ marginTop: '1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
+        <label htmlFor="propertySelect" style={{ fontWeight: 'bold' }}>Filter by Property:</label>
         <select
           id="propertySelect"
           value={selectedProperty}
@@ -65,9 +71,23 @@ const BookingManagement = () => {
           ))}
         </select>
 
+        {selectedProperty && (
+          <input
+            type="text"
+            placeholder="Search by guest name or ID"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              minWidth: '240px'
+            }}
+          />
+        )}
       </div>
 
-      {selectedProperty && bookings.length > 0 ? (
+      {selectedProperty && filteredBookings.length > 0 ? (
         <table className="bookings-table">
           <thead>
             <tr>
@@ -83,7 +103,7 @@ const BookingManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.map(b => (
+            {filteredBookings.map(b => (
               <tr key={b._id}>
                 <td>{b.guestName}</td>
                 <td>{b.guestEmail}</td>

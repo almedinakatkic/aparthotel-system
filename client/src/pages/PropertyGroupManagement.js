@@ -21,7 +21,9 @@ const PropertyGroupManagement = () => {
       const res = await api.get(`/property-group/company/${user.companyId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setGroups(res.data);
+
+      const sortedGroups = res.data.sort((a, b) => a.name.localeCompare(b.name));
+      setGroups(sortedGroups);
     } catch (err) {
       setError('Failed to load property groups');
     }
@@ -80,51 +82,41 @@ const PropertyGroupManagement = () => {
 
   return (
     <div className="rooms-container">
-      <h1 className="title" style={{color: '#193A6F'}}>Property Management</h1>
-      <button
-        className="login-button"
-        style={{ marginBottom: '1rem' }}
-        onClick={() => navigate('/create-property-group')}
-      >
+      <h1 className="title">Manage Properties</h1>
+      <button className="login-button" style={{ marginBottom: '1rem' }} onClick={() => navigate('/create-property-group')}>
         Add Property
       </button>
 
-      {/* Unified Search + Filters */}
-      <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto' }}>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <input
-            type="text"
-            className="login-input"
-            placeholder="Search by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: 2 }}
-          />
+      <div className="form-group" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <input
+          type="text"
+          className="login-input"
+          placeholder="Search by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-          <select
-            className="login-input"
-            value={filterLocation}
-            onChange={(e) => setFilterLocation(e.target.value)}
-            style={{ flex: 1 }}
-          >
-            <option value="">Filter by Location</option>
-            {[...new Set(groups.map(g => g.location))].map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
+        <select
+          className="login-input"
+          value={filterLocation}
+          onChange={(e) => setFilterLocation(e.target.value)}
+        >
+          <option value="">All Locations</option>
+          {[...new Set(groups.map(g => g.location))].map(loc => (
+            <option key={loc} value={loc}>{loc}</option>
+          ))}
+        </select>
 
-          <select
-            className="login-input"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            style={{ flex: 1 }}
-          >
-            <option value="">Filter by Type</option>
-            <option value="hotel">Hotel</option>
-            <option value="apartment_complex">Apartment Complex</option>
-            <option value="standalone_apartment">Standalone Apartment</option>
-          </select>
-        </div>
+        <select
+          className="login-input"
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="">All Types</option>
+          <option value="hotel">Hotel</option>
+          <option value="apartment_complex">Apartment Complex</option>
+          <option value="standalone_apartment">Standalone Apartment</option>
+        </select>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -144,38 +136,18 @@ const PropertyGroupManagement = () => {
           <tbody>
             {filteredGroups.map(group => (
               <tr key={group._id}>
-                <td>
-                  {editingId === group._id ? (
-                    <input name="name" value={formData.name} onChange={handleChange} />
-                  ) : (
-                    group.name
-                  )}
-                </td>
-                <td>
-                  {editingId === group._id ? (
-                    <input name="location" value={formData.location} onChange={handleChange} />
-                  ) : (
-                    group.location
-                  )}
-                </td>
-                <td>
-                  {editingId === group._id ? (
-                    <input name="address" value={formData.address} onChange={handleChange} />
-                  ) : (
-                    group.address
-                  )}
-                </td>
-                <td>
-                  {editingId === group._id ? (
-                    <select name="type" value={formData.type} onChange={handleChange}>
-                      <option value="hotel">Hotel</option>
-                      <option value="apartment_complex">Apartment Complex</option>
-                      <option value="standalone_apartment">Standalone Apartment</option>
-                    </select>
-                  ) : (
-                    group.type.replace('_', ' ')
-                  )}
-                </td>
+                <td>{editingId === group._id ? <input name="name" value={formData.name} onChange={handleChange} /> : group.name}</td>
+                <td>{editingId === group._id ? <input name="location" value={formData.location} onChange={handleChange} /> : group.location}</td>
+                <td>{editingId === group._id ? <input name="address" value={formData.address} onChange={handleChange} /> : group.address}</td>
+                <td>{editingId === group._id ? (
+                  <select name="type" value={formData.type} onChange={handleChange}>
+                    <option value="hotel">Hotel</option>
+                    <option value="apartment_complex">Apartment Complex</option>
+                    <option value="standalone_apartment">Standalone Apartment</option>
+                  </select>
+                ) : (
+                  group.type.replace('_', ' ')
+                )}</td>
                 <td>
                   {editingId === group._id ? (
                     <>
