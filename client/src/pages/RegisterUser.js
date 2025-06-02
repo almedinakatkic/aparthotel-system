@@ -60,7 +60,7 @@ const RegisterUser = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="add-user-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h1 className="title" style={{color: '#193A6F', marginBottom: '2rem'}}>Register New User</h1>
 

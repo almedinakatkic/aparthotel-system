@@ -1,6 +1,8 @@
 .general-report-container {
   max-width: 1000px;
-  margin: 20px auto;
+  margin-top: 125px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 20px;
   background: white;
   border-radius: 8px;

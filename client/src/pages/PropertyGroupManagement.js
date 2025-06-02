@@ -81,7 +81,7 @@ const PropertyGroupManagement = () => {
   );
 
   return (
-    <div className="rooms-container">
+    <div className="property-container">
       <h1 className="property-title" style={{ color: '#193A6F' }}>Manage Properties</h1>
       <button className="add-property-button" onClick={() => navigate('/create-property-group')}>
         + Add Property
@@ -90,14 +90,14 @@ const PropertyGroupManagement = () => {
       <div className="form-group" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
         <input
           type="text"
-          className="login-input"
+          className="property-input"
           placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <select
-          className="login-input"
+          className="property-input"
           value={filterLocation}
           onChange={(e) => setFilterLocation(e.target.value)}
         >
@@ -108,7 +108,7 @@ const PropertyGroupManagement = () => {
         </select>
 
         <select
-          className="login-input"
+          className="property-input"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >

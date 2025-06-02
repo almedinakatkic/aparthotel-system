@@ -1,6 +1,8 @@
 .reports-selection-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin-top: 80px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 2rem;
   text-align: center;
 }
