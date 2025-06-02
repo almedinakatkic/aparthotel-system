@@ -20,15 +20,22 @@
 }
 
 .unit-button {
+  width: 50%;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: 1px;
   padding: 0.75rem 1.25rem;
   background-color: #193A6F;
   color: white;
   border: none;
-  border-radius: 12px;
-  font-weight: 600;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 10px;
+  font-size: 16px;
 }
 
 .unit-button:hover {

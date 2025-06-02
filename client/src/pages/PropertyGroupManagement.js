@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/loginStyle.css';
+import '../assets/styles/PropertyManagement.css';
 
 const PropertyGroupManagement = () => {
   const { user, token } = useAuth();
@@ -82,9 +82,9 @@ const PropertyGroupManagement = () => {
 
   return (
     <div className="rooms-container">
-      <h1 className="title" style={{ color: '#193A6F' }}>Manage Properties</h1>
-      <button className="login-button" style={{ marginBottom: '1rem' }} onClick={() => navigate('/create-property-group')}>
-        Add Property
+      <h1 className="property-title" style={{ color: '#193A6F' }}>Manage Properties</h1>
+      <button className="add-property-button" onClick={() => navigate('/create-property-group')}>
+        + Add Property
       </button>
 
       <div className="form-group" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>

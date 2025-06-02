@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import '../assets/styles/guests.css';
+import '../assets/styles/BookingManagement.css';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -67,11 +67,11 @@ const BookingManagement = () => {
   };
 
   return (
-    <div className="rooms-container">
+    <div className="booking-container">
       <h1>Booking Management</h1>
 
       <button
-        className="login-button"
+        className="new-booking-button"
         style={{ marginLeft: '0rem', marginTop: '1.5rem' }}
         onClick={() => navigate('/create-booking')}
       >
@@ -109,12 +109,11 @@ const BookingManagement = () => {
 
               {selectedProperty && (
           <>
-            <button onClick={exportToExcel} className="login-button" style={{ 
+            <button onClick={exportToExcel} className="new-booking-button" style={{ 
               width: '150px', 
-              fontSize: '10px', 
+              fontSize: '13px', 
               height: '35px',
               marginLeft: '0',
-              marginTop: '30px'
               }}>Export to Excel</button>
           </>
         )}
