@@ -76,42 +76,42 @@
     color: #cb3737;
   }
   
-  .login-button {
-    width: 30%;
+  .login-button-auth {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    padding: 0.75rem;
-    background-color: #193A6F;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding: 10px 25px;
+    background-color: #193A6F !important;
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 50px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-    box-shadow: 0 4px 4px 2px rgb(188, 188, 188);
-    margin-bottom: 30px;
-    margin-top: 40px;
-    height: 50px;
+    box-shadow: 0 4px 6px 2px rgb(188, 188, 188);
+    letter-spacing: 1px;
   }
   
-  .login-button:hover {
+  .login-button-auth:hover {
     background-color: #d69d17;
   }
 
-  .login-button:disabled {
+  .login-button-auth:disabled {
     background-color: #a5b4fc;
     cursor: not-allowed;
   }
   
-  .error-message {
+  .error-message-login {
     color: #ef4444;
-    background-color: #fee2e2;
-    padding: 0.75rem;
     border-radius: 6px;
     margin-bottom: 1.5rem;
-    font-size: 0.875rem;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .signup-link {

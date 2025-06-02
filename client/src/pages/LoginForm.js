@@ -45,7 +45,7 @@ const LoginForm = () => {
         <h1 className="title" style={{ color: '#193A6F' }}>Sign In</h1>
         <p className="subtitle">Please enter your credentials to login</p>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message-login">{error}</div>}
         
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -75,7 +75,7 @@ const LoginForm = () => {
           <a href="#" className="forgot-password">Forgot your password?</a>
         </div>
         
-        <button type="submit" className="login-button" disabled={isLoading}>
+        <button type="submit" className="login-button-auth" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'LOGIN'}
         </button>
         
