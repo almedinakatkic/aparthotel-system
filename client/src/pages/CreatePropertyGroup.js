@@ -43,7 +43,7 @@ const CreatePropertyGroup = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title">Create Property Group</h1>
+        <h1 className="title" style={{ color: '#193A6F' }}>Add Property</h1>
         <p className="subtitle">Add a new hotel or apartment complex</p>
 
         {error && <div className="error-message">{error}</div>}
@@ -91,7 +91,7 @@ const CreatePropertyGroup = () => {
           </select>
         </div>
 
-        <button className="login-button" type="submit">Create Group</button>
+        <button className="login-button" type="submit">Add</button>
       </form>
     </div>
   );

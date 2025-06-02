@@ -60,7 +60,7 @@ const CreateUnit = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title">Add New Apartment / Unit</h1>
+        <h1 className="title" style={{ color: '#193A6F' }}>Add New Apartment / Unit</h1>
         <p className="subtitle">Link it to a property group</p>
 
         {error && <div className="error-message">{error}</div>}
@@ -96,7 +96,7 @@ const CreateUnit = () => {
           <input name="pricePerNight" type="number" value={formData.pricePerNight} onChange={handleChange} required />
         </div>
 
-        <button className="login-button" type="submit">Create Unit</button>
+        <button className="login-button" type="submit">Add</button>
       </form>
     </div>
   );

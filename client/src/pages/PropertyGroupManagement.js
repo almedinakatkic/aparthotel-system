@@ -82,7 +82,7 @@ const PropertyGroupManagement = () => {
 
   return (
     <div className="rooms-container">
-      <h1 className="title">Manage Properties</h1>
+      <h1 className="title" style={{ color: '#193A6F' }}>Manage Properties</h1>
       <button className="login-button" style={{ marginBottom: '1rem' }} onClick={() => navigate('/create-property-group')}>
         Add Property
       </button>
@@ -101,7 +101,7 @@ const PropertyGroupManagement = () => {
           value={filterLocation}
           onChange={(e) => setFilterLocation(e.target.value)}
         >
-          <option value="">All Locations</option>
+          <option value="">Filter by Location</option>
           {[...new Set(groups.map(g => g.location))].map(loc => (
             <option key={loc} value={loc}>{loc}</option>
           ))}
@@ -112,7 +112,7 @@ const PropertyGroupManagement = () => {
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
-          <option value="">All Types</option>
+          <option value="">Filter by Type</option>
           <option value="hotel">Hotel</option>
           <option value="apartment_complex">Apartment Complex</option>
           <option value="standalone_apartment">Standalone Apartment</option>
