@@ -113,7 +113,7 @@ const UnitManagement = () => {
   return (
     <div className="rooms-container">
       <h1 className="title" style={{color: '#193A6F'}}>Unit Management</h1>
-      <button className="login-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>Add Unit</button>
+      <button className="unit-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>Add Unit</button>
 
       <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -122,7 +122,7 @@ const UnitManagement = () => {
           </label>
           <select
             id="propertySelect"
-            className="login-input"
+            className="unit-input"
             name="propertyGroupId"
             value={filters.propertyGroupId}
             onChange={handleFilterChange}
@@ -137,10 +137,10 @@ const UnitManagement = () => {
 
         {filters.propertyGroupId && (
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <input type="number" name="unitNumber" value={filters.unitNumber} onChange={handleFilterChange} placeholder="Unit Number" className="login-input" style={{ flex: 1 }} />
-            <input type="number" name="floor" value={filters.floor} onChange={handleFilterChange} placeholder="Floor" className="login-input" style={{ flex: 1 }} />
-            <input type="number" name="beds" value={filters.beds} onChange={handleFilterChange} placeholder="Beds" className="login-input" style={{ flex: 1 }} />
-            <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max Price" className="login-input" style={{ flex: 1 }} />
+            <input type="number" name="unitNumber" value={filters.unitNumber} onChange={handleFilterChange} placeholder="Unit Number" className="unit-input" style={{ flex: 1 }} />
+            <input type="number" name="floor" value={filters.floor} onChange={handleFilterChange} placeholder="Floor" className="unit-input" style={{ flex: 1 }} />
+            <input type="number" name="beds" value={filters.beds} onChange={handleFilterChange} placeholder="Beds" className="unit-input" style={{ flex: 1 }} />
+            <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max Price" className="unit-input" style={{ flex: 1 }} />
           </div>
         )}
       </div>

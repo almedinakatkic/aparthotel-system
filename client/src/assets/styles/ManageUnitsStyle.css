@@ -1,7 +1,11 @@
 .rooms-container {
+  margin-top: 70px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
   max-width: 1200px;
-  margin: 30px 30px 30px 30px;
   background: #ffffff;
   color: #193A6F;
   border-radius: 16px;
@@ -15,7 +19,7 @@
   color: #1e1e2f
 }
 
-.login-button {
+.unit-button {
   padding: 0.75rem 1.25rem;
   background-color: #193A6F;
   color: white;
@@ -27,11 +31,11 @@
   margin-top: 10px;
 }
 
-.login-button:hover {
+.unit-button:hover {
   background-color: #767676;
 }
 
-.login-input {
+.unit-input {
   padding: 0.65rem;
   border: 1px solid #555;
   border-radius: 10px;
@@ -41,7 +45,7 @@
   margin-top: 10px;
 }
 
-.login-input::placeholder {
+.unit-input::placeholder {
   color: #1e1e2f
 }
 
