@@ -41,11 +41,19 @@ const BookingManagement = () => {
   }, [selectedProperty, token]);
 
   return (
-    <div className="guests-page">
+    <div className="rooms-container">
       <h1>Booking Management</h1>
 
+      <button
+          className="login-button"
+          style={{ marginLeft: '0rem', marginTop: '1.5rem' }}
+          onClick={() => navigate('/create-booking')}
+        >
+          + Create New Booking
+        </button>
+
       <div className="filter-container">
-        <label htmlFor="propertySelect">Filter by Property:</label>
+        <label htmlFor="propertySelect" style={{ fontWeight: 'bolder' }}>Filter by Property:</label>
         <select
           id="propertySelect"
           value={selectedProperty}
@@ -57,13 +65,6 @@ const BookingManagement = () => {
           ))}
         </select>
 
-        <button
-          className="login-button"
-          style={{ marginLeft: '1rem' }}
-          onClick={() => navigate('/create-booking')}
-        >
-          + Create New Booking
-        </button>
       </div>
 
       {selectedProperty && bookings.length > 0 ? (

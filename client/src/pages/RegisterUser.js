@@ -62,8 +62,7 @@ const RegisterUser = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title">Register New User</h1>
-        <p className="subtitle">Assign the user to a role and property group</p>
+        <h1 className="title" style={{color: '#193A6F', marginBottom: '2rem'}}>Register New User</h1>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
@@ -116,7 +115,7 @@ const RegisterUser = () => {
           </select>
         </div>
 
-        <button type="submit" className="login-button">Register User</button>
+        <button type="submit" className="login-button">Register</button>
       </form>
     </div>
   );

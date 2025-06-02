@@ -1,9 +1,7 @@
-/* ManageUnitsStyle.css */
-
 .rooms-container {
   padding: 2rem;
   max-width: 1200px;
-  margin: 30px auto;
+  margin: 30px 30px 30px 30px;
   background: #ffffff;
   color: #193A6F;
   border-radius: 16px;

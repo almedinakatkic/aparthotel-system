@@ -62,9 +62,9 @@
 .settings-button {
   padding: 10px 0;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: bolder;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s;
   border: none;
   flex: 1;
   justify-content: left;
@@ -77,7 +77,7 @@
 }
 
 .settings-button.primary:hover {
-  background-color: #1e568a;
+  background-color: #d69d17;
 }
 
 @media (max-width: 600px) {

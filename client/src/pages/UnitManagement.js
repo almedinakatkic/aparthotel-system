@@ -85,7 +85,7 @@ const UnitManagement = () => {
       });
       setMessage('Unit updated successfully');
       setEditingUnit(null);
-      const res = await api.get(`/units`, { headers: { Authorization: `Bearer ${token}` }});
+      const res = await api.get(`/units`, { headers: { Authorization: `Bearer ${token}` } });
       setUnits(res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Update failed');
@@ -101,7 +101,7 @@ const UnitManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Unit deleted');
-      const res = await api.get(`/units`, { headers: { Authorization: `Bearer ${token}` }});
+      const res = await api.get(`/units`, { headers: { Authorization: `Bearer ${token}` } });
       setUnits(res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Delete failed');
@@ -110,34 +110,41 @@ const UnitManagement = () => {
 
   return (
     <div className="rooms-container">
-      <h1 className="title">Manage Units</h1>
-      <button className="login-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>Add a Unit</button>
+      <h1 className="title" style={{color: '#193A6F'}}>Unit Management</h1>
+      <button className="login-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>Add Unit</button>
 
-      <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <label htmlFor="propertySelect" style={{ fontWeight: '600', color: 'black' }}>Filter by Property</label>
-        <select
-          id="propertySelect"
-          className="login-input"
-          name="propertyGroupId"
-          value={filters.propertyGroupId}
-          onChange={handleFilterChange}
-        >
-          <option value="">Select Property</option>
-          {propertyGroups.map(pg => (
-            <option key={pg._id} value={pg._id}>{pg.name}</option>
-          ))}
-        </select>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <label htmlFor="propertySelect" style={{ fontWeight: '700', color: '#193A6F', whiteSpace: 'nowrap' }}>
+            Filter by Property:
+          </label>
+          <select
+            id="propertySelect"
+            className="login-input"
+            name="propertyGroupId"
+            value={filters.propertyGroupId}
+            onChange={handleFilterChange}
+            style={{ flex: 1 }}
+          >
+            <option value="">Select Property</option>
+            {propertyGroups.map(pg => (
+              <option key={pg._id} value={pg._id}>{pg.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {filters.propertyGroupId && (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <input type="number" name="unitNumber" value={filters.unitNumber} onChange={handleFilterChange} placeholder="Unit Number" className="login-input" style={{ flex: 1 }} />
+            <input type="number" name="floor" value={filters.floor} onChange={handleFilterChange} placeholder="Floor" className="login-input" style={{ flex: 1 }} />
+            <input type="number" name="beds" value={filters.beds} onChange={handleFilterChange} placeholder="Beds" className="login-input" style={{ flex: 1 }} />
+            <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max Price" className="login-input" style={{ flex: 1 }} />
+          </div>
+        )}
       </div>
 
       {filters.propertyGroupId && (
         <>
-          <div className="form-group" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2rem' }}>
-            <input name="unitNumber" type="number" placeholder="Unit Number" value={filters.unitNumber} onChange={handleFilterChange} className="login-input" />
-            <input name="floor" type="number" placeholder="Floor" value={filters.floor} onChange={handleFilterChange} className="login-input" />
-            <input name="beds" type="number" placeholder="Beds" value={filters.beds} onChange={handleFilterChange} className="login-input" />
-            <input name="maxPrice" type="number" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} className="login-input" />
-          </div>
-
           {error && <div className="error-message">{error}</div>}
           {message && <div className="success-message">{message}</div>}
 

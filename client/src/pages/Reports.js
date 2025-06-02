@@ -12,7 +12,7 @@ const ReportsSelection = () => {
 
   return (
     <div className="reports-selection-container">
-      <h1 className="reports-title">Select a Report Type</h1>
+      <h1 className="reports-title" style={{color: '#193A6F', fontWeight: 'bolder'}}>Select a Report Type</h1>
       <div className="report-cards">
         {reportOptions.map((report) => (
           <div

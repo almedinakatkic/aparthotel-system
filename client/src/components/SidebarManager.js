@@ -63,7 +63,7 @@ const SidebarManager = () => (
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faBuilding} /></span>
-          <span className="nav-text">Manage Properties</span>
+          <span className="nav-text">Property Management</span>
         </NavLink>
         <NavLink 
           to="/units/manage" 
@@ -71,7 +71,7 @@ const SidebarManager = () => (
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faCubes} /></span>
-          <span className="nav-text">Manage Units</span>
+          <span className="nav-text">Unit Management</span>
         </NavLink>
         <NavLink 
           to="/booking-management" 

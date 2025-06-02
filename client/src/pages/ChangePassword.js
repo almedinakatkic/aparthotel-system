@@ -1,97 +1,107 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
 import '../assets/styles/loginStyle.css';
 
 const ChangePassword = () => {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const navigate = useNavigate();
   const { token } = useAuth();
+  const [formData, setFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
     setError('');
-    setSuccess('');
-    setIsLoading(true);
 
-    if (newPassword !== confirmNewPassword) {
-      setError('New passwords do not match');
-      setIsLoading(false);
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError('New passwords do not match.');
       return;
     }
 
     try {
-      await api.post(
-        '/auth/change-password',
-        { currentPassword, newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setSuccess('Password changed successfully. Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2000);
+      await api.post('/users/change-password', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMessage('Password updated successfully.');
+      setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Password change failed');
-    } finally {
-      setIsLoading(false);
+      setError(err.response?.data?.message || 'Password update failed.');
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title">Change Your Password</h1>
-        <p className="subtitle">Set a new password before continuing</p>
+    <div style={{ display: 'flex' }}>
+      <Sidebar />
+      <div style={{ flex: 1 }}>
+        <Navbar />
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        <div className="rooms-container" style={{ maxWidth: '500px', margin: '30px auto' }}>
+          <h1 className="title" style={{ textAlign: 'center', color: '#193A6F', marginBottom: '2rem' }}>
+            Change Your Password
+          </h1>
 
-        <div className="form-group">
-          <label htmlFor="currentPassword">Current Password</label>
-          <input
-            id="currentPassword"
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            placeholder="Enter current password"
-            required
-          />
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Current Password</label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={formData.currentPassword}
+                onChange={handleChange}
+                placeholder="Enter current password"
+                className="login-input"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                placeholder="Enter new password"
+                className="login-input"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Confirm New Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm new password"
+                className="login-input"
+                required
+              />
+            </div>
+
+            {message && <div className="success-message">{message}</div>}
+            {error && <div className="error-message">{error}</div>}
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+              <button type="submit" className="login-button">
+                Update
+              </button>
+            </div>
+          </form>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="newPassword">New Password</label>
-          <input
-            id="newPassword"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Enter new password"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmNewPassword">Confirm New Password</label>
-          <input
-            id="confirmNewPassword"
-            type="password"
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-            placeholder="Confirm new password"
-            required
-          />
-        </div>
-
-        <button type="submit" className="login-button" disabled={isLoading}>
-          {isLoading ? 'Updating...' : 'Update Password'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
