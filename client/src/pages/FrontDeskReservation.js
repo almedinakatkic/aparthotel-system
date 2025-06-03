@@ -1,125 +1,126 @@
-import React, { useState } from 'react';
-import '../assets/styles/frontDesk.css';
-
-const apartments = [
-  { id: 1, name: 'Apt A101' },
-  { id: 2, name: 'Apt B202' },
-  { id: 3, name: 'Apt C303' }
-];
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import '../assets/styles/createBooking.css';
 
 const FrontDeskReservation = () => {
-  const [selectedApartment, setSelectedApartment] = useState('');
-  const [guestInfo, setGuestInfo] = useState({
-    firstName: '',
-    lastName: '',
-    passport: '',
-    phone: ''
+  const { user, token } = useAuth();
+  const [units, setUnits] = useState([]);
+  const [formData, setFormData] = useState({
+    guestName: '',
+    guestEmail: '',
+    guestId: '',
+    phone: '',
+    numGuests: '',
+    unitId: '',
+    checkIn: '',
+    checkOut: ''
   });
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  const [status, setStatus] = useState('unbooked');
-  const [reservationList, setReservationList] = useState([]);
+  const [fullPrice, setFullPrice] = useState(0);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const reservation = {
-      apartment: selectedApartment,
-      guest: guestInfo,
-      checkIn,
-      checkOut,
-      status
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const res = await api.get(`/units/property/${user.propertyGroupId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUnits(res.data);
+      } catch (err) {
+        console.error('Failed to fetch units:', err);
+      }
     };
-    setReservationList([...reservationList, reservation]);
 
-    // Reset form
-    setSelectedApartment('');
-    setGuestInfo({ firstName: '', lastName: '', passport: '', phone: '' });
-    setCheckIn('');
-    setCheckOut('');
-    setStatus('unbooked');
+    fetchUnits();
+  }, [user.propertyGroupId, token]);
+
+  useEffect(() => {
+    const selectedUnit = units.find(u => u._id === formData.unitId);
+    if (selectedUnit && formData.checkIn && formData.checkOut) {
+      const nights = Math.ceil(
+        (new Date(formData.checkOut) - new Date(formData.checkIn)) / (1000 * 60 * 60 * 24)
+      );
+      setFullPrice(nights * selectedUnit.pricePerNight);
+    } else {
+      setFullPrice(0);
+    }
+  }, [formData, units]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (['numGuests'].includes(name)) {
+      setFormData(prev => ({ ...prev, [name]: Number(value) }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...formData,
+        propertyGroupId: user.propertyGroupId
+      };
+
+      await api.post('/bookings/create', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      setMessage('Booking created successfully');
+      setError('');
+      setFormData({
+        guestName: '',
+        guestEmail: '',
+        guestId: '',
+        phone: '',
+        numGuests: '',
+        unitId: '',
+        checkIn: '',
+        checkOut: ''
+      });
+      setFullPrice(0);
+    } catch (err) {
+      console.error("Booking failed:", err.response?.data || err.message);
+      setError(err.response?.data?.message || 'Booking failed');
+      setMessage('');
+    }
   };
 
   return (
-    <div className="frontdesk-container">
-      <h2>Front Desk Reservation</h2>
+    <div className="front-desk-page">
+      <h1>Create Booking</h1>
 
-      <form onSubmit={handleSubmit} className="reservation-form">
-        <label>
-          Select Apartment:
-          <select value={selectedApartment} onChange={(e) => setSelectedApartment(e.target.value)} required>
-            <option value="">-- Choose Apartment --</option>
-            {apartments.map((apt) => (
-              <option key={apt.id} value={apt.name}>{apt.name}</option>
-            ))}
-          </select>
-        </label>
+      <form onSubmit={handleSubmit} className="booking-form">
+        <h2>Guest Info</h2>
+        <input type="text" name="guestName" value={formData.guestName} onChange={handleChange} placeholder="Full Name" required />
+        <input type="email" name="guestEmail" value={formData.guestEmail} onChange={handleChange} placeholder="Email" required />
+        <input type="text" name="guestId" value={formData.guestId} onChange={handleChange} placeholder="Guest ID" required />
+        <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" required />
+        <input type="number" name="numGuests" value={formData.numGuests} onChange={handleChange} min="1" placeholder="Number of Guests" required />
 
-        <fieldset>
-          <legend>Guest Info</legend>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={guestInfo.firstName}
-            onChange={(e) => setGuestInfo({ ...guestInfo, firstName: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={guestInfo.lastName}
-            onChange={(e) => setGuestInfo({ ...guestInfo, lastName: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Passport Number"
-            value={guestInfo.passport}
-            onChange={(e) => setGuestInfo({ ...guestInfo, passport: e.target.value })}
-            required
-          />
-          <input
-            type="tel"
-            placeholder="Phone Number"
-            value={guestInfo.phone}
-            onChange={(e) => setGuestInfo({ ...guestInfo, phone: e.target.value })}
-            required
-          />
-        </fieldset>
+        <h2>Booking Info</h2>
+        <select name="unitId" value={formData.unitId} onChange={handleChange} required>
+          <option value="">Select Unit</option>
+          {units.map(unit => (
+            <option key={unit._id} value={unit._id}>
+              {unit.unitNumber} (Floor {unit.floor}, {unit.beds} bed{unit.beds > 1 ? 's' : ''})
+            </option>
+          ))}
+        </select>
 
-        <label>
-          Check-in Date:
-          <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} required />
-        </label>
-        <label>
-          Check-out Date:
-          <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} required />
-        </label>
+        <input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange} required />
+        <input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange} required />
 
-        <label>
-          Reservation Status:
-          <select value={status} onChange={(e) => setStatus(e.target.value)} required>
-            <option value="booked">Booked</option>
-            <option value="unbooked">Unbooked</option>
-          </select>
-        </label>
+        <p><strong>Total Price:</strong> {fullPrice} KM</p>
 
-        <button type="submit">Submit Reservation</button>
+        <button type="submit">Book</button>
+        {message && <p style={{ color: 'green' }}>{message}</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
-
-      <div className="reservation-summary">
-        <h3>Reservation Summary</h3>
-        {reservationList.length === 0 && <p>No reservations yet.</p>}
-        {reservationList.map((res, idx) => (
-          <div key={idx} className="reservation-card">
-            <p><strong>Apartment:</strong> {res.apartment}</p>
-            <p><strong>Guest:</strong> {res.guest.firstName} {res.guest.lastName}</p>
-            <p><strong>Passport:</strong> {res.guest.passport}</p>
-            <p><strong>Phone:</strong> {res.guest.phone}</p>
-            <p><strong>Stay:</strong> {res.checkIn} to {res.checkOut}</p>
-            <p><strong>Status:</strong> <span className={res.status === 'booked' ? 'booked' : 'unbooked'}>{res.status}</span></p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

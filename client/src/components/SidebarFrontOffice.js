@@ -31,7 +31,7 @@ const SidebarFrontOffice = () => (
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faBellConcierge} /></span>
-          <span className="nav-text">Front Desk</span>
+          <span className="nav-text">Reservations</span>
         </NavLink>
 
 
