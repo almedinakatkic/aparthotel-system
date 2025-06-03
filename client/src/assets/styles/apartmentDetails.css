@@ -1,0 +1,31 @@
+.apartment-details-container {
+  background-color: #fff;
+  margin: 120px auto;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 900px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.details-title {
+  font-size: 26px;
+  color: #193A6F;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  font-size: 16px;
+}
+
+.detail-item {
+  padding: 12px 15px;
+  background: #f9f9f9;
+  border-left: 4px solid #e69c2d;
+  border-radius: 6px;
+}
+
+

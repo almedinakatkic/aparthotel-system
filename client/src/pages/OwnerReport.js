@@ -167,12 +167,7 @@ const OwnerReport = () => {
         <button className="btn generate-btn" onClick={generateNewReport}>
           Generate New Report
         </button>
-        <button
-          className="btn view-financial-btn"
-          onClick={() => navigate('/financial-reports')}
-        >
-          View Financial Reports
-        </button>
+       
         <PDFDownloadLink
           document={<OwnerReportPDF report={currentReport} />}
           fileName={`owner_report_${currentReport.oReportID}.pdf`}

@@ -1,0 +1,49 @@
+.owner-apartment-container {
+  background: #fff;
+  margin: 120px auto;
+  max-width: 1100px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  color: #193A6F;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.apartment-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.apartment-table th,
+.apartment-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.apartment-table th {
+  background-color: #f5f7fa;
+  color: #193A6F;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status.booked {
+  background-color: #e69c2d;
+  color: white;
+}
+
+.status.available {
+  background-color: #193A6F;
+  color: white;
+}

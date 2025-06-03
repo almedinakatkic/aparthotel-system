@@ -1,0 +1,81 @@
+.guest-list-container {
+  max-width: 1100px;
+  margin: 120px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.guest-list-container h2 {
+  text-align: center;
+  color: #193a6f;
+  margin-bottom: 25px;
+}
+
+.guest-table-wrapper {
+  overflow-x: auto;
+}
+
+.guest-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.guest-table th,
+.guest-table td {
+  padding: 35px 16px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.guest-table th {
+  background-color: #f5f5f5;
+  color: #193a6f;
+}
+
+.status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: capitalize;
+}
+
+.status.staying {
+  background-color: #e69c2d;
+  color: white;
+  margin-top:20px;
+  padding: 20px 40px; 
+  font-size: 13px;   
+}
+
+
+.status.checking-out-today {
+  background-color: #e69c2d;
+  color: white;
+}
+
+.status.checked-out {
+  background-color: #bdc3c7;
+  color: white;
+}
+
+.guest-table input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.guest-table button {
+  padding: 10px 20px;
+  background-color: #1b2a4e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.guest-table button:hover {
+  background-color: #324f7b;
+}

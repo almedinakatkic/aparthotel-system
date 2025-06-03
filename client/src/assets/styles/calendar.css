@@ -1,0 +1,105 @@
+.calendar-container {
+  max-width: 1000px;
+  margin: 120px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 {
+  font-size: 24px;
+  color: #193a6f;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.calendar-day-name {
+  font-weight: bold;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+}
+
+.calendar-cell {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 5px;
+  min-height: 80px;
+  cursor: pointer;
+  background-color: #fafafa;
+  position: relative;
+}
+
+.outside-month {
+  background-color: #f0f0f0;
+  opacity: 0.5;
+}
+
+.date-number {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.reservation-badge {
+  background-color: #e69c2d;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+
+.reservation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.reservation-modal-content {
+  background: white;
+  width: 95%;              
+  max-width: 1000px;       
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

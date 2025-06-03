@@ -17,8 +17,17 @@ import PropertyGroupManagement from './pages/PropertyGroupManagement';
 import CreateUnit from './pages/CreateUnit';
 import UnitManagement from './pages/UnitManagement';
 import Reports from './pages/Reports';
+import ReportsOwner from './pages/ReportsOwner';
 import Settings from './pages/Settings';
 import './App.css';
+import OwnerApartmentList from './pages/OwnerApartmentList';
+import ApartmentDetails from './pages/ApartmentDetails';
+import FrontDeskReservation from './pages/FrontDeskReservation';
+import Calendar from './pages/Calendar';
+import GuestList from './pages/GuestList';
+import RoomManagement from './pages/RoomManagement';
+import TaskAssignment from './pages/TaskAssignment';
+import CleanerDashboard from './pages/CleanerDashboard';
 
 function AppContent() {
   const location = useLocation();
@@ -85,6 +94,15 @@ function AppContent() {
               }
             />
 
+              <Route
+              path="/reportsowner"
+              element={
+                <ProtectedRoute>
+                  <ReportsOwner />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/create-booking"
               element={
@@ -141,6 +159,84 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/ownerapartmentlist"
+              element={
+                <ProtectedRoute>
+                  <OwnerApartmentList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/apartmentdetails"
+              element={
+                <ProtectedRoute>
+                  <ApartmentDetails />
+                </ProtectedRoute>
+              }
+            />
+
+             <Route
+              path="/front-desk"
+              element={
+                <ProtectedRoute>
+                  <FrontDeskReservation />
+                </ProtectedRoute>
+              }
+            />
+
+               <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <Calendar />
+                </ProtectedRoute>
+              }
+            />
+           
+               <Route
+              path="/guests"
+              element={
+                <ProtectedRoute>
+                  <GuestList />
+                </ProtectedRoute>
+              }
+            />
+
+              <Route
+              path="/rooms"
+              element={
+                <ProtectedRoute>
+                  <RoomManagement />
+                </ProtectedRoute>
+              }
+            />
+
+             <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <TaskAssignment />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/cleaning"
+              element={
+                <ProtectedRoute>
+                  <CleanerDashboard />
+                </ProtectedRoute>
+              }
+
+              
+            />
+
+
+
+
+            
           </Routes>
         </main>
       </div>
