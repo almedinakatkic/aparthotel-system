@@ -83,7 +83,6 @@ const GeneralReports = () => {
   return (
     <div className="general-report-container">
       <div className="report-header">
-        <h2>Generate General Report</h2>
         <div className="date-selector">
           <input
             type="number"
@@ -162,13 +161,6 @@ const GeneralReports = () => {
             >
               {({ loading }) => (loading ? 'Preparing PDF...' : 'Save as PDF')}
             </PDFDownloadLink>
-
-            <button
-              className="btn back-btn"
-              onClick={() => navigate('/financial-reports')}
-            >
-              Back to Financial Reports
-            </button>
           </div>
         </>
       )}

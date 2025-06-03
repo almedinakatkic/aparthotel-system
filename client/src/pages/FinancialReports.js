@@ -1,30 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import FinancialReportPDF from '../components/FinancialReportPDF';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import '../assets/styles/financialReport.css';
 
 const FinancialReports = () => {
-  const [reports, setReports] = useState([
-    {
-      reportID: 1001,
-      apartment: 'A101',
-      date: new Date().toLocaleDateString(),
-      rental: 2500.0,
-      expenses: {
-        maintenance: 350.0,
-        cleaning: 150.0
-      },
-      companyShare: 30,
-      ownerShare: 70
-    }
-  ]);
-  const [currentReportIndex, setCurrentReportIndex] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { user, token } = useAuth();
+  const [propertyGroups, setPropertyGroups] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toLocaleString('default', { month: 'long' })
   );
   const [enteredYear, setEnteredYear] = useState(new Date().getFullYear());
+  const [report, setReport] = useState(null);
+  const [hasData, setHasData] = useState(false);
   const navigate = useNavigate();
 
   const months = [
@@ -32,69 +23,111 @@ const FinancialReports = () => {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const filteredReports = reports.filter((report) =>
-    report.apartment.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const visibleReports = filteredReports.length > 0 ? filteredReports : reports;
-  const currentReport = visibleReports[currentReportIndex] || reports[0];
-
-  const totalExpenses =
-    currentReport.expenses.maintenance + currentReport.expenses.cleaning;
-  const netIncome = currentReport.rental - totalExpenses;
-
-  const generateNewReport = () => {
-    const apartments = ['A101', 'B202', 'C303', 'D404'];
-    const newReport = {
-      reportID: reports[reports.length - 1].reportID + 1,
-      apartment: apartments[Math.floor(Math.random() * apartments.length)],
-      date: new Date().toLocaleDateString(),
-      rental: Math.floor(Math.random() * 3000) + 1500,
-      expenses: {
-        maintenance: Math.floor(Math.random() * 400) + 100,
-        cleaning: Math.floor(Math.random() * 200) + 50
-      },
-      companyShare: 30,
-      ownerShare: 70
+  useEffect(() => {
+    const fetchPropertyGroups = async () => {
+      try {
+        const res = await api.get(`/property-group/company/${user.companyId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setPropertyGroups(res.data);
+      } catch (err) {
+        console.error('Failed to fetch property groups:', err);
+      }
     };
-    setReports([...reports, newReport]);
-    setSearchQuery('');
-    setCurrentReportIndex(visibleReports.length);
-  };
+    fetchPropertyGroups();
+  }, [user.companyId, token]);
 
-  const navigateReport = (direction) => {
-    const newIndex = currentReportIndex + direction;
-    if (newIndex >= 0 && newIndex < visibleReports.length) {
-      setCurrentReportIndex(newIndex);
-    }
-  };
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!selectedProperty) {
+        setReport(null);
+        setHasData(false);
+        return;
+      }
+      try {
+        const res = await api.get(`/bookings/property/${selectedProperty}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const bookings = res.data || [];
+        const monthIndex = months.indexOf(selectedMonth);
+
+        const filtered = bookings.filter(b => {
+          const checkIn = new Date(b.checkIn);
+          return checkIn.getMonth() === monthIndex && checkIn.getFullYear() === parseInt(enteredYear);
+        });
+
+        if (filtered.length === 0) {
+          setHasData(false);
+          setReport(null);
+          return;
+        }
+
+        const rental = filtered.reduce((sum, b) => sum + b.fullPrice, 0);
+
+        const generatedReport = {
+          reportID: Math.floor(1000 + Math.random() * 9000),
+          date: new Date().toLocaleDateString(),
+          rental,
+          expenses: {
+            maintenance: 0,
+            cleaning: 0
+          },
+          companyShare: 30,
+          ownerShare: 70
+        };
+
+        setReport(generatedReport);
+        setHasData(true);
+      } catch (err) {
+        console.error('Failed to fetch bookings:', err);
+      }
+    };
+
+    fetchBookings();
+  }, [selectedProperty, selectedMonth, enteredYear, token]);
+
+  const totalExpenses = (report?.expenses.maintenance || 0) + (report?.expenses.cleaning || 0);
+  const netIncome = (report?.rental || 0) - totalExpenses;
 
   return (
     <div className="financial-report-container">
       <div className="report-header">
-        <h2>Financial Report #{currentReport.reportID}</h2>
-        <p className="report-date">{currentReport.date}</p>
+        <h2>Financial Report</h2>
+        <p className="report-date">{report?.date || new Date().toLocaleDateString()}</p>
 
-        {/* Filters row: Month, Year, Search */}
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
-          <div>
+        <div className='filter-row'>
+          <div style={{ flex: '1 1 30%' }}>
+            <label htmlFor="property-select"><strong>Property:</strong></label><br />
+            <select
+              id="property-select"
+              value={selectedProperty}
+              onChange={(e) => setSelectedProperty(e.target.value)}
+              className="search-bar"
+              style={{ width: '100%' }}
+            >
+              <option value="">Select Property</option>
+              {propertyGroups.map(pg => (
+                <option key={pg._id} value={pg._id}>{pg.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ flex: '1 1 30%' }}>
             <label htmlFor="month-select"><strong>Month:</strong></label><br />
             <select
               id="month-select"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="search-bar"
-              style={{ width: '150px' }}
+              style={{ width: '100%' }}
             >
               {months.map((month) => (
-                <option key={month} value={month}>
-                  {month}
-                </option>
+                <option key={month} value={month}>{month}</option>
               ))}
             </select>
           </div>
 
-          <div>
+          <div style={{ flex: '1 1 30%' }}>
             <label htmlFor="year-input"><strong>Year:</strong></label><br />
             <input
               type="number"
@@ -102,105 +135,63 @@ const FinancialReports = () => {
               value={enteredYear}
               onChange={(e) => setEnteredYear(e.target.value)}
               className="search-bar"
-              style={{ width: '120px' }}
+              style={{ width: '100%' }}
               placeholder="e.g. 2025"
             />
           </div>
+        </div>
+      </div>
 
-          <div>
-            <label htmlFor="search-apartment"><strong>Search Apartment:</strong></label><br />
-            <input
-              type="text"
-              id="search-apartment"
-              placeholder="e.g. A101"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentReportIndex(0);
-              }}
-              className="search-bar"
-              style={{ width: '450px' }}
-            />
+      {!selectedProperty ? (
+        <p style={{ marginTop: '2rem' }}>Please select a property to view financial reports.</p>
+      ) : !hasData ? (
+        <p style={{ marginTop: '2rem' }}>No bookings found for the selected filters.</p>
+      ) : report && (
+        <>
+          <div className="report-section">
+            <p>Rental Income: ${report.rental.toFixed(2)}</p>
           </div>
-        </div>
-      </div>
 
-      <div className="report-section">
-        <h3>Apartment: {currentReport.apartment}</h3>
-        <p>Rental Income: ${currentReport.rental.toFixed(2)}</p>
-      </div>
-
-      <div className="report-section">
-        <h3>Expenses</h3>
-        <ul className="expenses-list">
-          <li>Maintenance: ${currentReport.expenses.maintenance.toFixed(2)}</li>
-          <li>Cleaning: ${currentReport.expenses.cleaning.toFixed(2)}</li>
-          <li className="total">Total Expenses: ${totalExpenses.toFixed(2)}</li>
-        </ul>
-      </div>
-
-      <div className="report-section">
-        <h3>Distribution</h3>
-        <div className="distribution-grid">
-          <div>
-            <p>Net Income: ${netIncome.toFixed(2)}</p>
-            <p>
-              Company Share ({currentReport.companyShare}%): $
-              {(netIncome * (currentReport.companyShare / 100)).toFixed(2)}
-            </p>
-            <p>
-              Owner Share ({currentReport.ownerShare}%): $
-              {(netIncome * (currentReport.ownerShare / 100)).toFixed(2)}
-            </p>
+          <div className="report-section">
+            <h3>Expenses</h3>
+            <ul className="expenses-list">
+              <li>Maintenance: ${report.expenses.maintenance.toFixed(2)}</li>
+              <li>Cleaning: ${report.expenses.cleaning.toFixed(2)}</li>
+              <li className="total">Total Expenses: ${totalExpenses.toFixed(2)}</li>
+            </ul>
           </div>
-        </div>
-      </div>
 
-      <div className="navigation-controls">
-        <div className="report-navigation">
-          <button
-            onClick={() => navigateReport(-1)}
-            disabled={currentReportIndex === 0}
-            className="nav-btn"
-          >
-            &lt; Previous
-          </button>
-          <span className="report-counter">
-            Report {currentReportIndex + 1} of {visibleReports.length}
-          </span>
-          <button
-            onClick={() => navigateReport(1)}
-            disabled={currentReportIndex === visibleReports.length - 1}
-            className="nav-btn"
-          >
-            Next &gt;
-          </button>
-        </div>
-      </div>
+          <div className="report-section">
+            <h3>Distribution</h3>
+            <div className="distribution-grid">
+              <div>
+                <p>Net Income: ${netIncome.toFixed(2)}</p>
+                <p>Company Share ({report.companyShare}%): ${
+                  (netIncome * (report.companyShare / 100)).toFixed(2)
+                }</p>
+                <p>Owner Share ({report.ownerShare}%): ${
+                  (netIncome * (report.ownerShare / 100)).toFixed(2)
+                }</p>
+              </div>
+            </div>
+          </div>
 
-      <div className="action-buttons">
-        <button className="btn generate-btn" onClick={generateNewReport}>
-          Generate New Report
-        </button>
-        <button
-          className="btn view-general-btn"
-          onClick={() => navigate('/general-reports')}
-        >
-          View General Reports
-        </button>
-        <PDFDownloadLink
-          document={
-            <FinancialReportPDF
-              report={currentReport}
-              totals={{ totalExpenses, netIncome }}
-            />
-          }
-          fileName={`financial_report_${currentReport.reportID}.pdf`}
-          className="btn pdf-btn"
-        >
-          {({ loading }) => (loading ? 'Preparing PDF...' : 'Save as PDF')}
-        </PDFDownloadLink>
-      </div>
+          <div className="action-buttons">
+            <PDFDownloadLink
+              document={
+                <FinancialReportPDF
+                  report={report}
+                  totals={{ totalExpenses, netIncome }}
+                />
+              }
+              fileName={`financial_report_${selectedProperty}_${selectedMonth}_${enteredYear}.pdf`}
+              className="btn pdf-btn"
+            >
+              {({ loading }) => (loading ? 'Preparing PDF...' : 'Save as PDF')}
+            </PDFDownloadLink>
+          </div>
+        </>
+      )}
     </div>
   );
 };

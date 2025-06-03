@@ -6,5 +6,6 @@ const bookingController = require('../controllers/bookingController');
 router.post('/create', authMiddleware, bookingController.createBooking);
 router.get('/unit/:unitId', authMiddleware, bookingController.getBookingsByUnit);
 router.get('/property/:propertyGroupId', authMiddleware, bookingController.getBookingsByProperty);
+router.get('/monthly-income/:companyId', authMiddleware, bookingController.getMonthlyIncomeByCompany);
 
 module.exports = router;

@@ -92,3 +92,40 @@ exports.getBookingsByUnit = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch bookings', error: err.message });
   }
 };
+
+exports.getMonthlyIncomeByCompany = async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const bookings = await Booking.aggregate([
+      {
+        $lookup: {
+          from: 'propertygroups',
+          localField: 'propertyGroupId',
+          foreignField: '_id',
+          as: 'property'
+        }
+      },
+      { $unwind: '$property' },
+      {
+        $match: { 'property.companyId': new mongoose.Types.ObjectId(companyId) }
+      },
+      {
+        $group: {
+          _id: {
+            property: '$property.name',
+            month: { $month: '$checkIn' },
+            year: { $year: '$checkIn' }
+          },
+          totalIncome: { $sum: '$fullPrice' }
+        }
+      },
+      { $sort: { '_id.year': -1, '_id.month': -1 } }
+    ]);
+
+    res.json(bookings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch monthly income.' });
+  }
+};
+
