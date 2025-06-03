@@ -48,6 +48,13 @@
   cursor: pointer;
   background-color: #fafafa;
   position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.calendar-cell.booked {
+  background-color: #e69c2d;
+  color: white;
+  font-weight: bold;
 }
 
 .outside-month {
@@ -62,14 +69,14 @@
 }
 
 .reservation-badge {
-  background-color: #e69c2d;
-  color: white;
+  background-color: #fff;
+  color: #193a6f;
   padding: 3px 6px;
   border-radius: 4px;
   margin-top: 3px;
   font-size: 12px;
+  font-weight: bold;
 }
-
 
 .reservation-modal {
   position: fixed;
@@ -86,12 +93,13 @@
 
 .reservation-modal-content {
   background: white;
-  width: 95%;              
-  max-width: 1000px;       
+  width: 95%;
+  max-width: 1000px;
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 10px;
   position: relative;
+  padding: 20px;
 }
 
 .close-modal {
@@ -102,4 +110,17 @@
   background: none;
   border: none;
   cursor: pointer;
+}
+
+.unit-selector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.unit-selector select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }

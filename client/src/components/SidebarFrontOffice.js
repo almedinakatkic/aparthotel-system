@@ -71,7 +71,7 @@ const SidebarFrontOffice = () => (
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faBroom} /></span>
-          <span className="nav-text">Maintanance</span>
+          <span className="nav-text">Maintenance</span>
         </NavLink>
 
       </nav>
