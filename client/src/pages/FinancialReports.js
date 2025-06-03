@@ -148,9 +148,6 @@ const FinancialReports = () => {
         <p style={{ marginTop: '2rem' }}>No bookings found for the selected filters.</p>
       ) : report && (
         <>
-          <div className="report-section">
-            <p>Rental Income: ${report.rental.toFixed(2)}</p>
-          </div>
 
           <div className="report-section">
             <h3>Expenses</h3>

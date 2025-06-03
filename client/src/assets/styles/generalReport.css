@@ -78,47 +78,54 @@
   font-weight: bold;
 }
 
-
-
-
 .date-selector {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 40px 0;
   flex-wrap: wrap;
-  text-align: center;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
-.date-selector input[type="number"] {
-  width: 100px;
+.date-selector select {
   padding: 10px;
   font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 2px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  min-width: 120px;
   text-align: center;
 }
 
-.date-selector input[type="number"]:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.date-selector .generate-btn {
-  padding: 10px 100px;
-  font-size: 16px;
+.generate-btn {
   background-color: #e69c2d;
   color: white;
+  padding: 10px 30px;
+  font-size: 16px;
   border: none;
-  border-radius: 2px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.date-selector .generate-btn:hover {
-  background-color: #e69c2d;
+.generate-btn:hover {
+  background-color: #d78a1c;
+}
+
+.stat-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+  text-align: center;
+  width: 250px;
+  margin: 0 auto;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }

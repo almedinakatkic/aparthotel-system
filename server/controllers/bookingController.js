@@ -129,3 +129,52 @@ exports.getMonthlyIncomeByCompany = async (req, res) => {
   }
 };
 
+exports.getGeneralReport = async (req, res) => {
+  const { day, month, year } = req.query;
+
+  try {
+    const match = {};
+    const label = [];
+
+    if (year) {
+      match.checkIn = { ...match.checkIn, $gte: new Date(`${year}-01-01`), $lte: new Date(`${year}-12-31T23:59:59`) };
+      label.push(year);
+    }
+
+    if (month) {
+      const paddedMonth = month.toString().padStart(2, '0');
+      match.checkIn = {
+        $gte: new Date(`${year}-${paddedMonth}-01`),
+        $lte: new Date(`${year}-${paddedMonth}-31T23:59:59`)
+      };
+      label.push(`Month ${paddedMonth}`);
+    }
+
+    if (day) {
+      const paddedMonth = month.toString().padStart(2, '0');
+      const paddedDay = day.toString().padStart(2, '0');
+      match.checkIn = {
+        $gte: new Date(`${year}-${paddedMonth}-${paddedDay}T00:00:00`),
+        $lte: new Date(`${year}-${paddedMonth}-${paddedDay}T23:59:59`)
+      };
+      label.push(`Day ${paddedDay}`);
+    }
+
+    const bookings = await Booking.find(match);
+    const totalIncome = bookings.reduce((sum, b) => sum + (b.fullPrice || 0), 0);
+
+    let type = 'Yearly';
+    if (day && month && year) type = 'Daily';
+    else if (month && year) type = 'Monthly';
+
+    res.json({
+      type,
+      label: label.reverse().join(', '),
+      totalIncome
+    });
+
+  } catch (err) {
+    console.error("Error generating general report:", err);
+    res.status(500).json({ message: 'Failed to generate report' });
+  }
+};

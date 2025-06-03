@@ -1,117 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import GeneralReportPDF from '../components/GeneralReportPDF';
+import api from '../api/axios';
 import '../assets/styles/generalReport.css';
 
 const GeneralReports = () => {
-  const [selectedDate, setSelectedDate] = useState({
-    day: '',
-    month: '',
-    year: ''
-  });
-
+  const [filters, setFilters] = useState({ day: '', month: '', year: '' });
   const [report, setReport] = useState(null);
-  const navigate = useNavigate();
 
-  const generateReportData = ({ day, month, year }) => {
-    let reportDate = '';
-    if (day && month && year) {
-      reportDate = `${month}/${day}/${year}`;
-    } else if (month && year) {
-      reportDate = `${month}/${year}`;
-    } else if (year) {
-      reportDate = `${year}`;
-    } else {
-      reportDate = 'No date selected';
-    }
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
 
-    const newReport = {
-      gReportID: Math.floor(Math.random() * 10000) + 5000,
-      reportDate,
-      dailyIncome:
-        day && month && year ? Math.floor(Math.random() * 10000) + 5000 : 'N/A',
-      monthlyIncome:
-        month && year ? Math.floor(Math.random() * 250000) + 150000 : 'N/A',
-      yearlyIncome:
-        year ? Math.floor(Math.random() * 3000000) + 2000000 : 'N/A'
-    };
-
-    setReport(newReport);
-  };
-
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedDate((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleGenerate = () => {
-    const { day, month, year } = selectedDate;
+  const getFormattedDate = () => {
+    const { day, month, year } = filters;
+    const suffix = (d) => {
+      if (d > 3 && d < 21) return 'th';
+      switch (d % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    if (day && month && year) {
+      return `${day}${suffix(parseInt(day))} ${months[month - 1]} ${year}`;
+    } else if (month && year) {
+      return `${months[month - 1]} ${year}`;
+    } else if (year) {
+      return `${year}`;
+    }
+    return '';
+  };
+
+  const fetchReport = async () => {
+    const { day, month, year } = filters;
 
     if (day && (!month || !year)) {
-      alert('Please provide month and year when specifying a day.');
+      alert("For daily reports, select day, month, and year.");
       return;
     }
-
     if (month && !year) {
-      alert('Please provide year when specifying a month.');
+      alert("For monthly reports, select both month and year.");
+      return;
+    }
+    if (!day && !month && !year) {
+      alert("Please select at least the year.");
       return;
     }
 
-    if (!year && !month && !day) {
-      alert('Please provide at least a year to generate a report.');
-      return;
+    try {
+      const res = await api.get('/bookings/general', { params: filters });
+      setReport({ ...res.data, label: getFormattedDate() });
+    } catch (err) {
+      console.error("Error fetching report:", err);
     }
-
-    generateReportData({ day, month, year });
   };
 
   useEffect(() => {
     const today = new Date();
-    const defaultDate = {
-      day: today.getDate().toString(),
-      month: (today.getMonth() + 1).toString(),
+    setFilters({
+      day: '',
+      month: '',
       year: today.getFullYear().toString()
-    };
-    setSelectedDate(defaultDate);
-    generateReportData(defaultDate);
+    });
   }, []);
 
   return (
     <div className="general-report-container">
       <div className="report-header">
+        <h2>Generate General Report</h2>
+
         <div className="date-selector">
-          <input
-            type="number"
-            name="day"
-            placeholder="Day"
-            min="1"
-            max="31"
-            value={selectedDate.day}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="month"
-            placeholder="Month"
-            min="1"
-            max="12"
-            value={selectedDate.month}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="year"
-            placeholder="Year"
-            min="2000"
-            max="2100"
-            value={selectedDate.year}
-            onChange={handleInputChange}
-          />
-          <button className="btn generate-btn" onClick={handleGenerate}>
+          <select name="day" value={filters.day} onChange={handleChange}>
+            <option value="">Day</option>
+            {days.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+
+          <select name="month" value={filters.month} onChange={handleChange}>
+            <option value="">Month</option>
+            {months.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
+          </select>
+
+          <select name="year" value={filters.year} onChange={handleChange}>
+            <option value="">Year</option>
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+
+          <button className="btn generate-btn" onClick={fetchReport}>
             Generate Report
           </button>
         </div>
@@ -120,48 +104,31 @@ const GeneralReports = () => {
       {report && (
         <>
           <div className="report-header">
-            <h2>General Report #{report.gReportID}</h2>
-            <p className="report-date"> {report.reportDate}</p>
+            <h2>General Report</h2>
+            <strong><p className="report-date">{report.label}</p></strong>
           </div>
 
           <div className="stats-grid">
             <div className="stat-card">
-              <h3>Daily Income</h3>
-              <p>
-                {report.dailyIncome !== 'N/A'
-                  ? `$${report.dailyIncome.toLocaleString()}`
-                  : 'N/A'}
-              </p>
-            </div>
-
-            <div className="stat-card">
-              <h3>Monthly Income</h3>
-              <p>
-                {report.monthlyIncome !== 'N/A'
-                  ? `$${report.monthlyIncome.toLocaleString()}`
-                  : 'N/A'}
-              </p>
-            </div>
-
-            <div className="stat-card">
-              <h3>Yearly Income</h3>
-              <p>
-                {report.yearlyIncome !== 'N/A'
-                  ? `$${report.yearlyIncome.toLocaleString()}`
-                  : 'N/A'}
+              <h3>Total Income</h3>
+              <p style={{ fontSize: '1.6em', margin: 0 }}>
+                <strong>{report.totalIncome} €</strong>
               </p>
             </div>
           </div>
 
-          <div className="action-buttons">
-            <PDFDownloadLink
-              document={<GeneralReportPDF report={report} />}
-              fileName={`general_report_${report.gReportID}.pdf`}
-              className="btn pdf-btn"
-            >
-              {({ loading }) => (loading ? 'Preparing PDF...' : 'Save as PDF')}
-            </PDFDownloadLink>
-          </div>
+          {report && report.totalIncome != null && (
+  <div className="action-buttons">
+    <PDFDownloadLink
+      document={<GeneralReportPDF report={report} />}
+      fileName={`general_report_${report.label.replace(/\s+/g, '_')}.pdf`}
+      className="btn pdf-btn"
+    >
+      {({ loading }) => (loading ? 'Preparing PDF...' : 'Export PDF')}
+    </PDFDownloadLink>
+  </div>
+)}
+
         </>
       )}
     </div>

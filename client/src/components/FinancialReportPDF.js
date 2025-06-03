@@ -14,13 +14,8 @@ const FinancialReportPDF = ({ report, totals }) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.header}>
-        <Text style={styles.title}>Financial Report #{report.reportID}</Text>
+        <Text style={styles.title}>Financial Report</Text>
         <Text>Date: {report.date}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text>Apartment: {report.apartment}</Text>
-        <Text>Rental Income: ${report.rental.toFixed(2)}</Text>
       </View>
 
       <View style={styles.section}>
