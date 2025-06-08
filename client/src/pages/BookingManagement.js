@@ -14,6 +14,10 @@ const BookingManagement = () => {
   const [selectedProperty, setSelectedProperty] = useState('');
   const [bookings, setBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [note, setNote] = useState('');
+  const [editData, setEditData] = useState({ guestName: '', guestEmail: '', phone: '' });
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -44,6 +48,44 @@ const BookingManagement = () => {
     fetchBookings();
   }, [selectedProperty, token]);
 
+  const handleNoteSubmit = async () => {
+    try {
+      await api.post(`/guests/${selectedGuest.guestId}/notes`, { note }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Note added successfully.');
+      setNote('');
+    } catch (err) {
+      alert('Failed to add note.');
+    }
+  };
+
+  const handleGuestDelete = async () => {
+    try {
+      await api.delete(`/guests/${selectedGuest.guestId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Guest deleted.');
+      setShowGuestModal(false);
+      setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
+    } catch (err) {
+      alert('Error deleting guest.');
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const res = await api.put(`/guests/${selectedGuest.guestId}`, editData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Guest updated.');
+      setBookings(prev => prev.map(b => b.guestId === selectedGuest.guestId ? { ...b, ...editData } : b));
+      setShowGuestModal(false);
+    } catch (err) {
+      alert('Failed to update guest.');
+    }
+  };
+
   const filteredBookings = bookings.filter(b =>
     b.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     b.guestId.toLowerCase().includes(searchTerm.toLowerCase())
@@ -70,21 +112,13 @@ const BookingManagement = () => {
     <div className="booking-container">
       <h1>Booking Management</h1>
 
-      <button
-        className="new-booking-button"
-        style={{ marginLeft: '0rem', marginTop: '1.5rem' }}
-        onClick={() => navigate('/create-booking')}
-      >
+      <button className="new-booking-button" onClick={() => navigate('/create-booking')}>
         + Create New Booking
       </button>
 
-      <div className="filter-container" style={{ marginTop: '1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
-        <label htmlFor="propertySelect" style={{ fontWeight: 'bold' }}>Filter by Property:</label>
-        <select
-          id="propertySelect"
-          value={selectedProperty}
-          onChange={(e) => setSelectedProperty(e.target.value)}
-        >
+      <div className="filter-container">
+        <label htmlFor="propertySelect">Filter by Property:</label>
+        <select id="propertySelect" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (
             <option key={pg._id} value={pg._id}>{pg.name}</option>
@@ -92,29 +126,14 @@ const BookingManagement = () => {
         </select>
 
         {selectedProperty && (
-          <input
-            type="text"
-            placeholder="Search by guest name or ID"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              minWidth: '240px'
-            }}
-          />
-          
-        )}
-
-              {selectedProperty && (
           <>
-            <button onClick={exportToExcel} className="new-booking-button" style={{ 
-              width: '150px', 
-              fontSize: '13px', 
-              height: '35px',
-              marginLeft: '0',
-              }}>Export to Excel</button>
+            <input
+              type="text"
+              placeholder="Search by guest name or ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={exportToExcel}>Export to Excel</button>
           </>
         )}
       </div>
@@ -136,7 +155,14 @@ const BookingManagement = () => {
           </thead>
           <tbody>
             {filteredBookings.map(b => (
-              <tr key={b._id}>
+              <tr
+                key={b._id}
+                onClick={() => {
+                  setSelectedGuest(b);
+                  setEditData({ guestName: b.guestName, guestEmail: b.guestEmail, phone: b.phone });
+                  setShowGuestModal(true);
+                }}
+              >
                 <td>{b.guestName}</td>
                 <td>{b.guestEmail}</td>
                 <td>{b.phone}</td>
@@ -154,6 +180,31 @@ const BookingManagement = () => {
         <p>No bookings found for this property.</p>
       ) : (
         <p>Please select a property to view bookings.</p>
+      )}
+
+      {showGuestModal && selectedGuest && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Guest Options</h2>
+
+            <label>Name</label>
+            <input value={editData.guestName} onChange={(e) => setEditData({ ...editData, guestName: e.target.value })} />
+            <label>Email</label>
+            <input value={editData.guestEmail} onChange={(e) => setEditData({ ...editData, guestEmail: e.target.value })} />
+            <label>Phone</label>
+            <input value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} />
+
+            <button onClick={handleEditSubmit}>Save Changes</button>
+            <button onClick={handleGuestDelete}>Delete Guest</button>
+
+            <hr />
+            <label>Add Note</label>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+            <button onClick={handleNoteSubmit}>Add Note</button>
+
+            <button onClick={() => setShowGuestModal(false)}>Close</button>
+          </div>
+        </div>
       )}
     </div>
   );
