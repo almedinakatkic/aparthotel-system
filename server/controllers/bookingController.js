@@ -179,7 +179,6 @@ exports.getGeneralReport = async (req, res) => {
   }
 };
 
-// controllers/guestController.js
 exports.addGuestNote = async (req, res) => {
   try {
     const { guestId } = req.params;
@@ -189,9 +188,11 @@ exports.addGuestNote = async (req, res) => {
       return res.status(400).json({ message: 'Note content is required' });
     }
 
+    const newNote = { content: note, createdAt: new Date() };
+
     const booking = await Booking.findOneAndUpdate(
       { guestId },
-      { $push: { notes: { content: note, createdAt: new Date() } } },
+      { $push: { notes: newNote } },
       { new: true }
     );
 
@@ -199,11 +200,9 @@ exports.addGuestNote = async (req, res) => {
       return res.status(404).json({ message: 'Guest not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Note added successfully',
-      data: booking
-    });
+    const addedNote = booking.notes[booking.notes.length - 1];
+
+    res.status(200).json(addedNote);
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -249,13 +248,18 @@ exports.deleteGuestNote = async (req, res) => {
   }
 };
 
-
-
-
 exports.updateGuest = async (req, res) => {
   try {
     const { guestId } = req.params;
     const updateData = req.body;
+
+    const unit = await Unit.findById(updateData.unitId);
+    if (!unit) return res.status(404).json({ message: 'Unit not found' });
+
+    const nights = Math.ceil(
+      (new Date(updateData.checkOut) - new Date(updateData.checkIn)) / (1000 * 60 * 60 * 24)
+    );
+    updateData.fullPrice = nights * unit.pricePerNight;
 
     const booking = await Booking.findOneAndUpdate(
       { guestId },

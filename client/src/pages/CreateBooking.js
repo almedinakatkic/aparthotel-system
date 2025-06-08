@@ -1,3 +1,4 @@
+// src/pages/CreateBooking.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
@@ -74,6 +75,20 @@ const CreateBooking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const checkInDate = new Date(formData.checkIn);
+    const checkOutDate = new Date(formData.checkOut);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (checkInDate < today) {
+      setError('Check-in date cannot be in the past.');
+      return;
+    }
+    if (checkOutDate <= checkInDate) {
+      setError('Check-out must be after check-in.');
+      return;
+    }
+
     try {
       await api.post('/bookings/create', formData, {
         headers: {
@@ -136,8 +151,22 @@ const CreateBooking = () => {
             ))}
         </select>
 
-        <input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange} required />
-        <input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange} required />
+        <input
+          type="date"
+          name="checkIn"
+          value={formData.checkIn}
+          onChange={handleChange}
+          min={new Date().toISOString().split('T')[0]}
+          required
+        />
+        <input
+          type="date"
+          name="checkOut"
+          value={formData.checkOut}
+          onChange={handleChange}
+          min={formData.checkIn || new Date().toISOString().split('T')[0]}
+          required
+        />
 
         <p><strong>Total Price:</strong> {fullPrice} KM</p>
 
