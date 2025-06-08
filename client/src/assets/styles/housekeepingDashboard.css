@@ -1,0 +1,306 @@
+/* General Styles */
+.housekeeping-dashboard {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #333;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-header h1 {
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.dashboard-header p {
+  color: #7f8c8d;
+  font-size: 1.1em;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #7f8c8d;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.tabs button.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  font-weight: bold;
+}
+
+.tabs button:hover:not(.active) {
+  color: #2980b9;
+}
+
+/* Room Filters */
+.room-filters {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+}
+
+.room-filters label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* Task Section */
+.task-section h2,
+.room-status-section h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.no-tasks {
+  text-align: center;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  color: #7f8c8d;
+}
+
+/* Task List */
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.task-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-left: 4px solid #3498db;
+  transition: transform 0.2s;
+}
+
+.task-card.done {
+  border-left-color: #2ecc71;
+  opacity: 0.8;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.task-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-badge.pending {
+  background: #f39c12;
+  color: white;
+}
+
+.status-badge.done {
+  background: #2ecc71;
+  color: white;
+}
+
+.task-details {
+  margin-bottom: 15px;
+}
+
+.task-details p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.urgency-high {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.urgency-medium {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.urgency-low {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.task-actions {
+  text-align: right;
+}
+
+.complete-btn {
+  background: #2ecc71;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.complete-btn:hover {
+  background: #27ae60;
+}
+
+/* Room Status Section */
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stat-card h3 {
+  font-size: 2em;
+  margin: 0;
+  color: #3498db;
+}
+
+.stat-card p {
+  margin: 5px 0 0;
+  color: #7f8c8d;
+}
+
+/* Room Grid */
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.room-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.room-card.booked {
+  border-left: 4px solid #e74c3c;
+}
+
+.room-card.free {
+  border-left: 4px solid #2ecc71;
+}
+
+.room-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.room-status p {
+  margin: 5px 0;
+}
+
+.guest-info {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.room-maintenance {
+  margin: 15px 0;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.room-maintenance p {
+  margin: 8px 0;
+}
+
+.alert-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  background: #e74c3c;
+  color: white;
+  font-size: 12px;
+  border-radius: 20px;
+}
+
+.room-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.room-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.room-actions button:first-child {
+  background: #3498db;
+  color: white;
+}
+
+.room-actions button:first-child:hover {
+  background: #2980b9;
+}
+
+.room-actions button:first-child.active {
+  background: #e74c3c;
+}
+
+.room-actions button:last-child {
+  background: #f39c12;
+  color: white;
+}
+
+.room-actions button:last-child:hover {
+  background: #e67e22;
+}
+
+.room-actions button:last-child.active {
+  background: #2ecc71;
+}

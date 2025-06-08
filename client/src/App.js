@@ -28,6 +28,7 @@ import GuestList from './pages/GuestList';
 import RoomManagement from './pages/RoomManagement';
 import TaskAssignment from './pages/TaskAssignment';
 import CleanerDashboard from './pages/CleanerDashboard';
+import HousekeepingDashboard from './components/HousekeepingDashboard';
 
 function AppContent() {
   const location = useLocation();
@@ -229,9 +230,16 @@ function AppContent() {
                   <CleanerDashboard />
                 </ProtectedRoute>
               }
-
-              
             />
+
+            <Route
+              path="/housekeeping-dashboard"
+              element={
+                <ProtectedRoute>
+                  <HousekeepingDashboard />
+                </ProtectedRoute>
+              }
+            /> 
 
 
 
