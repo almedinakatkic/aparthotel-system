@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 const BookingManagement = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+
   const [propertyGroups, setPropertyGroups] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState('');
   const [bookings, setBookings] = useState([]);
@@ -17,8 +18,12 @@ const BookingManagement = () => {
   const [selectedGuest, setSelectedGuest] = useState(null);
   const [showGuestModal, setShowGuestModal] = useState(false);
   const [note, setNote] = useState('');
+  const [guestNotes, setGuestNotes] = useState([]);
   const [editData, setEditData] = useState({ guestName: '', guestEmail: '', phone: '' });
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [isDeletingNote, setIsDeletingNote] = useState(null);
 
+  // Fetch property groups
   useEffect(() => {
     const fetchProperties = async () => {
       try {
@@ -33,6 +38,7 @@ const BookingManagement = () => {
     fetchProperties();
   }, [user.companyId, token]);
 
+  // Fetch bookings when property selected
   useEffect(() => {
     const fetchBookings = async () => {
       if (!selectedProperty) return;
@@ -48,60 +54,119 @@ const BookingManagement = () => {
     fetchBookings();
   }, [selectedProperty, token]);
 
-  const handleNoteSubmit = async () => {
+  // Fetch guest notes when guest selected
+  const fetchGuestNotes = async (guestId) => {
     try {
-      await api.post(`/guests/${selectedGuest.guestId}/notes`, { note }, {
+      const res = await api.get(`/guests/${guestId}/notes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Note added successfully.');
+      setGuestNotes(res.data);
+    } catch (err) {
+      console.error('Failed to fetch guest notes:', err);
+    }
+  };
+
+  // Add new guest note
+  const handleNoteSubmit = async () => {
+    if (!note.trim()) {
+      alert("Note cannot be empty");
+      return;
+    }
+
+    setIsAddingNote(true);
+    try {
+      const res = await api.post(
+        `/guests/${selectedGuest.guestId}/notes`,
+        { note },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      const newNote = {
+        ...res.data,
+        note: note,
+        createdAt: new Date().toISOString()
+      };
+      
+      setGuestNotes(prev => [...prev, newNote]);
       setNote('');
     } catch (err) {
+      console.error('Failed to add note:', err);
       alert('Failed to add note.');
+    } finally {
+      setIsAddingNote(false);
     }
   };
 
-  const handleGuestDelete = async () => {
+  // Delete note
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    
+    setIsDeletingNote(noteId);
     try {
-      await api.delete(`/guests/${selectedGuest.guestId}`, {
+      await api.delete(`/guests/${selectedGuest.guestId}/notes/${noteId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Guest deleted.');
-      setShowGuestModal(false);
-      setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
+      setGuestNotes(prev => prev.filter(n => n._id !== noteId));
     } catch (err) {
-      alert('Error deleting guest.');
+      console.error('Failed to delete note:', err);
+      alert('Failed to delete note.');
+    } finally {
+      setIsDeletingNote(null);
     }
   };
 
+  // Delete guest
+  const handleGuestDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this guest?')) {
+      try {
+        await api.delete(`/guests/${selectedGuest.guestId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        alert('Guest deleted.');
+        setShowGuestModal(false);
+        setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
+      } catch (err) {
+        console.error('Error deleting guest:', err);
+        alert('Error deleting guest.');
+      }
+    }
+  };
+
+  // Update guest info
   const handleEditSubmit = async () => {
     try {
-      const res = await api.put(`/guests/${selectedGuest.guestId}`, editData, {
+      await api.put(`/guests/${selectedGuest.guestId}`, editData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Guest updated.');
-      setBookings(prev => prev.map(b => b.guestId === selectedGuest.guestId ? { ...b, ...editData } : b));
+      setBookings(prev =>
+        prev.map(b =>
+          b.guestId === selectedGuest.guestId ? { ...b, ...editData } : b
+        )
+      );
       setShowGuestModal(false);
     } catch (err) {
+      console.error('Failed to update guest:', err);
       alert('Failed to update guest.');
     }
   };
 
   const filteredBookings = bookings.filter(b =>
-    b.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.guestId.toLowerCase().includes(searchTerm.toLowerCase())
+    b.guestName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    b.guestId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredBookings.map(b => ({
       Guest: b.guestName,
-      Email: b.email,
+      Email: b.guestEmail,
       Phone: b.phone,
       'Guest ID': b.guestId,
-      Unit: b.unitNumber,
-      'Check-in': b.checkIn.split('T')[0],
-      'Check-out': b.checkOut.split('T')[0],
+      Unit: b.unitId?.unitNumber,
+      'Check-in': b.checkIn?.split('T')[0],
+      'Check-out': b.checkOut?.split('T')[0],
       Guests: b.numGuests,
-      'Total (KM)': b.totalPrice
+      'Total (€)': b.fullPrice
     })));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
@@ -118,7 +183,11 @@ const BookingManagement = () => {
 
       <div className="filter-container">
         <label htmlFor="propertySelect">Filter by Property:</label>
-        <select id="propertySelect" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
+        <select
+          id="propertySelect"
+          value={selectedProperty}
+          onChange={(e) => setSelectedProperty(e.target.value)}
+        >
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (
             <option key={pg._id} value={pg._id}>{pg.name}</option>
@@ -129,11 +198,12 @@ const BookingManagement = () => {
           <>
             <input
               type="text"
+              className='booking-search-input'
               placeholder="Search by guest name or ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={exportToExcel}>Export to Excel</button>
+            <button className="export-button" onClick={exportToExcel}>Export to Excel</button>
           </>
         )}
       </div>
@@ -159,8 +229,15 @@ const BookingManagement = () => {
                 key={b._id}
                 onClick={() => {
                   setSelectedGuest(b);
-                  setEditData({ guestName: b.guestName, guestEmail: b.guestEmail, phone: b.phone });
+                  setEditData({
+                    guestName: b.guestName || '',
+                    guestEmail: b.guestEmail || '',
+                    phone: b.phone || ''
+                  });
+                  setGuestNotes([]);
+                  setNote('');
                   setShowGuestModal(true);
+                  fetchGuestNotes(b.guestId);
                 }}
               >
                 <td>{b.guestName}</td>
@@ -188,21 +265,67 @@ const BookingManagement = () => {
             <h2>Guest Options</h2>
 
             <label>Name</label>
-            <input value={editData.guestName} onChange={(e) => setEditData({ ...editData, guestName: e.target.value })} />
+            <input
+              value={editData.guestName}
+              onChange={(e) => setEditData({ ...editData, guestName: e.target.value })}
+            />
             <label>Email</label>
-            <input value={editData.guestEmail} onChange={(e) => setEditData({ ...editData, guestEmail: e.target.value })} />
+            <input
+              value={editData.guestEmail}
+              onChange={(e) => setEditData({ ...editData, guestEmail: e.target.value })}
+            />
             <label>Phone</label>
-            <input value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} />
+            <input
+              value={editData.phone}
+              onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+            />
 
-            <button onClick={handleEditSubmit}>Save Changes</button>
+            <button className='modal-save-button' onClick={handleEditSubmit}>Save Changes</button>
             <button onClick={handleGuestDelete}>Delete Guest</button>
 
             <hr />
-            <label>Add Note</label>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} />
-            <button onClick={handleNoteSubmit}>Add Note</button>
 
-            <button onClick={() => setShowGuestModal(false)}>Close</button>
+            <div className="guest-notes">
+              <h4>Guest Notes</h4>
+              {guestNotes.length > 0 ? (
+                <ul>
+                  {guestNotes.map((n) => (
+                    <li key={n._id}>
+                      <p>{n.note}</p>
+                      {n.createdAt && (
+                        <small>{new Date(n.createdAt).toLocaleString()}</small>
+                      )}
+                      <button 
+                        onClick={() => handleDeleteNote(n._id)}
+                        disabled={isDeletingNote === n._id}
+                        className="delete-note-button"
+                      >
+                        {isDeletingNote === n._id ? 'Deleting...' : 'Delete'}
+                      </button>
+                      <hr></hr>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p id='no-notes'>No notes available.</p>
+
+              )}
+            </div>
+
+            <label>Add Note</label>
+            <textarea 
+              value={note} 
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Enter your note here..."
+            />
+            <button 
+              onClick={handleNoteSubmit}
+              disabled={isAddingNote || !note.trim()}
+            >
+              {isAddingNote ? 'Adding...' : 'Add Note'}
+            </button>
+
+            <button className="modal-close-button" onClick={() => setShowGuestModal(false)}>Close</button>
           </div>
         </div>
       )}

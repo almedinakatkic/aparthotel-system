@@ -25,6 +25,7 @@
 .filter-container {
   display: flex;
   align-items: center;
+  margin-top: 20px;
   margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 10px;
@@ -68,7 +69,6 @@
 .bookings-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -97,6 +97,36 @@
   margin-top: 20px;
   color: #666;
   font-style: italic;
+}
+
+.booking-search-input{
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: fit-content;
+  max-width: 300px;
+}
+
+.export-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #193A6F;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  width: fit-content;
+  transition: background-color 0.3s;
+  height: 35px;
+
+}
+.export-button:hover {
+  background-color: #5c5d60;
 }
 
 .modal-overlay {
@@ -185,23 +215,41 @@
   opacity: 0.9;
 }
 
-.modal button:first-of-type {
-  background-color: #4a90e2;
+.modal-save-button {
+  background-color: #0f3b6c;
   color: white;
 }
 
 .modal button:nth-of-type(2) {
-  background-color: #e74c3c;
+  background-color: #8f291d;
   color: white;
 }
 
 .modal button:nth-of-type(3) {
-  background-color: #2ecc71;
+  background-color: #069341;
   color: white;
 }
 
-.modal button:last-of-type {
-  background-color: #95a5a6;
+.delete-note-button{
+  background-color: transparent;
+  color: #ff6b6b;
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+.delete-note-button:hover {
+  text-decoration: underline;
+  color: #ff6b6b;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+
+.modal-close-button{
+  background-color: #8b8b8b;
   color: white;
   margin-top: 1rem;
 }
@@ -211,6 +259,13 @@
   border: 0;
   border-top: 1px solid #eee;
 }
+
+.guest-notes p{
+  margin: 0;
+  padding: 0.1rem 0;
+}
+
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

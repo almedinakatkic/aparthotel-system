@@ -19,7 +19,11 @@ const bookingSchema = new mongoose.Schema({
   checkIn: { type: Date, required: true },
   checkOut: { type: Date, required: true },
   fullPrice: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  notes: [{
+    content: String,
+    createdAt: { type: Date, default: Date.now }
+  }]
 });
 
 module.exports = mongoose.model('Booking', bookingSchema);

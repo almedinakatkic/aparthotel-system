@@ -178,3 +178,128 @@ exports.getGeneralReport = async (req, res) => {
     res.status(500).json({ message: 'Failed to generate report' });
   }
 };
+
+// controllers/guestController.js
+exports.addGuestNote = async (req, res) => {
+  try {
+    const { guestId } = req.params;
+    const { note } = req.body;
+
+    if (!note) {
+      return res.status(400).json({ message: 'Note content is required' });
+    }
+
+    const booking = await Booking.findOneAndUpdate(
+      { guestId },
+      { $push: { notes: { content: note, createdAt: new Date() } } },
+      { new: true }
+    );
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Guest not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Note added successfully',
+      data: booking
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add note',
+      error: err.message
+    });
+  }
+};
+
+exports.getGuestNotes = async (req, res) => {
+  try {
+    const { guestId } = req.params;
+
+    const booking = await Booking.findOne({ guestId }, { notes: 1 });
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Guest not found' });
+    }
+
+    res.status(200).json(booking.notes || []);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch guest notes', error: err.message });
+  }
+};
+
+exports.deleteGuestNote = async (req, res) => {
+  const { guestId, noteId } = req.params;
+
+  try {
+    const booking = await Booking.findOne({ guestId });
+    if (!booking) return res.status(404).json({ message: 'Guest not found' });
+
+    const noteIndex = booking.notes.findIndex(n => n._id.toString() === noteId);
+    if (noteIndex === -1) return res.status(404).json({ message: 'Note not found' });
+
+    booking.notes.splice(noteIndex, 1);
+    await booking.save();
+
+    res.status(200).json({ message: 'Note deleted' });
+  } catch (err) {
+    console.error('Delete note error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
+
+
+exports.updateGuest = async (req, res) => {
+  try {
+    const { guestId } = req.params;
+    const updateData = req.body;
+
+    const booking = await Booking.findOneAndUpdate(
+      { guestId },
+      updateData,
+      { new: true }
+    );
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Guest not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Guest updated successfully',
+      data: booking
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update guest',
+      error: err.message
+    });
+  }
+};
+
+exports.deleteGuest = async (req, res) => {
+  try {
+    const { guestId } = req.params;
+
+    const result = await Booking.deleteOne({ guestId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Guest not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Guest deleted successfully'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete guest',
+      error: err.message
+    });
+  }
+};
