@@ -29,6 +29,7 @@ import RoomManagement from './pages/RoomManagement';
 import TaskAssignment from './pages/TaskAssignment';
 import CleanerDashboard from './pages/CleanerDashboard';
 import HousekeepingDashboard from './components/HousekeepingDashboard';
+import OwnerDashboard from './pages/OwnerDashboard';
 
 function AppContent() {
   const location = useLocation();
@@ -240,10 +241,14 @@ function AppContent() {
                 </ProtectedRoute>
               }
             /> 
-
-
-
-
+            <Route
+              path="/owner-dashboard"
+              element={
+                <ProtectedRoute>
+                  <OwnerDashboard />
+                </ProtectedRoute>
+              }
+            />
             
           </Routes>
         </main>

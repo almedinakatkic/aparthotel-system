@@ -16,7 +16,7 @@ const SidebarOwner = () => (
 
 
           <NavLink 
-                  to="/dashboard" 
+                  to="/owner-dashboard" 
                   className="nav-item"
                   activeClassName="active-nav-item"
                 >
