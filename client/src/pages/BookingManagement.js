@@ -23,7 +23,6 @@ const BookingManagement = () => {
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [isDeletingNote, setIsDeletingNote] = useState(null);
 
-  // Fetch property groups
   useEffect(() => {
     const fetchProperties = async () => {
       try {
@@ -38,7 +37,6 @@ const BookingManagement = () => {
     fetchProperties();
   }, [user.companyId, token]);
 
-  // Fetch bookings when property selected
   useEffect(() => {
     const fetchBookings = async () => {
       if (!selectedProperty) return;
@@ -54,7 +52,6 @@ const BookingManagement = () => {
     fetchBookings();
   }, [selectedProperty, token]);
 
-  // Fetch guest notes when guest selected
   const fetchGuestNotes = async (guestId) => {
     try {
       const res = await api.get(`/guests/${guestId}/notes`, {
@@ -66,73 +63,46 @@ const BookingManagement = () => {
     }
   };
 
-  // Add new guest note
   const handleNoteSubmit = async () => {
-    if (!note.trim()) {
-      alert("Note cannot be empty");
-      return;
-    }
+    if (!note.trim()) return;
 
     setIsAddingNote(true);
     try {
-      const res = await api.post(
-        `/guests/${selectedGuest.guestId}/notes`,
-        { note },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      const newNote = {
-        ...res.data,
-        note: note,
-        createdAt: new Date().toISOString()
-      };
-      
-      setGuestNotes(prev => [...prev, newNote]);
+      const res = await api.post(`/guests/${selectedGuest.guestId}/notes`, { note }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const updated = await api.get(`/guests/${selectedGuest.guestId}/notes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setGuestNotes(updated.data);
       setNote('');
     } catch (err) {
       console.error('Failed to add note:', err);
-      alert('Failed to add note.');
     } finally {
       setIsAddingNote(false);
     }
   };
 
-  // Delete note
   const handleDeleteNote = async (noteId) => {
     if (!window.confirm('Are you sure you want to delete this note?')) return;
-    
+
     setIsDeletingNote(noteId);
     try {
       await api.delete(`/guests/${selectedGuest.guestId}/notes/${noteId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setGuestNotes(prev => prev.filter(n => n._id !== noteId));
+      const updated = await api.get(`/guests/${selectedGuest.guestId}/notes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setGuestNotes(updated.data);
     } catch (err) {
       console.error('Failed to delete note:', err);
-      alert('Failed to delete note.');
     } finally {
       setIsDeletingNote(null);
     }
   };
 
-  // Delete guest
-  const handleGuestDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this guest?')) {
-      try {
-        await api.delete(`/guests/${selectedGuest.guestId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('Guest deleted.');
-        setShowGuestModal(false);
-        setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
-      } catch (err) {
-        console.error('Error deleting guest:', err);
-        alert('Error deleting guest.');
-      }
-    }
-  };
-
-  // Update guest info
   const handleEditSubmit = async () => {
     try {
       await api.put(`/guests/${selectedGuest.guestId}`, editData, {
@@ -148,6 +118,22 @@ const BookingManagement = () => {
     } catch (err) {
       console.error('Failed to update guest:', err);
       alert('Failed to update guest.');
+    }
+  };
+
+  const handleGuestDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this guest?')) {
+      try {
+        await api.delete(`/guests/${selectedGuest.guestId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        alert('Guest deleted.');
+        setShowGuestModal(false);
+        setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
+      } catch (err) {
+        console.error('Error deleting guest:', err);
+        alert('Error deleting guest.');
+      }
     }
   };
 
@@ -198,7 +184,7 @@ const BookingManagement = () => {
           <>
             <input
               type="text"
-              className='booking-search-input'
+              className="booking-search-input"
               placeholder="Search by guest name or ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -208,7 +194,7 @@ const BookingManagement = () => {
         )}
       </div>
 
-      {selectedProperty && filteredBookings.length > 0 ? (
+      {selectedProperty && filteredBookings.length > 0 && (
         <table className="bookings-table">
           <thead>
             <tr>
@@ -234,10 +220,9 @@ const BookingManagement = () => {
                     guestEmail: b.guestEmail || '',
                     phone: b.phone || ''
                   });
-                  setGuestNotes([]);
                   setNote('');
-                  setShowGuestModal(true);
                   fetchGuestNotes(b.guestId);
+                  setShowGuestModal(true);
                 }}
               >
                 <td>{b.guestName}</td>
@@ -253,10 +238,6 @@ const BookingManagement = () => {
             ))}
           </tbody>
         </table>
-      ) : selectedProperty ? (
-        <p>No bookings found for this property.</p>
-      ) : (
-        <p>Please select a property to view bookings.</p>
       )}
 
       {showGuestModal && selectedGuest && (
@@ -291,34 +272,31 @@ const BookingManagement = () => {
                 <ul>
                   {guestNotes.map((n) => (
                     <li key={n._id}>
-                      <p>{n.note}</p>
-                      {n.createdAt && (
-                        <small>{new Date(n.createdAt).toLocaleString()}</small>
-                      )}
-                      <button 
+                      <p>{n.content}</p>
+                      {n.createdAt && <small>{new Date(n.createdAt).toLocaleString()}</small>}
+                      <button
                         onClick={() => handleDeleteNote(n._id)}
                         disabled={isDeletingNote === n._id}
                         className="delete-note-button"
                       >
                         {isDeletingNote === n._id ? 'Deleting...' : 'Delete'}
                       </button>
-                      <hr></hr>
+                      <hr />
                     </li>
                   ))}
                 </ul>
               ) : (
                 <p id='no-notes'>No notes available.</p>
-
               )}
             </div>
 
             <label>Add Note</label>
-            <textarea 
-              value={note} 
+            <textarea
+              value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Enter your note here..."
             />
-            <button 
+            <button
               onClick={handleNoteSubmit}
               disabled={isAddingNote || !note.trim()}
             >
