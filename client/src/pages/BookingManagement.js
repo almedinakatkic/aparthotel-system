@@ -193,7 +193,10 @@ const BookingManagement = () => {
                 fetchGuestNotes(b.guestId);
                 setShowGuestModal(true);
               }}>
-                <td>{b.guestName}</td>
+                <td>{b.guestName}
+                  {selectedGuest?.guestId === b.guestId && guestNotes.length > 0 && (
+                    <span title="Guest has notes"> ⚠️</span>
+                  )}</td>
                 <td>{b.guestEmail}</td>
                 <td>{b.phone}</td>
                 <td>{b.guestId}</td>
@@ -255,7 +258,8 @@ const BookingManagement = () => {
               {isAddingNote ? 'Adding...' : 'Add Note'}
             </button>
 
-            <button onClick={() => setShowGuestModal(false)} className="modal-close-button">Close</button>
+            <button onClick={() => setShowGuestModal(false)} className="modal-close-x">×</button>
+
           </div>
         </div>
       )}
