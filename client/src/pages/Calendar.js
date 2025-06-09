@@ -28,6 +28,7 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [guestNotesMap, setGuestNotesMap] = useState({});
 
   useEffect(() => {
     const fetchUnits = async () => {
@@ -40,7 +41,6 @@ const Calendar = () => {
         console.error('Failed to fetch units:', err);
       }
     };
-
     if (propertyGroupId) fetchUnits();
   }, [propertyGroupId, token]);
 
@@ -67,7 +67,6 @@ const Calendar = () => {
         console.error('Failed to fetch bookings:', err);
       }
     };
-
     fetchBookings();
   }, [selectedUnitId, token]);
 
@@ -87,15 +86,34 @@ const Calendar = () => {
 
   const handleDayClick = (day) => {
     const matches = getBookingsForDay(day);
-    if (matches.length > 0) {
-      setSelectedDate(format(day, 'yyyy-MM-dd'));
-      setModalOpen(true);
-    }
+    setSelectedDate(format(day, 'yyyy-MM-dd'));
+    setModalOpen(true);
+
+    const fetchNotes = async () => {
+      const notesMap = {};
+      await Promise.all(
+        matches.map(async (b) => {
+          const guestId = b.guestId || b.guestID;
+          try {
+            const res = await api.get(`/guests/${guestId}/notes`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            notesMap[guestId] = res.data;
+          } catch (err) {
+            console.error(`Failed to fetch notes for guest ${guestId}:`, err);
+          }
+        })
+      );
+      setGuestNotesMap(notesMap);
+    };
+
+    fetchNotes();
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setSelectedDate(null);
+    setGuestNotesMap({});
   };
 
   const allFloors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
@@ -168,20 +186,35 @@ const Calendar = () => {
                     end: parseISO(b.checkOut)
                   })
                 )
-                .map((b, idx) => (
-                  <li key={idx} style={{ marginBottom: '10px' }}>
-                    <strong>Name: </strong>{b.guestName || b.guestFullName}<br/>
-                    <strong>ID: </strong>{b.guestId || b.guestID}<br/>
-                    <strong>Email: </strong>{b.guestEmail}<br/>
-                    <strong>Phone: </strong>{b.phone}<br/>
-                    <strong>Number of guests: </strong>{b.numGuests}<br/>
-                    <strong>Stay: </strong>{format(parseISO(b.checkIn), 'yyyy-MM-dd')} → {format(parseISO(b.checkOut), 'yyyy-MM-dd')}
-                  </li>
-                ))}
+                .map((b, idx) => {
+                  const guestId = b.guestId || b.guestID;
+                  const notes = guestNotesMap[guestId] || [];
+                  return (
+                    <li key={idx} style={{ marginBottom: '20px' }}>
+                      <strong>Name: </strong>{b.guestName || b.guestFullName}<br />
+                      <strong>ID: </strong>{guestId}<br />
+                      <strong>Email: </strong>{b.guestEmail}<br />
+                      <strong>Phone: </strong>{b.phone}<br />
+                      <strong>Guests: </strong>{b.numGuests}<br />
+                      <strong>Stay: </strong>{format(parseISO(b.checkIn), 'yyyy-MM-dd')} → {format(parseISO(b.checkOut), 'yyyy-MM-dd')}<br />
+                      {notes.length > 0 && (
+                        <>
+                          <strong>Notes:</strong>
+                          <ul>
+                            {notes.map((n) => (
+                              <li key={n._id || n.createdAt}>
+                                {n.content || n.note} <small>({format(new Date(n.createdAt), 'yyyy-MM-dd HH:mm')})</small>
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         </div>
-
       )}
     </div>
   );
