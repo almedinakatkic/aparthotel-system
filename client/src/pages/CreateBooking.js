@@ -1,4 +1,3 @@
-// src/pages/CreateBooking.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
@@ -144,9 +143,10 @@ const CreateBooking = () => {
               const pgId = u.propertyGroupId?._id || u.propertyGroupId;
               return pgId === formData.propertyGroupId;
             })
+            .sort((a, b) => Number(a.unitNumber) - Number(b.unitNumber)) 
             .map(unit => (
               <option key={unit._id} value={unit._id}>
-                {unit.unitNumber} (Floor {unit.floor}, {unit.beds} bed{unit.beds > 1 ? 's' : ''})
+                {unit.unitNumber} 
               </option>
             ))}
         </select>

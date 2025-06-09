@@ -1,4 +1,3 @@
-// src/pages/BookingManagement.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -216,7 +215,7 @@ const BookingManagement = () => {
         + Create New Booking
       </button>
       <div className="filter-container">
-        <label>Filter by Property:</label>
+        <label style={{ fontWeight: 'bolder' }}>Filter by Property:</label>
         <select value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (

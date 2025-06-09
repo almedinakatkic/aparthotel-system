@@ -293,10 +293,6 @@
   padding: 0.1rem 0;
 }
 
-.close-btn {
-  background-color: rgb(237, 235, 235);
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .filter-container {
