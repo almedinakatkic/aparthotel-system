@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
 import '../assets/styles/loginStyle.css';
 
 const ChangePassword = () => {
@@ -42,11 +40,8 @@ const ChangePassword = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <Sidebar />
       <div style={{ flex: 1 }}>
-        <Navbar />
-
-        <div className="rooms-container" style={{ maxWidth: '500px', margin: '30px auto' }}>
+        <div className="rooms-container" style={{ maxWidth: '500px', margin: '130px auto' }}>
           <h1 className="title" style={{ textAlign: 'center', color: '#193A6F', marginBottom: '2rem' }}>
             Change Your Password
           </h1>

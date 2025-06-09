@@ -29,7 +29,7 @@ const LoginForm = () => {
         if (user.role === 'manager') navigate('/dashboard');
         else if (user.role === 'frontoffice') navigate('/front-desk');
         else if (user.role === 'housekeeping') navigate('/rooms');
-        else if (user.role === 'owner') navigate('/owner-report');
+        else if (user.role === 'owner') navigate('/owner-dashboard');
         else navigate('/');
       }
     } catch (err) {

@@ -26,6 +26,9 @@ app.use('/api/bookings', bookingRoutes);
 const guestRoutes = require('./routes/guestRoutes');
 app.use('/api/guests', guestRoutes);
 
+const ownerRoutes = require('./routes/ownerRoutes');
+app.use('/api/owner', ownerRoutes);
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
