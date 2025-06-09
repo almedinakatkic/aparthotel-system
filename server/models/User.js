@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
   resetTokenExpiry: {
     type: Date
   },
+  mustChangePassword: {
+  type: Boolean,
+  default: false
+  },
 });
 
 userSchema.methods.comparePassword = async function (inputPassword) {

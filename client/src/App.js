@@ -1,4 +1,4 @@
-import { Navigate, Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import HousekeepingDashboard from './components/HousekeepingDashboard';
 import Navbar from './components/Navbar';
@@ -18,6 +18,7 @@ import ForgotPasswordForm from './pages/ForgotPasswordForm';
 import GeneralReports from './pages/GeneralReports';
 import GuestList from './pages/GuestList';
 import LoginForm from './pages/LoginForm';
+import ManagerResetPassword from './pages/ManagerResetPassword';
 import OwnerApartmentList from './pages/OwnerApartmentList';
 import OwnerDashboard from './pages/OwnerDashboard';
 import OwnerReport from './pages/OwnerReport';
@@ -40,8 +41,6 @@ function AppContent() {
     location.pathname.startsWith('/reset-password') ||
     location.pathname === '/forgot-password';
 
-  //const isAuthPage = location.pathname === '/login' || location.pathname === '/change-password'||location.pathname.startsWith('/reset-password');
-
   return (
     <div className="app">
       {!isAuthPage && <Navbar />}
@@ -54,6 +53,9 @@ function AppContent() {
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+
             <Route
               path="/dashboard"
               element={
@@ -86,13 +88,13 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-            <Route 
-              path="/settings" 
+            <Route
+              path="/settings"
               element={
                 <ProtectedRoute>
                   <Settings />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route
               path="/reports"
@@ -102,8 +104,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
-              <Route
+            <Route
               path="/reportsowner"
               element={
                 <ProtectedRoute>
@@ -111,7 +112,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/create-booking"
               element={
@@ -168,7 +168,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/ownerapartmentlist"
               element={
@@ -177,7 +176,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/apartmentdetails"
               element={
@@ -186,7 +184,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-              <Route
+            <Route
               path="/calendar"
               element={
                 <ProtectedRoute>
@@ -194,8 +192,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
-              <Route
+            <Route
               path="/guests"
               element={
                 <ProtectedRoute>
@@ -203,8 +200,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
-              <Route
+            <Route
               path="/rooms"
               element={
                 <ProtectedRoute>
@@ -212,7 +208,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/tasks"
               element={
@@ -229,7 +224,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/housekeeping-dashboard"
               element={
@@ -246,8 +240,14 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
-            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+            <Route
+              path="/reset-user-password"
+              element={
+                <ProtectedRoute>
+                  <ManagerResetPassword />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>
@@ -256,11 +256,7 @@ function AppContent() {
 }
 
 function App() {
-  return (
-    <Router>
-      <AppContent />
-    </Router>
-  );
+  return <AppContent />;
 }
 
 export default App;

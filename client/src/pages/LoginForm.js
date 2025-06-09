@@ -21,16 +21,27 @@ const LoginForm = () => {
       const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
 
-      login(user, token); 
+      login(user, token);
 
-      if (user.firstLogin) {
+      if (user.firstLogin || user.mustChangePassword) {
         navigate('/change-password');
       } else {
-        if (user.role === 'manager') navigate('/dashboard');
-        else if (user.role === 'frontoffice') navigate('/front-desk');
-        else if (user.role === 'housekeeping') navigate('/rooms');
-        else if (user.role === 'owner') navigate('/owner-report');
-        else navigate('/');
+        switch (user.role) {
+          case 'manager':
+            navigate('/dashboard');
+            break;
+          case 'frontoffice':
+            navigate('/front-desk');
+            break;
+          case 'housekeeping':
+            navigate('/rooms');
+            break;
+          case 'owner':
+            navigate('/owner-report');
+            break;
+          default:
+            navigate('/');
+        }
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -44,9 +55,9 @@ const LoginForm = () => {
       <form className="login-form" onSubmit={handleSubmit}>
         <h1 className="title" style={{ color: '#193A6F' }}>Sign In</h1>
         <p className="subtitle">Please enter your credentials to login</p>
-        
+
         {error && <div className="error-message-login">{error}</div>}
-        
+
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -58,7 +69,7 @@ const LoginForm = () => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -70,16 +81,16 @@ const LoginForm = () => {
             required
           />
         </div>
-        
+
         <div className="forgot">
           <a onClick={() => navigate('/forgot-password')} className="forgot-password" style={{ cursor: 'pointer' }}>
-  Forgot your password?</a>
+            Forgot your password?
+          </a>
         </div>
-        
+
         <button type="submit" className="login-button-auth" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'LOGIN'}
         </button>
-        
       </form>
     </div>
   );

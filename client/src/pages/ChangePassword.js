@@ -1,107 +1,90 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import api from '../api/axios';
+import '../assets/styles/changePassword.css';
 import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
-import '../assets/styles/loginStyle.css';
 
 const ChangePassword = () => {
-  const { token } = useAuth();
-  const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [message, setMessage] = useState('');
+  const { user, token, logout } = useAuth();
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const mustChange = user?.mustChangePassword;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
     setError('');
+    setMessage('');
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError('New passwords do not match.');
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
 
     try {
-      await api.post('/users/change-password', formData, {
+      const payload = mustChange
+        ? { newPassword }
+        : { currentPassword, newPassword };
+
+      await api.post('/auth/change-password', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setMessage('Password updated successfully.');
-      setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
+      setMessage('Password updated successfully. Please log in again.');
+      setTimeout(() => {
+        logout();
+      }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || 'Password update failed.');
     }
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1 }}>
-        <Navbar />
+    <div className="change-password-container">
+      <form className="change-password-form" onSubmit={handleSubmit}>
+        <h2 className="change-password-title">Change Your Password</h2>
 
-        <div className="rooms-container" style={{ maxWidth: '500px', margin: '30px auto' }}>
-          <h1 className="title" style={{ textAlign: 'center', color: '#193A6F', marginBottom: '2rem' }}>
-            Change Your Password
-          </h1>
+        {!mustChange && (
+          <div className="form-group">
+            <label>Current Password</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Current Password</label>
-              <input
-                type="password"
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleChange}
-                placeholder="Enter current password"
-                className="login-input"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>New Password</label>
-              <input
-                type="password"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                placeholder="Enter new password"
-                className="login-input"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Confirm New Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm new password"
-                className="login-input"
-                required
-              />
-            </div>
-
-            {message && <div className="success-message">{message}</div>}
-            {error && <div className="error-message">{error}</div>}
-
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-              <button type="submit" className="login-button">
-                Update
-              </button>
-            </div>
-          </form>
+        <div className="form-group">
+          <label>New Password</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
         </div>
-      </div>
+
+        <div className="form-group">
+          <label>Confirm New Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+        {message && <div className="success-message">{message}</div>}
+
+        <button type="submit" className="change-password-button">
+          Update
+        </button>
+      </form>
     </div>
   );
 };
