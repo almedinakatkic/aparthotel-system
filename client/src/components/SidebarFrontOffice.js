@@ -26,7 +26,7 @@ const SidebarFrontOffice = () => (
         </NavLink>
         
         <NavLink 
-          to="/front-desk" 
+          to="/create-booking" 
           className="nav-item"
           activeClassName="active-nav-item"
         >

@@ -22,7 +22,6 @@ import Settings from './pages/Settings';
 import './App.css';
 import OwnerApartmentList from './pages/OwnerApartmentList';
 import ApartmentDetails from './pages/ApartmentDetails';
-import FrontDeskReservation from './pages/FrontDeskReservation';
 import Calendar from './pages/Calendar';
 import GuestList from './pages/GuestList';
 import RoomManagement from './pages/RoomManagement';
@@ -179,16 +178,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
-             <Route
-              path="/front-desk"
-              element={
-                <ProtectedRoute>
-                  <FrontDeskReservation />
-                </ProtectedRoute>
-              }
-            />
-
                <Route
               path="/calendar"
               element={
