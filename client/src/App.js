@@ -1,38 +1,46 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
+import './App.css';
+import HousekeepingDashboard from './components/HousekeepingDashboard';
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
-import LoginForm from './pages/LoginForm';
+import ApartmentDetails from './pages/ApartmentDetails';
+import BookingManagement from './pages/BookingManagement';
+import Calendar from './pages/Calendar';
 import ChangePassword from './pages/ChangePassword';
+import CleanerDashboard from './pages/CleanerDashboard';
+import CreateBooking from './pages/CreateBooking';
+import CreatePropertyGroup from './pages/CreatePropertyGroup';
+import CreateUnit from './pages/CreateUnit';
 import Dashboard from './pages/Dashboard';
 import FinancialReports from './pages/FinancialReports';
+import ForgotPasswordForm from './pages/ForgotPasswordForm';
 import GeneralReports from './pages/GeneralReports';
+import GuestList from './pages/GuestList';
+import LoginForm from './pages/LoginForm';
+import OwnerApartmentList from './pages/OwnerApartmentList';
+import OwnerDashboard from './pages/OwnerDashboard';
 import OwnerReport from './pages/OwnerReport';
-import CreateBooking from './pages/CreateBooking';
-import BookingManagement from './pages/BookingManagement';
-import RegisterUser from './pages/RegisterUser';
-import ProtectedRoute from './components/ProtectedRoute';
-import CreatePropertyGroup from './pages/CreatePropertyGroup';
 import PropertyGroupManagement from './pages/PropertyGroupManagement';
-import CreateUnit from './pages/CreateUnit';
-import UnitManagement from './pages/UnitManagement';
+import RegisterUser from './pages/RegisterUser';
 import Reports from './pages/Reports';
 import ReportsOwner from './pages/ReportsOwner';
-import Settings from './pages/Settings';
-import './App.css';
-import OwnerApartmentList from './pages/OwnerApartmentList';
-import ApartmentDetails from './pages/ApartmentDetails';
-import Calendar from './pages/Calendar';
-import GuestList from './pages/GuestList';
+import ResetPasswordForm from './pages/ResetPasswordForm';
 import RoomManagement from './pages/RoomManagement';
+import Settings from './pages/Settings';
 import TaskAssignment from './pages/TaskAssignment';
-import CleanerDashboard from './pages/CleanerDashboard';
-import HousekeepingDashboard from './components/HousekeepingDashboard';
-import OwnerDashboard from './pages/OwnerDashboard';
+import UnitManagement from './pages/UnitManagement';
+
 
 function AppContent() {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/change-password';
+  const isAuthPage =
+    location.pathname === '/login' ||
+    location.pathname === '/change-password' ||
+    location.pathname.startsWith('/reset-password') ||
+    location.pathname === '/forgot-password';
+
+  //const isAuthPage = location.pathname === '/login' || location.pathname === '/change-password'||location.pathname.startsWith('/reset-password');
 
   return (
     <div className="app">
@@ -178,7 +186,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-               <Route
+              <Route
               path="/calendar"
               element={
                 <ProtectedRoute>
@@ -186,8 +194,8 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-           
-               <Route
+
+              <Route
               path="/guests"
               element={
                 <ProtectedRoute>
@@ -205,7 +213,7 @@ function AppContent() {
               }
             />
 
-             <Route
+            <Route
               path="/tasks"
               element={
                 <ProtectedRoute>
@@ -213,7 +221,7 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-             <Route
+            <Route
               path="/cleaning"
               element={
                 <ProtectedRoute>
@@ -229,7 +237,7 @@ function AppContent() {
                   <HousekeepingDashboard />
                 </ProtectedRoute>
               }
-            /> 
+            />
             <Route
               path="/owner-dashboard"
               element={
@@ -238,7 +246,8 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-            
+            <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           </Routes>
         </main>
       </div>

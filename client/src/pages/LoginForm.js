@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../assets/styles/loginStyle.css'; 
-import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import '../assets/styles/loginStyle.css';
+import { useAuth } from '../context/AuthContext';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -72,7 +72,8 @@ const LoginForm = () => {
         </div>
         
         <div className="forgot">
-          <a href="#" className="forgot-password">Forgot your password?</a>
+          <a onClick={() => navigate('/forgot-password')} className="forgot-password" style={{ cursor: 'pointer' }}>
+  Forgot your password?</a>
         </div>
         
         <button type="submit" className="login-button-auth" disabled={isLoading}>

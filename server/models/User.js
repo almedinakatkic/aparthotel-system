@@ -25,7 +25,13 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  resetToken: {
+    type: String,
+  },
+  resetTokenExpiry: {
+    type: Date
+  },
 });
 
 userSchema.methods.comparePassword = async function (inputPassword) {
