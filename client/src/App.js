@@ -30,6 +30,9 @@ import RoomManagement from './pages/RoomManagement';
 import Settings from './pages/Settings';
 import TaskAssignment from './pages/TaskAssignment';
 import UnitManagement from './pages/UnitManagement';
+import OwnerBookingCalendar from './pages/OwnerBookingCalendar';
+import MaintenanceDashboard from './pages/MaintenanceDashboard';
+import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
 
 
 function AppContent() {
@@ -243,6 +246,30 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <OwnerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/maintanance"
+              element={
+                <ProtectedRoute>
+                  <MaintenanceDashboard />
+                </ProtectedRoute>
+              }
+            />
+              <Route
+              path="/week"
+              element={
+                <ProtectedRoute>
+                  <WeeklyHousekeepingSpread />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ownercalendar"
+              element={
+                <ProtectedRoute>
+                  <OwnerBookingCalendar />
                 </ProtectedRoute>
               }
             />

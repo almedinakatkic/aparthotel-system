@@ -1,31 +1,63 @@
+:root {
+  --primary:    #193A6F; 
+  --secondary:  #4A90E2;  
+  --accent:     #2DD35D;  
+  --bg-white:   #FFFFFF;
+  --bg-light:   #F4F8FD;  
+  --text-dark:  #2E3A59;
+  --text-med:   #647A9C;
+  --shadow-col: rgba(25, 58, 111, 0.05);
+}
+
 .apartment-details-container {
-  background-color: #fff;
-  margin: 120px auto;
-  padding: 30px;
-  border-radius: 12px;
+  background-color: var(--bg-white);
+  margin: 40px auto 0;
+  padding-top: 50px;
+  padding-bottom: 100px;
+  padding-left: 50px;
+  padding-right: 50px;
   max-width: 900px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  border-left: 100px solid var(--text-dark);
+  box-shadow: 0 4px 12px var(--shadow-col);
+}
+.apartment-details-container:first-of-type {
+  margin-top: 120px;
 }
 
 .details-title {
   font-size: 26px;
-  color: #193A6F;
+  color: var(--primary);
   margin-bottom: 25px;
   text-align: center;
 }
 
 .details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   font-size: 16px;
 }
 
 .detail-item {
-  padding: 12px 15px;
-  background: #f9f9f9;
-  border-left: 4px solid #e69c2d;
+  background: var(--bg-light);
+  padding: 20px 15px;
+  border-left: 5px solid var(--text-dark);
   border-radius: 6px;
+  transition: background 0.2s ease, border-left-color 0.2s ease;
+}
+.detail-item:hover {
+  background: #e8f4ff;            
 }
 
-
+.detail-item .label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-med);
+  font-weight: 600;
+}
+.detail-item .value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-dark);
+}

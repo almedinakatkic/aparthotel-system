@@ -4,64 +4,25 @@
   padding: 30px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px #193A6F;
 }
 
-.task-dashboard h2,
-.task-dashboard h3 {
-  text-align: center;
-  color: #193a6f;
-}
 
-.task-form {
-  display: grid;
-  gap: 12px;
-  margin: 30px 0;
-}
-
-.task-form input,
-.task-form select,
-.task-form textarea {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 100%;
-}
-
-.task-form button {
-  padding: 10px 20px;
-  background-color: #193a6f;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.task-form button:hover {
-  background-color: #324a7a;
-}
-
-.task-list {
-  margin-top: 40px;
-}
 
 .task-card {
-  background: #f9f9f9;
-  border-left: 5px solid #193a6f;
-  padding: 20px;
-  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-left: 30px solid #193A6F; 
+  padding: 15px;
   border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
 .task-card.done {
-  background-color: #d4edda; 
+  background-color: #e0ffe0;
   border-left: 5px solid #28a745;
+  opacity: 0.85;
   transition: background-color 0.3s ease;
 }
-
-
 
 .task-card h4 {
   margin: 0 0 10px 0;
@@ -74,14 +35,25 @@
 
 .task-card button {
   margin-top: 10px;
-  background-color: #27ae60;
-  border: none;
+  background-color: #193A6F;
   color: white;
-  padding: 6px 12px;
+  border: none;
+  padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .task-card button:hover {
-  background-color: #219150;
+  background-color: #324a7a;
+}
+
+.task-card.done button {
+  background-color: #888; 
+}
+
+.task-list {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }

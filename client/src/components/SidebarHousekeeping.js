@@ -5,6 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBroom } from '@fortawesome/free-solid-svg-icons';
 import { faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
+import { faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+
+
 
 const SidebarHousekeeping = () => (
   <div className="sidebar">
@@ -31,13 +35,24 @@ const SidebarHousekeeping = () => (
         </NavLink>
 
         <NavLink 
-          to="/rooms" 
+          to="/maintanance" 
           className="nav-item"
           activeClassName="active-nav-item"
         >
-          <span className="nav-icon"><FontAwesomeIcon icon={faClipboardList} /></span>
-          <span className="nav-text">Room Management</span>
+          <span className="nav-icon"><FontAwesomeIcon icon={faWrench} /></span>
+          <span className="nav-text">Maintenance Tasks</span>
         </NavLink>
+
+
+         <NavLink 
+          to="/week" 
+          className="nav-item"
+          activeClassName="active-nav-item"
+        >
+          <span className="nav-icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
+          <span className="nav-text">Calendar</span>
+        </NavLink>
+
         
       </nav>
     </div>

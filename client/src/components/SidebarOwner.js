@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import '../assets/styles/sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { 
   faChartLine, 
   faBuilding,
@@ -24,15 +25,7 @@ const SidebarOwner = () => (
                   <span className="nav-text">Dashboard</span>
                 </NavLink>
 
-        <NavLink 
-          to="/reportsowner"
-          className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
-        >
-          <span className="nav-icon"><FontAwesomeIcon icon={faChartLine} /></span>
-          <span className="nav-text">My Report</span>
-        </NavLink>
-
-        <NavLink 
+         <NavLink 
           to="/ownerapartmentlist"
           className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
         >
@@ -40,13 +33,28 @@ const SidebarOwner = () => (
           <span className="nav-text">My Apartments</span>
         </NavLink>
 
-
-         <NavLink 
+        <NavLink 
           to="/apartmentdetails"
           className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
         >
                   <span className="nav-icon"><FontAwesomeIcon icon={faCubes} /></span>
                   <span className="nav-text">Apartment Details</span>
+        </NavLink>
+
+         <NavLink 
+          to="/ownercalendar"
+          className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
+        >
+                  <span className="nav-icon"><FontAwesomeIcon icon={faCalendar} /></span>
+                  <span className="nav-text">My Calendar</span>
+        </NavLink>
+
+        <NavLink 
+          to="/reportsowner"
+          className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
+        >
+          <span className="nav-icon"><FontAwesomeIcon icon={faChartLine} /></span>
+          <span className="nav-text">My Report</span>
         </NavLink>
 
 

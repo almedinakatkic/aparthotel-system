@@ -1,0 +1,211 @@
+.weekly-calendar {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1100px;
+  margin: 120px auto;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: white;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.week-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.week-title h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+.nav-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.current-week-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.current-week-button:hover {
+  background-color: #3a7bc8;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day-column {
+  background-color: #fafafa;
+  border-radius: 8px;
+  min-height: 500px;
+  border: 1px solid #eee;
+}
+
+.day-column.today {
+  background-color: #f0f7ff;
+  border: 1px solid #cce0ff;
+}
+
+.day-header {
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+.day-name {
+  font-weight: bold;
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.day-number {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 5px;
+}
+
+.tasks-container {
+  padding: 10px;
+  height: calc(100% - 60px);
+  overflow-y: auto;
+}
+
+.task-card {
+  background-color: white;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.task-card.maintenance {
+  border-left: 8px solid #f39c12;
+}
+
+.task-card.cleaning {
+  border-left: 8px solid #193A6F;
+}
+
+.task-card.done {
+  background-color: #e6f9ec;
+  border-left: 3px solid #50c878;
+  box-shadow: 0 1px 3px rgba(0, 128, 0, 0.15);
+  opacity: 1;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.room {
+  color: #333;
+  font-weight: 500;
+}
+
+.time {
+  color: #666;
+}
+
+.task-issue {
+  margin-bottom: 8px;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.task-type {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.status-button {
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.status-button.pending {
+  background-color: #193A6F;;
+  color: white;
+}
+
+.status-button.done {
+  background-color: #50c878;
+  color: white;
+}
+
+.status-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.no-tasks {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px 0;
+  font-size: 0.9rem;
+}
+
+/* Scrollbar styling */
+.tasks-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}

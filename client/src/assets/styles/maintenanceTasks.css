@@ -1,0 +1,54 @@
+.maintenance-dashboard {
+  max-width: 1100px;
+  margin: 120px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px #e69c2d;
+}
+
+.maintenance-task-list {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.maintenance-card {
+  border: 1px solid #ccc;
+  border-left: 30px solid #e69c2d;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.maintenance-card.done {
+  background-color: #e6ffe6;
+  border-left: 5px solid #4caf50;
+  opacity: 0.9;
+  transition: background-color 0.3s ease;
+}
+
+.maintenance-card h4 {
+  margin: 0 0 10px 0;
+  color:rgb(138, 94, 28);
+}
+
+.maintenance-card p {
+  margin: 6px 0;
+}
+
+.maintenance-card button {
+  margin-top: 10px;
+  background-color: #e69c2d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.maintenance-card.done button {
+  background-color: #888;
+}
