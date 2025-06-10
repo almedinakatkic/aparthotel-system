@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const Unit = require('../models/Unit');
 
+
 exports.createBooking = async (req, res) => {
   try {
     const {
@@ -89,6 +90,15 @@ exports.getBookingsByUnit = async (req, res) => {
     res.status(200).json(bookings);
   } catch (err) {
     console.error('Fetch bookings failed:', err.message);
+    res.status(500).json({ message: 'Failed to fetch bookings', error: err.message });
+  }
+};
+
+exports.getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate('unitId'); 
+    res.status(200).json(bookings);
+  } catch (err) {
     res.status(500).json({ message: 'Failed to fetch bookings', error: err.message });
   }
 };

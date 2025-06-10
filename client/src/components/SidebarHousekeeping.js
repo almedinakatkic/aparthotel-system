@@ -16,14 +16,14 @@ const SidebarHousekeeping = () => (
       <nav className="sidebar-nav">
         
         
-        <NavLink 
+        {/* <NavLink 
                   to="/housekeeping-dashboard" 
                   className="nav-item"
                   activeClassName="active-nav-item"
                 >
                   <span className="nav-icon"><FontAwesomeIcon icon={faChartPie} /></span>
                   <span className="nav-text">Dashboard</span>
-                </NavLink>
+                </NavLink> */}
 
         <NavLink 
           to="/cleaning" 
