@@ -28,7 +28,7 @@ const LoginForm = () => {
       } else {
         if (user.role === 'manager') navigate('/dashboard');
         else if (user.role === 'frontoffice') navigate('/front-desk');
-        else if (user.role === 'housekeeping') navigate('/housekeeping-dashboard');
+        else if (user.role === 'housekeeping') navigate('/cleaning');
         else if (user.role === 'owner') navigate('/owner-dashboard');
         else navigate('/');
       }
