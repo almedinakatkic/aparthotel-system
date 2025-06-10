@@ -8,5 +8,10 @@ router.get('/:ownerId/dashboard', authMiddleware, ownerController.getOwnerDashbo
 router.get('/:ownerId/apartments', authMiddleware, ownerController.getOwnerApartments);
 router.get('/:ownerId/reports', authMiddleware, ownerController.getOwnerReports);
 router.get('/:ownerId/apartments/details', authMiddleware, ownerController.getApartmentDetails);
+router.get('/:ownerId/bookings', /*authMiddleware,*/ ownerController.getOwnerBookings);
+
+
+
+
 
 module.exports = router;

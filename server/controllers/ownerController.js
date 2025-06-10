@@ -40,7 +40,11 @@ exports.getOwnerDashboard = async (req, res) => {
     }
 
     // Get all property groups owned by this owner
-    const propertyGroups = await PropertyGroup.find({ companyId: owner.companyId });
+    const propertyGroup = await PropertyGroup.findById(owner.propertyGroupId);
+    if (!propertyGroup) {
+      return res.status(404).json({ message: 'Property group not found for this owner' });
+    }
+    const propertyGroups = [propertyGroup];
 
     // Get all units in these property groups
     const unitIds = (await Unit.find({ 
@@ -234,5 +238,40 @@ exports.getApartmentDetails = async (req, res) => {
   } catch (err) {
     console.error('Error in getApartmentDetails:', err);
     res.status(500).json({ message: 'Failed to fetch apartment details', error: err.message });
+  }
+};
+
+// Get owner bookings for calendar
+// Get owner bookings for calendar (one property group)
+exports.getOwnerBookings = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+    const owner = await User.findById(ownerId);
+    if (!owner || owner.role !== 'owner') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    if (!owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner has no property group assigned' });
+    }
+    // Get all units for this property group
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId });
+    const unitMap = {};
+    units.forEach(u => unitMap[u._id.toString()] = u.unitNumber);
+
+    const bookings = await Booking.find({
+      unitId: { $in: units.map(u => u._id) }
+    });
+
+    // Format for calendar
+    const result = bookings.map(b => ({
+      apartment: `Apt ${unitMap[b.unitId.toString()]}`,
+      start: b.checkIn.toISOString().split('T')[0],
+      end: b.checkOut.toISOString().split('T')[0]
+    }));
+    console.log("Calendar bookings sent to frontend:", result); // DEBUG
+    res.json(result);
+  } catch (err) {
+    console.error('Error in getOwnerBookings:', err);
+    res.status(500).json({ message: 'Failed to fetch bookings', error: err.message });
   }
 };

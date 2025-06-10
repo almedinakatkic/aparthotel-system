@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   format,
   startOfMonth,
@@ -11,18 +12,54 @@ import {
   isSameMonth
 } from 'date-fns';
 import '../assets/styles/ownerCalendar.css';
+import { useAuth } from '../context/AuthContext';
 
 const OwnerBookingCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedApartment, setSelectedApartment] = useState('All');
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
 
-  const bookings = [
-    { apartment: 'Apt A101', start: '2025-06-15', end: '2025-06-18' },
-    { apartment: 'Apt B202', start: '2025-07-01', end: '2025-07-05' },
-    { apartment: 'Apt C303', start: '2025-07-10', end: '2025-07-13' },
+  // Fetch bookings from backend
+  useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error("No authentication token found.");
+      if (!user || !user._id) throw new Error("No logged in user found.");
+
+      const apiUrl = `http://localhost:5000/api/owner/${user._id}/bookings`;
+      const response = await axios.get(apiUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // LOG THE RESPONSE HERE:
+      console.log("API bookings response:", response.data);
+
+      setBookings(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (user && user._id) {
+    fetchBookings();
+  }
+}, [user]);
+
+
+
+  const uniqueApartments = [
+    'All',
+    ...Array.from(new Set(bookings.map(b => b.apartment)))
   ];
-
-  const uniqueApartments = ['All', ...new Set(bookings.map(b => b.apartment))];
 
   const handleApartmentChange = (e) => {
     setSelectedApartment(e.target.value);
@@ -63,7 +100,6 @@ const OwnerBookingCalendar = () => {
         </div>
       );
     }
-
     return <div className="calendar-days">{days}</div>;
   };
 
@@ -124,7 +160,9 @@ const OwnerBookingCalendar = () => {
       {renderHeader()}
       {renderFilter()}
       {renderDays()}
-      {renderCells()}
+      {loading && <div className="loading">Loading bookings...</div>}
+      {error && <div className="error">Error: {error}</div>}
+      {!loading && !error && renderCells()}
     </div>
   );
 };
