@@ -28,7 +28,7 @@ const ChangePassword = () => {
     }
 
     try {
-      await api.post('/users/change-password', formData, {
+      await api.post('/auth/change-password', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Password updated successfully.');
