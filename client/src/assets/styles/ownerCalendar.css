@@ -91,9 +91,8 @@
   color: white;
 }
 
-/* Zauzeti termini - originalni stil */
 .calendar-cell.booked {
-  background-color: #a6c1ac;
+  background-color: rgb(162, 179, 208);
   color: white;
   font-weight: bold;
   cursor: pointer;

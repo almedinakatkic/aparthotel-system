@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../assets/styles/ownerApartmentList.css';
 import { useAuth } from '../context/AuthContext';
 
-const OwnerApartmentList = () => {
+const OwnerApartmentList = ({ refreshFlag }) => {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,7 +54,7 @@ const OwnerApartmentList = () => {
     };
 
     fetchUnitsWithStatus();
-  }, [user, token]);
+  }, [user, token, refreshFlag]); // Dodali smo refreshFlag
 
   return (
     <div className="owner-apartment-container">

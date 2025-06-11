@@ -19,27 +19,38 @@ exports.getOwnerDashboard = async (req, res) => {
       return res.status(404).json({ message: 'Owner has no assigned property group.' });
     }
 
-    let startDate, endDate = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+
     switch (timeRange) {
-      case 'week': startDate = new Date(); startDate.setDate(startDate.getDate() - 7); break;
-      case 'month': startDate = new Date(); startDate.setMonth(startDate.getMonth() - 1); break;
-      case 'quarter': startDate = new Date(); startDate.setMonth(startDate.getMonth() - 3); break;
-      case 'year': startDate = new Date(); startDate.setFullYear(startDate.getFullYear() - 1); break;
-      default: startDate = new Date(0);
+      case 'week':
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+      case 'month':
+        startDate.setMonth(startDate.getMonth() - 1);
+        break;
+      case 'quarter':
+        startDate.setMonth(startDate.getMonth() - 3);
+        break;
+      case 'year':
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        break;
+      default:
+        startDate = new Date(0);
     }
 
     const units = await Unit.find({ propertyGroupId: owner.propertyGroupId });
     const unitIds = units.map(unit => unit._id);
+    const totalUnits = unitIds.length;
 
     const bookings = await Booking.find({
       unitId: { $in: unitIds },
       checkIn: { $gte: startDate, $lte: endDate }
     }).populate('unitId');
 
-    const totalUnits = unitIds.length;
+    const revenue = bookings.reduce((sum, b) => sum + (b.fullPrice || 0), 0);
     const bookedUnits = [...new Set(bookings.map(b => b.unitId._id.toString()))].length;
     const occupancyRate = totalUnits > 0 ? Math.round((bookedUnits / totalUnits) * 100) : 0;
-    const revenue = bookings.reduce((sum, b) => sum + (b.fullPrice || 0), 0);
     const expenses = revenue * 0.4;
 
     const upcomingBookings = await Booking.find({
@@ -49,8 +60,52 @@ exports.getOwnerDashboard = async (req, res) => {
 
     const maintenanceIssues = [
       { id: 1, room: '101', issue: 'AC not working', priority: 'High', reported: new Date().toISOString() },
-      { id: 2, room: '205', issue: 'Leaky faucet', priority: 'Medium', reported: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() }
+      { id: 2, room: '205', issue: 'Leaky faucet', priority: 'Medium', reported: new Date(Date.now() - 2 * 86400000).toISOString() }
     ];
+
+    const revenueAgg = await Booking.aggregate([
+      {
+        $match: {
+          unitId: { $in: unitIds },
+          checkIn: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$checkIn' },
+            month: { $month: '$checkIn' }
+          },
+          totalRevenue: { $sum: '$fullPrice' },
+          totalNights: {
+            $sum: {
+              $ceil: {
+                $divide: [{ $subtract: ['$checkOut', '$checkIn'] }, 1000 * 60 * 60 * 24]
+              }
+            }
+          }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const revenueTrend = revenueAgg.map(item => ({
+      month: `${months[item._id.month - 1]} ${item._id.year}`,
+      revenue: item.totalRevenue
+    }));
+
+    const occupancyTrend = revenueAgg.map(item => {
+      const totalDays = 30;
+      const maxNights = totalUnits * totalDays;
+      const occupancy = maxNights > 0 ? Math.round((item.totalNights / maxNights) * 100) : 0;
+
+      return {
+        month: `${months[item._id.month - 1]} ${item._id.year}`,
+        occupancy
+      };
+    });
 
     res.json({
       occupancyRate,
@@ -65,7 +120,9 @@ exports.getOwnerDashboard = async (req, res) => {
         nights: Math.ceil((b.checkOut - b.checkIn) / (1000 * 60 * 60 * 24)),
         revenue: b.fullPrice
       })),
-      maintenanceIssues
+      maintenanceIssues,
+      revenueTrend,
+      occupancyTrend
     });
 
   } catch (err) {
@@ -73,6 +130,8 @@ exports.getOwnerDashboard = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch dashboard data', error: err.message });
   }
 };
+
+
 
 // Get owner apartments list
 exports.getOwnerApartments = async (req, res) => {
