@@ -5,7 +5,6 @@ import '../assets/styles/createBooking.css';
 
 const Reservations = () => {
   const { user, token } = useAuth();
-  const [propertyGroups, setPropertyGroups] = useState([]);
   const [units, setUnits] = useState([]);
   const [formData, setFormData] = useState({
     guestName: '',
