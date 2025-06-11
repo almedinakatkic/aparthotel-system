@@ -1,30 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import OwnerReportPDF from '../components/OwnerReportPDF';
 import '../assets/styles/ownerReport.css';
+import { useAuth } from '../context/AuthContext';
 
 const OwnerReport = () => {
-  const [reports, setReports] = useState([
-    {
-      oReportID: 2001,
-      apartment: 'A101',
-      date: new Date().toLocaleDateString(),
-      ownerIncome: 1750.0,
-      expenses: {
-        maintenance: 350.0,
-        cleaning: 150.0
-      },
-      rentalIncome: 2500.0
-    }
-  ]);
-
+  const [reports, setReports] = useState([]);
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toLocaleString('default', { month: 'long' })
   );
   const [enteredYear, setEnteredYear] = useState(new Date().getFullYear());
+  const { token, user } = useAuth();
   const navigate = useNavigate();
 
   const months = [
@@ -32,30 +21,32 @@ const OwnerReport = () => {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await fetch(`http://localhost:5050/api/owner/${user.id}/reports`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        setReports(data);
+      } catch (err) {
+        console.error('Failed to fetch reports:', err);
+      }
+    };
+
+    if (token && user?.id) {
+      fetchReports();
+    }
+  }, [token, user]);
+
   const filteredReports = reports.filter((report) =>
     report.apartment.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const visibleReports = filteredReports.length > 0 ? filteredReports : reports;
-  const currentReport = visibleReports[currentReportIndex] || reports[0];
-
-  const generateNewReport = () => {
-    const apartments = ['A101', 'B202', 'C303', 'D404'];
-    const newReport = {
-      oReportID: reports[reports.length - 1].oReportID + 1,
-      apartment: apartments[Math.floor(Math.random() * apartments.length)],
-      date: new Date().toLocaleDateString(),
-      ownerIncome: Math.floor(Math.random() * 2000) + 1000,
-      expenses: {
-        maintenance: Math.floor(Math.random() * 400) + 100,
-        cleaning: Math.floor(Math.random() * 200) + 50
-      },
-      rentalIncome: Math.floor(Math.random() * 3000) + 1500
-    };
-    setReports([...reports, newReport]);
-    setSearchQuery('');
-    setCurrentReportIndex(visibleReports.length);
-  };
+  const currentReport = visibleReports[currentReportIndex] || null;
 
   const navigateReport = (direction) => {
     const newIndex = currentReportIndex + direction;
@@ -64,11 +55,15 @@ const OwnerReport = () => {
     }
   };
 
+  if (!currentReport) {
+    return <div className="owner-report-container">No reports available.</div>;
+  }
+
   return (
     <div className="owner-report-container">
       <div className="report-header">
         <h2>Owner Report #{currentReport.oReportID}</h2>
-        <p className="report-date">{currentReport.date}</p>
+        <p className="report-date">{new Date(currentReport.date).toLocaleDateString()}</p>
 
         <input
           type="text"
@@ -164,10 +159,6 @@ const OwnerReport = () => {
       </div>
 
       <div className="action-buttons">
-        <button className="btn generate-btn" onClick={generateNewReport}>
-          Generate New Report
-        </button>
-       
         <PDFDownloadLink
           document={<OwnerReportPDF report={currentReport} />}
           fileName={`owner_report_${currentReport.oReportID}.pdf`}
