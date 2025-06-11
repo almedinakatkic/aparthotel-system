@@ -1,5 +1,6 @@
 const Unit = require('../models/Unit');
 const PropertyGroup = require('../models/PropertyGroup');
+const User = require('../models/User');
 
 exports.createUnit = async (req, res) => {
   const { unitNumber, floor, beds, pricePerNight, status, propertyGroupId } = req.body;
@@ -45,6 +46,24 @@ exports.getUnitsByProperty = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch units', error: err.message });
   }
 };
+
+exports.getUnitsByOwner = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+
+    const owner = await User.findById(ownerId);
+    if (!owner || !owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner or property group not found' });
+    }
+
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId }).populate('propertyGroupId');
+
+    res.status(200).json(units);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch units for owner', error: err.message });
+  }
+};
+
 
 exports.updateUnit = async (req, res) => {
   try {

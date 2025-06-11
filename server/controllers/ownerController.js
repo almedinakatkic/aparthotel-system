@@ -10,69 +10,43 @@ exports.getOwnerDashboard = async (req, res) => {
     const { ownerId } = req.params;
     const { timeRange } = req.query;
 
-    // Verify the requesting user is the owner
     const owner = await User.findById(ownerId);
     if (!owner || owner.role !== 'owner') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    // Calculate date range based on timeRange parameter
+    if (!owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner has no assigned property group.' });
+    }
+
     let startDate, endDate = new Date();
     switch (timeRange) {
-      case 'week':
-        startDate = new Date();
-        startDate.setDate(startDate.getDate() - 7);
-        break;
-      case 'month':
-        startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 1);
-        break;
-      case 'quarter':
-        startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 3);
-        break;
-      case 'year':
-        startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        break;
-      default:
-        startDate = new Date(0); // All time
+      case 'week': startDate = new Date(); startDate.setDate(startDate.getDate() - 7); break;
+      case 'month': startDate = new Date(); startDate.setMonth(startDate.getMonth() - 1); break;
+      case 'quarter': startDate = new Date(); startDate.setMonth(startDate.getMonth() - 3); break;
+      case 'year': startDate = new Date(); startDate.setFullYear(startDate.getFullYear() - 1); break;
+      default: startDate = new Date(0);
     }
 
-    // Get all property groups owned by this owner
-    const propertyGroup = await PropertyGroup.findById(owner.propertyGroupId);
-    if (!propertyGroup) {
-      return res.status(404).json({ message: 'Property group not found for this owner' });
-    }
-    const propertyGroups = [propertyGroup];
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId });
+    const unitIds = units.map(unit => unit._id);
 
-    // Get all units in these property groups
-    const unitIds = (await Unit.find({ 
-      propertyGroupId: { $in: propertyGroups.map(pg => pg._id) }
-    })).map(unit => unit._id);
-
-    // Get bookings data
     const bookings = await Booking.find({
       unitId: { $in: unitIds },
       checkIn: { $gte: startDate, $lte: endDate }
-    }).populate('unitId').populate('propertyGroupId');
+    }).populate('unitId');
 
-    // Calculate metrics
     const totalUnits = unitIds.length;
     const bookedUnits = [...new Set(bookings.map(b => b.unitId._id.toString()))].length;
     const occupancyRate = totalUnits > 0 ? Math.round((bookedUnits / totalUnits) * 100) : 0;
     const revenue = bookings.reduce((sum, b) => sum + (b.fullPrice || 0), 0);
-    
-    // For demo purposes - in a real app you would calculate actual expenses
-    const expenses = revenue * 0.4; // Assuming 40% expenses
-    
-    // Get upcoming bookings (next 30 days)
+    const expenses = revenue * 0.4;
+
     const upcomingBookings = await Booking.find({
       unitId: { $in: unitIds },
       checkIn: { $gte: new Date(), $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }
     }).limit(5).populate('unitId');
 
-    // For demo purposes - in a real app you would get actual maintenance issues
     const maintenanceIssues = [
       { id: 1, room: '101', issue: 'AC not working', priority: 'High', reported: new Date().toISOString() },
       { id: 2, room: '205', issue: 'Leaky faucet', priority: 'Medium', reported: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() }
@@ -82,7 +56,7 @@ exports.getOwnerDashboard = async (req, res) => {
       occupancyRate,
       revenue,
       expenses,
-      guestSatisfaction: 4.7, // Default value
+      guestSatisfaction: 4.7,
       upcomingBookings: upcomingBookings.map(b => ({
         id: b._id,
         room: b.unitId.unitNumber,
@@ -105,21 +79,17 @@ exports.getOwnerApartments = async (req, res) => {
   try {
     const { ownerId } = req.params;
 
-    // Verify the requesting user is the owner
     const owner = await User.findById(ownerId);
     if (!owner || owner.role !== 'owner') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    // Get all property groups owned by this owner
-    const propertyGroups = await PropertyGroup.find({ companyId: owner.companyId });
+    if (!owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner has no property group assigned.' });
+    }
 
-    // Get all units in these property groups
-    const units = await Unit.find({ 
-      propertyGroupId: { $in: propertyGroups.map(pg => pg._id) }
-    }).populate('propertyGroupId');
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId }).populate('propertyGroupId');
 
-    // Get current bookings to determine apartment status
     const currentBookings = await Booking.find({
       unitId: { $in: units.map(u => u._id) },
       checkIn: { $lte: new Date() },
@@ -149,21 +119,17 @@ exports.getOwnerReports = async (req, res) => {
   try {
     const { ownerId } = req.params;
 
-    // Verify the requesting user is the owner
     const owner = await User.findById(ownerId);
     if (!owner || owner.role !== 'owner') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    // Get all property groups owned by this owner
-    const propertyGroups = await PropertyGroup.find({ companyId: owner.companyId });
+    if (!owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner has no property group assigned.' });
+    }
 
-    // Get all units in these property groups
-    const units = await Unit.find({ 
-      propertyGroupId: { $in: propertyGroups.map(pg => pg._id) }
-    });
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId });
 
-    // Generate reports for each unit (simplified for demo)
     const reports = units.map((unit, index) => {
       const rentalIncome = Math.floor(Math.random() * 3000) + 1500;
       const maintenance = Math.floor(Math.random() * 400) + 100;
@@ -193,26 +159,21 @@ exports.getApartmentDetails = async (req, res) => {
   try {
     const { ownerId } = req.params;
 
-    // Verify the requesting user is the owner
     const owner = await User.findById(ownerId);
     if (!owner || owner.role !== 'owner') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    // Get all property groups owned by this owner
-    const propertyGroups = await PropertyGroup.find({ companyId: owner.companyId });
+    if (!owner.propertyGroupId) {
+      return res.status(404).json({ message: 'Owner has no property group assigned.' });
+    }
 
-    // Get all units in these property groups
-    const units = await Unit.find({ 
-      propertyGroupId: { $in: propertyGroups.map(pg => pg._id) }
-    }).populate('propertyGroupId');
+    const units = await Unit.find({ propertyGroupId: owner.propertyGroupId }).populate('propertyGroupId');
 
-    // Get bookings for these units
     const bookings = await Booking.find({
       unitId: { $in: units.map(u => u._id) }
     }).sort({ checkIn: -1 });
 
-    // Get maintenance history (simplified for demo)
     const apartmentDetails = units.map(unit => {
       const unitBookings = bookings.filter(b => b.unitId.toString() === unit._id.toString());
       const currentBooking = unitBookings.find(b => 
@@ -242,7 +203,6 @@ exports.getApartmentDetails = async (req, res) => {
 };
 
 // Get owner bookings for calendar
-// Get owner bookings for calendar (one property group)
 exports.getOwnerBookings = async (req, res) => {
   try {
     const { ownerId } = req.params;
@@ -253,7 +213,7 @@ exports.getOwnerBookings = async (req, res) => {
     if (!owner.propertyGroupId) {
       return res.status(404).json({ message: 'Owner has no property group assigned' });
     }
-    // Get all units for this property group
+
     const units = await Unit.find({ propertyGroupId: owner.propertyGroupId });
     const unitMap = {};
     units.forEach(u => unitMap[u._id.toString()] = u.unitNumber);
@@ -262,13 +222,12 @@ exports.getOwnerBookings = async (req, res) => {
       unitId: { $in: units.map(u => u._id) }
     });
 
-    // Format for calendar
     const result = bookings.map(b => ({
       apartment: `Apt ${unitMap[b.unitId.toString()]}`,
       start: b.checkIn.toISOString().split('T')[0],
       end: b.checkOut.toISOString().split('T')[0]
     }));
-    console.log("Calendar bookings sent to frontend:", result); // DEBUG
+
     res.json(result);
   } catch (err) {
     console.error('Error in getOwnerBookings:', err);
