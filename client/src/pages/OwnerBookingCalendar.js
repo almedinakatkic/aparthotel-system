@@ -28,54 +28,51 @@ const OwnerBookingCalendar = () => {
   useEffect(() => {
     const fetchBookingsAndUnits = async () => {
       try {
-        const bookingsRes = await fetch('http://localhost:5050/api/bookings', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const unitsRes = await fetch('http://localhost:5050/api/units', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [bookingsRes, unitsRes] = await Promise.all([
+          fetch('http://localhost:5050/api/bookings', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch('http://localhost:5050/api/units', {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        ]);
 
         const bookingsData = await bookingsRes.json();
         const unitsData = await unitsRes.json();
 
-        const parsedBookings = bookingsData.map(b => {
-          const matchedUnit = unitsData.find(u => u._id === b.unitId);
+        const parsedBookings = (bookingsData || []).map(b => {
+          const matchedUnit = (unitsData || []).find(u => u._id === b.unitId);
           return {
             ...b,
             start: new Date(b.checkIn),
             end: new Date(b.checkOut),
-            apartment: matchedUnit?.unitNumber || 'Unknown'
+            apartment: matchedUnit ? matchedUnit.unitNumber.toString() : 'Unknown'
           };
         });
 
         setBookings(parsedBookings);
-        setUnits(unitsData);
+        setUnits(unitsData || []);
       } catch (error) {
         console.error('Failed to fetch bookings or units:', error);
       }
     };
 
-    fetchBookingsAndUnits();
+    if (token) {
+      fetchBookingsAndUnits();
+    }
   }, [token]);
 
   const uniqueApartments = [
     'All',
-    ...Array.from(new Set(units.map(u => u.unitNumber)))
-  ];
+    ...Array.from(new Set(bookings.map(b => b.apartment).filter(apt => apt !== 'Unknown')))
+  ].sort((a, b) => {
+    if (a === 'All') return -1;
+    if (b === 'All') return 1;
+    return a.localeCompare(b, undefined, { numeric: true });
+  });
 
   const handleApartmentChange = (e) => {
     setSelectedApartment(e.target.value);
-  };
-
-  const getBookingInfo = (date) => {
-    const day = startOfDay(date);
-    return bookings.find(({ start, end, apartment }) => {
-      const matchesApartment = selectedApartment === 'All' || selectedApartment === apartment;
-      return matchesApartment && isWithinInterval(day, {
-        start: startOfDay(start),
-        end: startOfDay(end),
-      });
-    }) || null;
   };
 
   const handleDateClick = (date) => {
@@ -87,13 +84,8 @@ const OwnerBookingCalendar = () => {
       });
     });
 
-    if (bookingsOnDay.length > 0) {
-      setSelectedBooking(bookingsOnDay);
-      setShowDetails(true);
-    } else {
-      setSelectedBooking([]);
-      setShowDetails(false);
-    }
+    setSelectedBooking(bookingsOnDay);
+    setShowDetails(bookingsOnDay.length > 0);
   };
 
   const renderHeader = () => (
@@ -131,6 +123,7 @@ const OwnerBookingCalendar = () => {
         </div>
       );
     }
+
     return <div className="calendar-days">{days}</div>;
   };
 
@@ -191,35 +184,35 @@ const OwnerBookingCalendar = () => {
   };
 
   const renderBookingDetails = () => {
-  if (!selectedBooking || selectedBooking.length === 0) return null;
+    if (!selectedBooking || selectedBooking.length === 0) return null;
 
-  const uniqueApartments = Array.from(
-    new Set(selectedBooking.map(b => b.apartment))
-  );
+    const uniqueApartments = Array.from(
+      new Set(selectedBooking.map(b => b.apartment))
+    ).filter(apt => apt !== 'Unknown');
 
-  return (
-    <div className="booking-details">
-      <h3>Bookings for Selected Date</h3>
-      
-      <p><strong>Total Bookings:</strong> {selectedBooking.length}</p>
-      <p><strong>Occupied Apartments:</strong> {uniqueApartments.join(', ')}</p>
+    return (
+      <div className="booking-details">
+        <h3>Bookings for Selected Date</h3>
 
-      <hr />
+        <p><strong>Total Bookings:</strong> {selectedBooking.length}</p>
+        {uniqueApartments.length > 0 && (
+          <p><strong>Occupied Apartments:</strong> {uniqueApartments.join(', ')}</p>
+        )}
 
-      {selectedBooking.map((b, idx) => (
-        <div key={idx} className="booking-card">
-          <p><strong>Apartment:</strong> {b.apartment}</p>
-          <p><strong>Guest:</strong> {b.guestName} ({b.guestEmail})</p>
-          <p><strong>Check-In:</strong> {format(new Date(b.checkIn), 'yyyy-MM-dd')}</p>
-          <p><strong>Check-Out:</strong> {format(new Date(b.checkOut), 'yyyy-MM-dd')}</p>
-          <hr />
-        </div>
-      ))}
-      <button onClick={() => setShowDetails(false)}>Close</button>
-    </div>
-  );
-};
+        <hr />
 
+        {selectedBooking.map((b, idx) => (
+          <div key={idx} className="booking-card">
+            <p><strong>Apartment:</strong> {b.apartment}</p>
+            <p><strong>Guest:</strong> {b.guestName} ({b.guestEmail})</p>
+            <p><strong>Check-In:</strong> {format(new Date(b.checkIn), 'yyyy-MM-dd')}</p>
+            <p><strong>Check-Out:</strong> {format(new Date(b.checkOut), 'yyyy-MM-dd')}</p>
+          </div>
+        ))}
+        <button onClick={() => setShowDetails(false)}>Close</button>
+      </div>
+    );
+  };
 
   return (
     <div className="owner-calendar">
