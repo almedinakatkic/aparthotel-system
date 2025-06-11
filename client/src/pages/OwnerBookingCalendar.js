@@ -34,6 +34,7 @@ const OwnerBookingCalendar = () => {
         const data = await res.json();
         const parsed = data.map(b => ({
           ...b,
+          apartment: String(b.apartment), // dodano!
           start: new Date(b.start),
           end: new Date(b.end)
         }));
