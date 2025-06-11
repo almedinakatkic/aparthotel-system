@@ -1,209 +1,141 @@
-import React, { useState } from 'react';
+// RoomManagement.js (with search, filter, and 3-column layout)
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import axios from '../api/axios';
 import '../assets/styles/roomManagement.css';
 
-const initialRooms = [
-  {
-    roomNumber: '101',
-    apartment: 'Apt A101',
-    isBooked: true,
-    guest: {
-      firstName: 'John',
-      lastName: 'Doe',
-      passport: 'A123456',
-      phone: '+38760111222',
-      checkIn: '2025-06-01',
-      checkOut: '2025-06-07'
-    },
-    lastCleaned: '2025-06-03',
-    lastMaintenance: '2025-05-28',
-    needsCleaning: false,
-    needsMaintenance: false
-  },
-  {
-    roomNumber: '102',
-    apartment: 'Apt A101',
-    isBooked: false,
-    guest: null,
-    lastCleaned: '2025-06-01',
-    lastMaintenance: '2025-05-20',
-    needsCleaning: true,
-    needsMaintenance: false
-  },
-  {
-    roomNumber: '201',
-    apartment: 'Apt B202',
-    isBooked: true,
-    guest: {
-      firstName: 'Jane',
-      lastName: 'Smith',
-      passport: 'B987654',
-      phone: '+38760222333',
-      checkIn: '2025-06-02',
-      checkOut: '2025-06-08'
-    },
-    lastCleaned: '2025-06-02',
-    lastMaintenance: '2025-05-25',
-    needsCleaning: false,
-    needsMaintenance: true
-  }
-];
-
 const RoomManagement = () => {
-  const [rooms, setRooms] = useState(initialRooms);
-  const [editIndex, setEditIndex] = useState(null);
+  const { user, token } = useAuth();
+  const [units, setUnits] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
 
-  const handleChange = (index, field, value, nestedField = null) => {
-    const updated = [...rooms];
-    if (nestedField) {
-      if (!updated[index].guest) updated[index].guest = {};
-      updated[index].guest[nestedField] = value;
-    } else {
-      updated[index][field] = value;
+  const fetchUnits = async () => {
+    try {
+      const res = await axios.get('/units', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const filtered = res.data.filter(unit => {
+        const userProp = user.propertyGroupId?._id || user.propertyGroupId;
+        const unitProp = unit.propertyGroupId?._id || unit.propertyGroupId;
+        return unitProp === userProp;
+      });
+
+      setUnits(filtered);
+    } catch (error) {
+      console.error('Error fetching units:', error.response?.data || error.message);
     }
-    setRooms(updated);
   };
 
-  const toggleStatus = (index, key) => {
-    const updated = [...rooms];
-    updated[index][key] = !updated[index][key];
-
-    if (!updated[index][key]) {
-      const now = new Date().toISOString().split('T')[0];
-      if (key === 'needsCleaning') updated[index].lastCleaned = now;
-      if (key === 'needsMaintenance') updated[index].lastMaintenance = now;
+  const fetchBookings = async () => {
+    try {
+      const res = await axios.get('/bookings', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBookings(res.data);
+    } catch (error) {
+      console.error('Error fetching bookings:', error.response?.data || error.message);
     }
-
-    setRooms(updated);
   };
 
-  const handleSave = () => setEditIndex(null);
+  const sendTask = async (unitId, taskType) => {
+    try {
+      await axios.post(`/housekeeping/notify`, {
+        unitId,
+        taskType
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert(`${taskType} request sent for unit ${unitId}`);
+    } catch (error) {
+      console.error(`Failed to send ${taskType} task:`, error.response?.data || error.message);
+    }
+  };
+
+  const getTodayStatus = (unitId) => {
+    return bookings.some(b => {
+      const checkIn = new Date(b.checkIn).setHours(0, 0, 0, 0);
+      const checkOut = new Date(b.checkOut).setHours(0, 0, 0, 0);
+      const todayDate = new Date().setHours(0, 0, 0, 0);
+      const bUnitId = typeof b.unitId === 'object' ? b.unitId._id : b.unitId;
+      return (
+        bUnitId === unitId &&
+        checkIn <= todayDate &&
+        checkOut > todayDate
+      );
+    }) ? 'Booked' : 'Free';
+  };
+
+  const handleCheckboxChange = (unitId, type) => {
+    sendTask(unitId, type);
+  };
+
+  useEffect(() => {
+    if (!user || !user.propertyGroupId) return;
+    fetchUnits();
+    fetchBookings();
+  }, [user]);
+
+  const filteredUnits = units.filter(unit => {
+    const unitStatus = getTodayStatus(unit._id);
+    const matchesSearch = unit.unitNumber.toString().includes(searchTerm.trim());
+    const matchesStatus = statusFilter === 'All' || unitStatus === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <div className="room-management-container">
-      <h2>Room Management</h2>
+    <div className="room-management-page">
+      <h1>Room Management</h1>
 
-      <div className="room-list">
-        {rooms.map((room, index) => {
-          const isEditing = editIndex === index;
-
-          return (
-            <div key={index} className={`room-card ${room.isBooked ? 'booked' : 'free'}`}>
-              {isEditing ? (
-                <>
-                  <input
-                    type="text"
-                    value={room.roomNumber}
-                    onChange={(e) => handleChange(index, 'roomNumber', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    value={room.apartment}
-                    onChange={(e) => handleChange(index, 'apartment', e.target.value)}
-                  />
-                </>
-              ) : (
-                <h3>Room {room.roomNumber} — {room.apartment}</h3>
-              )}
-
-              <p><strong>Status:</strong> {room.isBooked ? 'Booked' : 'Free'}</p>
-
-              {room.isBooked && (
-                <div className="guest-info">
-                  <h4>Guest Info</h4>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        placeholder="First Name"
-                        value={room.guest?.firstName || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'firstName')}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Last Name"
-                        value={room.guest?.lastName || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'lastName')}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Passport"
-                        value={room.guest?.passport || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'passport')}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Phone"
-                        value={room.guest?.phone || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'phone')}
-                      />
-                      <input
-                        type="date"
-                        value={room.guest?.checkIn || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'checkIn')}
-                      />
-                      <input
-                        type="date"
-                        value={room.guest?.checkOut || ''}
-                        onChange={(e) => handleChange(index, null, e.target.value, 'checkOut')}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <p><strong>Name:</strong> {room.guest.firstName} {room.guest.lastName}</p>
-                      <p><strong>Passport:</strong> {room.guest.passport}</p>
-                      <p><strong>Phone:</strong> {room.guest.phone}</p>
-                      <p><strong>Check-in:</strong> {room.guest.checkIn}</p>
-                      <p><strong>Check-out:</strong> {room.guest.checkOut}</p>
-                    </>
-                  )}
-                </div>
-              )}
-
-              <p><strong>Last Cleaned:</strong> {isEditing ? (
-                <input
-                  type="date"
-                  value={room.lastCleaned}
-                  onChange={(e) => handleChange(index, 'lastCleaned', e.target.value)}
-                />
-              ) : room.lastCleaned}</p>
-
-              <p><strong>Last Maintenance:</strong> {isEditing ? (
-                <input
-                  type="date"
-                  value={room.lastMaintenance}
-                  onChange={(e) => handleChange(index, 'lastMaintenance', e.target.value)}
-                />
-              ) : room.lastMaintenance}</p>
-
-              <div className="room-actions">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={room.needsCleaning}
-                    onChange={() => toggleStatus(index, 'needsCleaning')}
-                  />
-                  Needs Cleaning
-                </label>
-
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={room.needsMaintenance}
-                    onChange={() => toggleStatus(index, 'needsMaintenance')}
-                  />
-                  Needs Maintenance
-                </label>
-              </div>
-
-              {isEditing ? (
-                <button onClick={handleSave}>Save</button>
-              ) : (
-                <button onClick={() => setEditIndex(index)}>Edit</button>
-              )}
-            </div>
-          );
-        })}
+      <div className="filters">
+        <input
+          type="text"
+          placeholder="Search by Room Number"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ width: '190px', height: '17px' }}
+        />
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          style={{ width: '200px' }}
+        >
+          <option value="All">All</option>
+          <option value="Booked">Booked</option>
+          <option value="Free">Free</option>
+        </select>
       </div>
+
+      {filteredUnits.length === 0 ? (
+        <p style={{ color: 'red' }}>No matching units found.</p>
+      ) : (
+        <div className="room-grid">
+          {filteredUnits.map(unit => (
+            <div key={unit._id} className="room-card">
+              <h2>Room Number: {unit.unitNumber}</h2>
+              <p>Status: <strong>{getTodayStatus(unit._id)}</strong></p>
+              <p>Last Cleaned: {unit.lastCleaned ? new Date(unit.lastCleaned).toLocaleDateString() : 'N/A'}</p>
+              <p>Last Maintenance: {unit.lastMaintenance ? new Date(unit.lastMaintenance).toLocaleDateString() : 'N/A'}</p>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={() => handleCheckboxChange(unit._id, 'cleaning')}
+                />
+                Needs Cleaning
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={() => handleCheckboxChange(unit._id, 'maintenance')}
+                />
+                Needs Maintenance
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
