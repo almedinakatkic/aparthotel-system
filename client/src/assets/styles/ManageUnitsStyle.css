@@ -16,7 +16,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #1e1e2f
+  color: #193A6F
 }
 
 .unit-button {
@@ -106,7 +106,6 @@
 
 .rooms-table button:hover {
   opacity: 0.85;
-  
 }
 
 .rooms-table button:nth-child(1) {

@@ -114,8 +114,7 @@ const PropertyGroupManagement = () => {
         >
           <option value="">Filter by Type</option>
           <option value="hotel">Hotel</option>
-          <option value="apartment_complex">Apartment Complex</option>
-          <option value="standalone_apartment">Standalone Apartment</option>
+          <option value="apartment">Apartment</option>
         </select>
       </div>
 
@@ -142,8 +141,7 @@ const PropertyGroupManagement = () => {
                 <td>{editingId === group._id ? (
                   <select name="type" value={formData.type} onChange={handleChange}>
                     <option value="hotel">Hotel</option>
-                    <option value="apartment_complex">Apartment Complex</option>
-                    <option value="standalone_apartment">Standalone Apartment</option>
+                    <option value="apartment">Apartment</option>
                   </select>
                 ) : (
                   group.type.replace('_', ' ')

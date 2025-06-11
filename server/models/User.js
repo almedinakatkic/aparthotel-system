@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PropertyGroup'
   },
+  unitId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Unit'
+  },
   firstLogin: {
     type: Boolean,
     default: true
@@ -26,12 +30,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  resetToken: {
-    type: String,
-  },
-  resetTokenExpiry: {
-    type: Date
-  },
+  resetToken: String,
+  resetTokenExpiry: Date
 });
 
 userSchema.methods.comparePassword = async function (inputPassword) {

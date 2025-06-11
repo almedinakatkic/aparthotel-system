@@ -44,7 +44,7 @@ const CreatePropertyGroup = () => {
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h1 className="title" style={{ color: '#193A6F' }}>Add Property</h1>
-        <p className="subtitle">Add a new hotel or apartment complex</p>
+        <p className="subtitle">Add a new hotel or apartment</p>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
@@ -86,8 +86,7 @@ const CreatePropertyGroup = () => {
           <label>Type</label>
           <select name="type" value={formData.type} onChange={handleChange}>
             <option value="hotel">Hotel</option>
-            <option value="apartment_complex">Apartment Complex</option>
-            <option value="standalone_apartment">Standalone Apartment</option>
+            <option value="apartment">Apartment</option>
           </select>
         </div>
 

@@ -34,7 +34,7 @@ import Settings from './pages/Settings';
 import TaskAssignment from './pages/TaskAssignment';
 import UnitManagement from './pages/UnitManagement';
 import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
-
+import ManageUsers from './pages/ManageUsers';
 
 function AppContent() {
   const location = useLocation();
@@ -273,6 +273,14 @@ function AppContent() {
                   <OwnerBookingCalendar />
                 </ProtectedRoute>
               }
+            />
+            <Route 
+              path="/manage-users" 
+              element={
+                  <ProtectedRoute>
+                    <ManageUsers />
+                  </ProtectedRoute>
+                } 
             />
             <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />

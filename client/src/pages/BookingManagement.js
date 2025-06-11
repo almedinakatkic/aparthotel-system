@@ -280,7 +280,7 @@ const BookingManagement = () => {
                 .filter(u => u.propertyGroupId === selectedProperty || u.propertyGroupId?._id === selectedProperty)
                 .map(u => (
                   <option key={u._id} value={u._id}>
-                    {u.unitNumber} (Floor {u.floor}, {u.beds} bed{u.beds > 1 ? 's' : ''})
+                    {u.unitNumber} (floor {u.floor}, {u.beds} bed{u.beds > 1 ? 's' : ''})
                   </option>
                 ))}
             </select>

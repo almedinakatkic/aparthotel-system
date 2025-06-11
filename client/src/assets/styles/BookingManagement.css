@@ -131,6 +131,7 @@
   height: 35px;
 
 }
+
 .export-button:hover {
   background-color: #5c5d60;
 }
@@ -262,7 +263,6 @@
   background-color: transparent;
 }
 
-
 .modal-close-x {
   position: absolute;
   top: 10px;
@@ -280,7 +280,6 @@
 .modal-close-x:hover {
   color: #d00;
 }
-
 
 .modal hr {
   margin: 1.5rem 0;

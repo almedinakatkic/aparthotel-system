@@ -7,7 +7,7 @@ const propertyGroupSchema = new mongoose.Schema({
   address: { type: String, required: true },
   type: {
     type: String,
-    enum: ['hotel', 'apartment_complex', 'standalone_apartment'],
+    enum: ['hotel', 'apartment'],
     required: true
   }
 });
