@@ -10,7 +10,8 @@ import {
   subMonths,
   isSameMonth,
   isWithinInterval,
-  startOfDay
+  startOfDay,
+  isToday
 } from 'date-fns';
 import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
@@ -22,7 +23,7 @@ const OwnerBookingCalendar = () => {
   const [units, setUnits] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const { token } = useAuth(); // Or fallback to: const token = localStorage.getItem('token');
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchBookingsAndUnits = async () => {
@@ -87,14 +88,13 @@ const OwnerBookingCalendar = () => {
     });
 
     if (bookingsOnDay.length > 0) {
-      setSelectedBooking(bookingsOnDay); // sada niz
+      setSelectedBooking(bookingsOnDay);
       setShowDetails(true);
     } else {
       setSelectedBooking([]);
       setShowDetails(false);
     }
   };
-
 
   const renderHeader = () => (
     <div className="calendar-header">
@@ -148,8 +148,8 @@ const OwnerBookingCalendar = () => {
       for (let i = 0; i < 7; i++) {
         const currentDate = startOfDay(day);
         const isCurrentMonth = isSameMonth(currentDate, monthStart);
+        const today = isToday(currentDate);
 
-        // Filtriraj sve bookinge koji padaju na ovaj dan
         const dayBookings = bookings.filter(({ start, end, apartment }) => {
           const matchesApartment = selectedApartment === 'All' || selectedApartment === apartment;
           return matchesApartment && isWithinInterval(currentDate, {
@@ -161,7 +161,10 @@ const OwnerBookingCalendar = () => {
         days.push(
           <div
             key={currentDate.toISOString()}
-            className={`calendar-cell ${!isCurrentMonth ? 'disabled' : dayBookings.length > 0 ? 'booked' : ''}`}
+            className={`calendar-cell 
+              ${!isCurrentMonth ? 'disabled' : ''}
+              ${dayBookings.length > 0 ? 'booked' : ''}
+              ${today ? 'today' : ''}`}
             onClick={() => handleDateClick(currentDate)}
           >
             <div className="date-number">{format(currentDate, 'd')}</div>
@@ -187,26 +190,35 @@ const OwnerBookingCalendar = () => {
     return <div>{rows}</div>;
   };
 
-
   const renderBookingDetails = () => {
-    if (!selectedBooking || selectedBooking.length === 0) return null;
+  if (!selectedBooking || selectedBooking.length === 0) return null;
 
-    return (
-      <div className="booking-details">
-        <h3>Bookings for Selected Date</h3>
-        {selectedBooking.map((b, idx) => (
-          <div key={idx} className="booking-card">
-            <p><strong>Apartment:</strong> {b.apartment}</p>
-            <p><strong>Guest:</strong> {b.guestName} ({b.guestEmail})</p>
-            <p><strong>Check-In:</strong> {format(new Date(b.checkIn), 'yyyy-MM-dd')}</p>
-            <p><strong>Check-Out:</strong> {format(new Date(b.checkOut), 'yyyy-MM-dd')}</p>
-            <hr />
-          </div>
-        ))}
-        <button onClick={() => setShowDetails(false)}>Close</button>
-      </div>
-    );
-  };
+  const uniqueApartments = Array.from(
+    new Set(selectedBooking.map(b => b.apartment))
+  );
+
+  return (
+    <div className="booking-details">
+      <h3>Bookings for Selected Date</h3>
+      
+      <p><strong>Total Bookings:</strong> {selectedBooking.length}</p>
+      <p><strong>Occupied Apartments:</strong> {uniqueApartments.join(', ')}</p>
+
+      <hr />
+
+      {selectedBooking.map((b, idx) => (
+        <div key={idx} className="booking-card">
+          <p><strong>Apartment:</strong> {b.apartment}</p>
+          <p><strong>Guest:</strong> {b.guestName} ({b.guestEmail})</p>
+          <p><strong>Check-In:</strong> {format(new Date(b.checkIn), 'yyyy-MM-dd')}</p>
+          <p><strong>Check-Out:</strong> {format(new Date(b.checkOut), 'yyyy-MM-dd')}</p>
+          <hr />
+        </div>
+      ))}
+      <button onClick={() => setShowDetails(false)}>Close</button>
+    </div>
+  );
+};
 
 
   return (
