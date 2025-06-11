@@ -20,56 +20,39 @@ const OwnerBookingCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedApartment, setSelectedApartment] = useState('All');
   const [bookings, setBookings] = useState([]);
-  const [units, setUnits] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   useEffect(() => {
-    const fetchBookingsAndUnits = async () => {
+    const fetchBookings = async () => {
       try {
-        const [bookingsRes, unitsRes] = await Promise.all([
-          fetch('http://localhost:5050/api/bookings', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch('http://localhost:5050/api/units', {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-        ]);
-
-        const bookingsData = await bookingsRes.json();
-        const unitsData = await unitsRes.json();
-
-        const parsedBookings = (bookingsData || []).map(b => {
-          const matchedUnit = (unitsData || []).find(u => u._id === b.unitId);
-          return {
-            ...b,
-            start: new Date(b.checkIn),
-            end: new Date(b.checkOut),
-            apartment: matchedUnit ? matchedUnit.unitNumber.toString() : 'Unknown'
-          };
+        const res = await fetch(`http://localhost:5050/api/owner/${user.id}/bookings`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        setBookings(parsedBookings);
-        setUnits(unitsData || []);
+        const data = await res.json();
+        const parsed = data.map(b => ({
+          ...b,
+          start: new Date(b.start),
+          end: new Date(b.end)
+        }));
+
+        setBookings(parsed);
       } catch (error) {
-        console.error('Failed to fetch bookings or units:', error);
+        console.error('Failed to fetch bookings:', error);
       }
     };
 
-    if (token) {
-      fetchBookingsAndUnits();
+    if (token && user?.id) {
+      fetchBookings();
     }
-  }, [token]);
+  }, [token, user]);
 
   const uniqueApartments = [
     'All',
-    ...Array.from(new Set(bookings.map(b => b.apartment).filter(apt => apt !== 'Unknown')))
-  ].sort((a, b) => {
-    if (a === 'All') return -1;
-    if (b === 'All') return 1;
-    return a.localeCompare(b, undefined, { numeric: true });
-  });
+    ...Array.from(new Set(bookings.map(b => b.apartment)))
+  ];
 
   const handleApartmentChange = (e) => {
     setSelectedApartment(e.target.value);
@@ -186,27 +169,17 @@ const OwnerBookingCalendar = () => {
   const renderBookingDetails = () => {
     if (!selectedBooking || selectedBooking.length === 0) return null;
 
-    const uniqueApartments = Array.from(
-      new Set(selectedBooking.map(b => b.apartment))
-    ).filter(apt => apt !== 'Unknown');
-
     return (
       <div className="booking-details">
         <h3>Bookings for Selected Date</h3>
-
         <p><strong>Total Bookings:</strong> {selectedBooking.length}</p>
-        {uniqueApartments.length > 0 && (
-          <p><strong>Occupied Apartments:</strong> {uniqueApartments.join(', ')}</p>
-        )}
-
         <hr />
-
         {selectedBooking.map((b, idx) => (
           <div key={idx} className="booking-card">
-            <p><strong>Apartment:</strong> {b.apartment}</p>
-            <p><strong>Guest:</strong> {b.guestName} ({b.guestEmail})</p>
-            <p><strong>Check-In:</strong> {format(new Date(b.checkIn), 'yyyy-MM-dd')}</p>
-            <p><strong>Check-Out:</strong> {format(new Date(b.checkOut), 'yyyy-MM-dd')}</p>
+            <p><strong>Apartment:</strong> Apt {b.apartment}</p>
+            <p><strong>Guest:</strong> {b.guest || 'N/A'}</p>
+            <p><strong>Check-In:</strong> {format(new Date(b.start), 'yyyy-MM-dd')}</p>
+            <p><strong>Check-Out:</strong> {format(new Date(b.end), 'yyyy-MM-dd')}</p>
           </div>
         ))}
         <button onClick={() => setShowDetails(false)}>Close</button>

@@ -210,6 +210,7 @@ exports.getOwnerBookings = async (req, res) => {
     if (!owner || owner.role !== 'owner') {
       return res.status(403).json({ message: 'Access denied' });
     }
+
     if (!owner.propertyGroupId) {
       return res.status(404).json({ message: 'Owner has no property group assigned' });
     }
@@ -223,9 +224,11 @@ exports.getOwnerBookings = async (req, res) => {
     });
 
     const result = bookings.map(b => ({
-      apartment: `Apt ${unitMap[b.unitId.toString()]}`,
+      apartment: unitMap[b.unitId.toString()],
       start: b.checkIn.toISOString().split('T')[0],
-      end: b.checkOut.toISOString().split('T')[0]
+      end: b.checkOut.toISOString().split('T')[0],
+      guest: b.guestName || 'N/A',
+      guestEmail: b.guestEmail || ''
     }));
 
     res.json(result);
