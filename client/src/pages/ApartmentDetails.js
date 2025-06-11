@@ -25,7 +25,7 @@ const ApartmentDetails = () => {
           return;
         }
 
-        const res = await axios.get(`http://localhost:5000/api/owner/${user.id}/apartments/details`, {
+        const res = await axios.get(`http://localhost:5050/api/owner/${user.id}/apartments/details`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

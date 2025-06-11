@@ -26,7 +26,7 @@ const OwnerApartmentList = () => {
           return;
         }
 
-        const apiUrl = `http://localhost:5000/api/owner/${user.id}/apartments`;
+        const apiUrl = `http://localhost:5050/api/owner/${user.id}/apartments`;
 
         const response = await axios.get(apiUrl, {
           headers: { Authorization: `Bearer ${token}` }

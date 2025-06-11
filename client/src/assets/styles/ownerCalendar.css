@@ -1,26 +1,27 @@
 .owner-calendar {
   max-width: 900px;
   margin: 120px auto;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 2rem;
+  border-radius: 12px;
   background-color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: "Segoe UI", sans-serif;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 20px;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-bottom: 50px;
+  margin-bottom: 2rem;
+  color: #333;
 }
 
-
 .month-label {
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: #2e3a59;
 }
 
 .calendar-days,
@@ -32,56 +33,137 @@
   flex: 1;
   text-align: center;
   font-weight: 600;
-  padding: 10px 0;
-  background-color: #f7f7f7;
-  color: #333;
-  border-bottom: 1px solid #ccc;
+  padding: 12px 0;
+  background-color: #f5f5f5;
+  color: #444;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
 .calendar-cell {
   flex: 1;
   height: 100px;
   text-align: center;
-  padding: 5px;
+  padding: 0.5rem;
   border: 1px solid #eee;
   box-sizing: border-box;
   position: relative;
+  font-size: 0.95rem;
+  background-color: #fff;
+  transition: background 0.2s ease-in-out;
+}
+
+.calendar-cell:hover {
+  background-color: #f9f9f9;
 }
 
 .date-number {
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: bold;
+  margin-bottom: 0.3rem;
+  color: #333;
 }
 
 .calendar-cell.booked {
-  background-color: #2E3A59;
+  background-color: #70ac82c1;
   color: white;
   font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-
-
 .calendar-cell.booked .booking-info {
-  font-size: 15px;
+  font-size: 0.85rem;
   margin-top: 5px;
   font-weight: 500;
+  color: white;
 }
 
 .calendar-cell.disabled {
   background-color: #f0f0f0;
-  color: #ccc;
+  color: #bbb;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .calendar-filter {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 20px 0;
-  font-size: 16px;
-}
-.calendar-filter select {
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  margin: 1.5rem 0;
+  font-size: 1rem;
 }
 
+.calendar-filter select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+}
+
+.booking-details {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  padding: 1.2rem;
+  border-radius: 10px;
+  z-index: 1000;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  font-size: 0.95rem;
+}
+
+.booking-details h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #2e3a59;
+}
+
+.booking-details button {
+  margin-top: 10px;
+  background-color: #2e3a59;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.booking-info small {
+  font-size: 0.75rem;
+  color: #e4e4e4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .owner-calendar {
+    padding: 1rem;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .calendar-cell {
+    height: 80px;
+    padding: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  .date-number {
+    font-size: 0.9rem;
+  }
+
+  .booking-details {
+    width: 90%;
+    bottom: 10px;
+    right: 5%;
+    padding: 1rem;
+  }
+}
