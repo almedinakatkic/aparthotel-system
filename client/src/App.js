@@ -35,6 +35,7 @@ import TaskAssignment from './pages/TaskAssignment';
 import UnitManagement from './pages/UnitManagement';
 import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
 import ManageUsers from './pages/ManageUsers';
+import Reservations from './pages/Reservations';
 
 function AppContent() {
   const location = useLocation();
@@ -190,7 +191,17 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-              <Route
+            
+             <Route
+              path="/reservations"
+              element={
+                <ProtectedRoute>
+                  <Reservations />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="/calendar"
               element={
                 <ProtectedRoute>

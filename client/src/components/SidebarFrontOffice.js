@@ -26,7 +26,7 @@ const SidebarFrontOffice = () => (
         </NavLink>
         
         <NavLink 
-          to="/create-booking" 
+          to="/reservations" 
           className="nav-item"
           activeClassName="active-nav-item"
         >
@@ -62,8 +62,6 @@ const SidebarFrontOffice = () => (
           <span className="nav-icon"><FontAwesomeIcon icon={faBed} /></span>
           <span className="nav-text">Rooms</span>
         </NavLink>
-
-
 
             <NavLink 
           to="/tasks" 
