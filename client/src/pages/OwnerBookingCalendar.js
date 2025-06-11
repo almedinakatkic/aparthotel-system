@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import {
   format,
   startOfMonth,
@@ -12,53 +11,32 @@ import {
   isSameMonth
 } from 'date-fns';
 import '../assets/styles/ownerCalendar.css';
-import { useAuth } from '../context/AuthContext';
+
+const dummyBookings = [
+  {
+    apartment: 'Apt A101',
+    start: new Date('2025-06-16'),
+    end: new Date('2025-06-18'),
+  },
+  {
+    apartment: 'Apt B202',
+    start: new Date('2025-07-01'),
+    end: new Date('2025-07-05'),
+  },
+  {
+    apartment: 'Apt A101',
+    start: new Date('2025-06-10'),
+    end: new Date('2025-06-12'),
+  }
+];
 
 const OwnerBookingCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedApartment, setSelectedApartment] = useState('All');
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { user } = useAuth();
-
-  // Fetch bookings from backend
-  useEffect(() => {
-  const fetchBookings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error("No authentication token found.");
-      if (!user || !user._id) throw new Error("No logged in user found.");
-
-      const apiUrl = `http://localhost:5000/api/owner/${user._id}/bookings`;
-      const response = await axios.get(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // LOG THE RESPONSE HERE:
-      console.log("API bookings response:", response.data);
-
-      setBookings(response.data);
-    } catch (err) {
-      setError(err.response?.data?.message || err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (user && user._id) {
-    fetchBookings();
-  }
-}, [user]);
-
-
 
   const uniqueApartments = [
     'All',
-    ...Array.from(new Set(bookings.map(b => b.apartment)))
+    ...Array.from(new Set(dummyBookings.map(b => b.apartment)))
   ];
 
   const handleApartmentChange = (e) => {
@@ -104,11 +82,9 @@ const OwnerBookingCalendar = () => {
   };
 
   const getBookingInfo = (date) => {
-    return bookings.find(({ start, end, apartment }) => {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
+    return dummyBookings.find(({ start, end, apartment }) => {
       const matchesApartment = selectedApartment === 'All' || selectedApartment === apartment;
-      return matchesApartment && date >= startDate && date <= endDate;
+      return matchesApartment && date >= start && date <= end;
     }) || null;
   };
 
@@ -160,9 +136,7 @@ const OwnerBookingCalendar = () => {
       {renderHeader()}
       {renderFilter()}
       {renderDays()}
-      {loading && <div className="loading">Loading bookings...</div>}
-      {error && <div className="error">Error: {error}</div>}
-      {!loading && !error && renderCells()}
+      {renderCells()}
     </div>
   );
 };

@@ -1,42 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../assets/styles/apartmentDetails.css';
-
-const apartmentList = [
-  {
-    name: 'Apt A101',
-    location: 'Sarajevo',
-    address: 'Miljacka Street 10',
-    type: 'apartment',
-    booking: { from: '2025-06-01', to: '2025-06-10' },
-    lastMaintenance: '2025-05-20',
-    lastCleaning: '2025-05-30'
-  },
-  {
-    name: 'Apt B202',
-    location: 'Sarajevo',
-    address: 'Zmaja od Bosne 50',
-    type: 'apartment',
-    booking: null, 
-    lastMaintenance: '2025-05-18',
-    lastCleaning: '2025-05-25'
-  },
-  {
-    name: 'Apt C303',
-    location: 'Sarajevo',
-    address: 'Titova 12',
-    type: 'apartment',
-    booking: { from: '2025-06-15', to: '2025-06-22' },
-    lastMaintenance: '2025-05-25',
-    lastCleaning: '2025-05-31'
-  }
-];
+import { useAuth } from '../context/AuthContext';
 
 const ApartmentDetails = () => {
+  const [apartments, setApartments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError("No authentication token found.");
+          setLoading(false);
+          return;
+        }
+
+        if (!user || !user.id) {
+          setError("No logged-in user found.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await axios.get(`http://localhost:5000/api/owner/${user.id}/apartments/details`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setApartments(res.data);
+        setError(null);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.id) fetchDetails();
+  }, [user]);
+
   return (
     <div className="apartment-details-wrapper">
-      {apartmentList.map((apartment, index) => (
+
+      {loading && <div>Loading apartment details...</div>}
+      {error && <div className="error">Error: {error}</div>}
+      
+      {!loading && !error && apartments.length === 0 && (
+        <div>No apartment details found.</div>
+      )}
+
+      {!loading && !error && apartments.map((apartment, index) => (
         <div key={index} className="apartment-details-container">
-          <h2 className="details-title">{apartment.name} Details</h2>
+          <h3 className="details-title">{apartment.name} Details</h3>
           <div className="details-grid">
             <div className="detail-item"><strong>Location:</strong> {apartment.location}</div>
             <div className="detail-item"><strong>Address:</strong> {apartment.address}</div>
