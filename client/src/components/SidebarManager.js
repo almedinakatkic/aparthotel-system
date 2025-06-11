@@ -1,17 +1,15 @@
-import React from 'react';
+import {
+  faBuilding,
+  faCalendarCheck,
+  faChartPie,
+  faCubes,
+  faFileInvoiceDollar,
+  faKey,
+  faUserPlus
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import '../assets/styles/sidebar.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChartPie,
-  faUserPlus,
-  faFileInvoiceDollar,
-  faFileAlt,
-  faUserTie,
-  faBuilding,
-  faCubes,
-  faCalendarCheck
-} from '@fortawesome/free-solid-svg-icons';
 
 const SidebarManager = () => (
   <div className="sidebar">
@@ -33,6 +31,12 @@ const SidebarManager = () => (
           <span className="nav-icon"><FontAwesomeIcon icon={faUserPlus} /></span>
           <span className="nav-text">Register User</span>
         </NavLink>
+
+        <NavLink to="/reset-user-password" className="nav-item" activeClassName="active-nav-item">
+          <span className="nav-icon"><FontAwesomeIcon icon={faKey} /></span>
+          <span className="nav-text">Reset Password</span>
+        </NavLink>
+
         <NavLink 
           to="/reports" 
           className="nav-item"

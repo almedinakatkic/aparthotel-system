@@ -7,6 +7,7 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+const resetLinksMap = {};
 
 // LOGIN
 router.post('/login', async (req, res) => {
@@ -87,7 +88,8 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(200).json({ message: 'If this email is registered, a password reset link has been sent.' });
+      // Don't reveal user existence
+      return res.status(200).json({ message: 'If this email is registered, a password reset link has been generated.' });
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -98,14 +100,59 @@ router.post('/forgot-password', async (req, res) => {
     await user.save();
 
     const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
-    console.log(`Send this link to the user: ${resetLink}`);
 
-    res.status(200).json({ message: 'Reset link sent if email is registered.' });
+    //Save the link in memory for manager access
+    resetLinksMap[user._id] = resetLink;
+
+    return res.status(200).json({
+      message: 'Reset link generated successfully.'
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error in /forgot-password:', err);
+    return res.status(500).json({ message: 'Server error' });
   }
 });
+
+// MANAGER GETS LATEST RESET LINK BY EMAIL
+router.get('/latest-reset-link/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const link = resetLinksMap[user._id];
+    if (!link) return res.status(404).json({ message: 'No reset link generated yet' });
+
+    res.status(200).json({ resetLink: link });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Generate reset link for any user (manager-triggered)
+router.post('/manager-reset-link', authMiddleware, async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = resetTokenExpiry;
+    await user.save();
+
+    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+    resetLinksMap[user._id] = resetLink;
+
+    res.status(200).json({ resetLink });
+  } catch (err) {
+    res.status(500).json({ message: 'Manager reset failed', error: err.message });
+  }
+});
+
 
 // RESET PASSWORD
 router.post('/reset-password/:token', async (req, res) => {
@@ -115,19 +162,18 @@ router.post('/reset-password/:token', async (req, res) => {
   try {
     const user = await User.findOne({
       resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() }, // Token must not be expired
+      resetTokenExpiry: { $gt: Date.now() },
     });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
-    const hashedPassword = await require('bcryptjs').hash(newPassword, 10);
-
-
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
+    user.firstLogin = false;
 
     await user.save();
 

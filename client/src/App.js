@@ -18,7 +18,9 @@ import ForgotPasswordForm from './pages/ForgotPasswordForm';
 import GeneralReports from './pages/GeneralReports';
 import GuestList from './pages/GuestList';
 import LoginForm from './pages/LoginForm';
+import MaintenanceDashboard from './pages/MaintenanceDashboard';
 import OwnerApartmentList from './pages/OwnerApartmentList';
+import OwnerBookingCalendar from './pages/OwnerBookingCalendar';
 import OwnerDashboard from './pages/OwnerDashboard';
 import OwnerReport from './pages/OwnerReport';
 import PropertyGroupManagement from './pages/PropertyGroupManagement';
@@ -26,12 +28,11 @@ import RegisterUser from './pages/RegisterUser';
 import Reports from './pages/Reports';
 import ReportsOwner from './pages/ReportsOwner';
 import ResetPasswordForm from './pages/ResetPasswordForm';
+import ResetUserPassword from './pages/ResetUserPassword';
 import RoomManagement from './pages/RoomManagement';
 import Settings from './pages/Settings';
 import TaskAssignment from './pages/TaskAssignment';
 import UnitManagement from './pages/UnitManagement';
-import OwnerBookingCalendar from './pages/OwnerBookingCalendar';
-import MaintenanceDashboard from './pages/MaintenanceDashboard';
 import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
 
 
@@ -275,6 +276,9 @@ function AppContent() {
             />
             <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+            <Route path="/reset-user-password" element={<ProtectedRoute><ResetUserPassword /></ProtectedRoute>
+  }
+/>
           </Routes>
         </main>
       </div>
