@@ -1,158 +1,127 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import '../assets/styles/taskAssignment.css';
 
-const cleaners = ['Elma', 'Haris', 'Nina', 'Tarik'];
-
-const initialTasks = [
-  {
-    room: '101',
-    apartment: 'Apt A101',
-    assignedTo: 'Elma',
-    type: 'Cleaning',
-    date: '2025-06-05',
-    time: '10:00',
-    status: 'Pending'
-  },
-  {
-    room: '201',
-    apartment: 'Apt B202',
-    assignedTo: 'Haris',
-    type: 'Maintenance',
-    issue: 'Air conditioner not cooling',
-    urgency: 'High',
-    date: '2025-06-06',
-    time: '14:00',
-    status: 'Pending'
-  }
-];
-
 const TaskAssignment = () => {
-  const [tasks, setTasks] = useState(initialTasks);
-  const [form, setForm] = useState({
-    room: '',
-    apartment: '',
-    assignedTo: '',
-    type: 'Cleaning',
-    date: '',
-    time: '',
-    issue: '',
-    urgency: 'Low'
-  });
+  const { user, token } = useAuth();
+  const [units, setUnits] = useState([]);
+  const [cleaners, setCleaners] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState('');
+  const [selectedCleaner, setSelectedCleaner] = useState('');
+  const [taskType, setTaskType] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
 
-  const handleChange = (field, value) => {
-    setForm({ ...form, [field]: value });
-  };
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [resUnits, resUsers, resTasks] = await Promise.all([
+          api.get('/units', { headers: { Authorization: `Bearer ${token}` } }),
+          api.get(`/users/company/${user.companyId}`, { headers: { Authorization: `Bearer ${token}` } }),
+          api.get(`/tasks/${user.propertyGroupId}`, { headers: { Authorization: `Bearer ${token}` } })
+        ]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newTask = {
-      ...form,
-      status: 'Pending'
+        const housekeeping = resUsers.data.filter(u => u.role === 'housekeeping');
+        const sortedUnits = resUnits.data
+          .filter(u => u.propertyGroupId === user.propertyGroupId || u.propertyGroupId?._id === user.propertyGroupId)
+          .sort((a, b) => Number(a.unitNumber) - Number(b.unitNumber));
+
+        setUnits(sortedUnits);
+        setCleaners(housekeeping);
+        setTasks(resTasks.data);
+      } catch (err) {
+        console.error('Failed to fetch initial data:', err);
+      }
     };
-    setTasks([...tasks, newTask]);
+    fetchInitialData();
+  }, [user.companyId, user.propertyGroupId, token]);
 
-    // Reset
-    setForm({
-      room: '',
-      apartment: '',
-      assignedTo: '',
-      type: 'Cleaning',
-      date: '',
-      time: '',
-      issue: '',
-      urgency: 'Low'
-    });
+  const handleAssignTask = async () => {
+    if (!selectedUnit || !selectedCleaner || !taskType || !selectedDate) {
+      return alert('Please select unit, cleaner, task type, and date.');
+    }
+
+    try {
+      const res = await api.post('/tasks', {
+        unitId: selectedUnit,
+        assignedTo: selectedCleaner,
+        type: taskType,
+        date: selectedDate,
+        propertyGroupId: user.propertyGroupId
+      }, { headers: { Authorization: `Bearer ${token}` } });
+
+      setTasks(prev => [...prev, res.data]);
+      setSelectedUnit('');
+      setSelectedCleaner('');
+      setTaskType('');
+      setSelectedDate('');
+    } catch (err) {
+      console.error('Error assigning task:', err);
+      alert('Failed to assign task.');
+    }
   };
 
-  const markAsDone = (index) => {
-    const updated = [...tasks];
-    updated[index].status = 'Done';
-    setTasks(updated);
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await api.delete(`/tasks/${taskId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTasks(prev => prev.filter(t => t._id !== taskId));
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      alert('Failed to delete task.');
+    }
   };
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="task-dashboard">
-      <h2>Cleaning & Maintenance Assignment</h2>
+    <div className="task-assignment-container">
+      <h2>Task Assignment</h2>
 
-      <form className="task-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Room Number"
-          value={form.room}
-          onChange={(e) => handleChange('room', e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Apartment"
-          value={form.apartment}
-          onChange={(e) => handleChange('apartment', e.target.value)}
-          required
-        />
-        <select value={form.assignedTo} onChange={(e) => handleChange('assignedTo', e.target.value)} required>
-          <option value="">-- Assign to Cleaner --</option>
-          {cleaners.map((name) => (
-            <option key={name} value={name}>{name}</option>
+      <div className="form-group">
+        <select value={selectedUnit} onChange={e => setSelectedUnit(e.target.value)}>
+          <option value="">Select Unit</option>
+          {units.map(u => (
+            <option key={u._id} value={u._id}>{u.unitNumber}</option>
           ))}
         </select>
-        <select value={form.type} onChange={(e) => handleChange('type', e.target.value)}>
-          <option value="Cleaning">Cleaning</option>
-          <option value="Maintenance">Maintenance</option>
+
+        <select value={selectedCleaner} onChange={e => setSelectedCleaner(e.target.value)}>
+          <option value="">Assign to Cleaner</option>
+          {cleaners.map(c => (
+            <option key={c._id} value={c._id}>{c.name} {c.surname}</option>
+          ))}
         </select>
 
-        {form.type === 'Maintenance' && (
-          <>
-            <textarea
-              placeholder="Describe the issue"
-              value={form.issue}
-              onChange={(e) => handleChange('issue', e.target.value)}
-              required
-            />
-            <select value={form.urgency} onChange={(e) => handleChange('urgency', e.target.value)}>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </>
-        )}
+        <select value={taskType} onChange={e => setTaskType(e.target.value)}>
+          <option value="">Select Task Type</option>
+          <option value="cleaning">Cleaning</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
 
-        <input
-          type="date"
-          value={form.date}
-          onChange={(e) => handleChange('date', e.target.value)}
-          required
-        />
-        <input
-          type="time"
-          value={form.time}
-          onChange={(e) => handleChange('time', e.target.value)}
-          required
-        />
+        <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} min={today} />
 
-        <button type="submit">Assign Task</button>
-      </form>
+        <button onClick={handleAssignTask}>Assign Task</button>
+      </div>
 
-      <div className="task-list">
-        <h3>Assigned Tasks</h3>
-        {tasks.length === 0 ? <p>No tasks assigned.</p> : (
-          tasks.map((task, index) => (
-            <div key={index} className={`task-card ${task.status === 'Done' ? 'done' : ''}`}>
-              <h4>{task.type} — Room {task.room} ({task.apartment})</h4>
-              <p><strong>Assigned To:</strong> {task.assignedTo}</p>
-              <p><strong>Date:</strong> {task.date} at {task.time}</p>
-              {task.type === 'Maintenance' && (
-                <>
-                  <p><strong>Issue:</strong> {task.issue}</p>
-                  <p><strong>Urgency:</strong> {task.urgency}</p>
-                </>
-              )}
+      <div className="tasks-list">
+        {tasks.map(task => {
+          const isDone = task.status === 'done';
+          const unit = units.find(u => u._id === task.unitId);
+          const cleaner = cleaners.find(c => c._id === task.assignedTo);
+          return (
+            <div key={task._id} className={`task-card ${isDone ? 'done' : 'pending'}`}>
+              <p><strong>Room:</strong> {unit?.unitNumber || 'N/A'}</p>
+              <p><strong>Task:</strong> {task.type}</p>
+              <p><strong>Assigned to:</strong> {cleaner ? `${cleaner.name}` : 'N/A'}</p>
+              <p><strong>Date:</strong> {new Date(task.date).toLocaleDateString()}</p>
               <p><strong>Status:</strong> {task.status}</p>
-              {task.status !== 'Done' && (
-                <button onClick={() => markAsDone(index)}>Mark as Done</button>
-              )}
+              {isDone && <button onClick={() => handleDeleteTask(task._id)}>Remove</button>}
             </div>
-          ))
-        )}
+          );
+        })}
       </div>
     </div>
   );

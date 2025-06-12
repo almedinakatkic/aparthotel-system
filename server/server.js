@@ -22,15 +22,12 @@ const unitRoutes = require('./routes/unitRoutes');
 app.use('/api/units', unitRoutes);
 const bookingRoutes = require('./routes/bookingRoutes');
 app.use('/api/bookings', bookingRoutes);
-
 const guestRoutes = require('./routes/guestRoutes');
 app.use('/api/guests', guestRoutes);
-
 const ownerRoutes = require('./routes/ownerRoutes');
 app.use('/api/owner', ownerRoutes);
-
-
-
+const taskRoutes = require('./routes/taskRoutes');
+app.use('/api/tasks', taskRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

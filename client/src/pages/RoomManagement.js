@@ -1,4 +1,3 @@
-// RoomManagement.js (with search, filter, and 3-column layout)
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from '../api/axios';

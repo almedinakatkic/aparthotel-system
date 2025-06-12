@@ -27,23 +27,24 @@
 }
 
 .room-card {
-  border: 1px solid #ddd;
+  padding: 1rem;
   border-radius: 8px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  background-color: #f9f9f9;
+  color: black;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  background-color: white;
+  outline: none;
+  border-left: none;
 }
 
 .room-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-  border-color: #4299e1;
 }
 
 .room-card h2 {
   margin-bottom: 0.5rem;
-  color: #193A6F;
+  color: black;
 }
 
 .room-card p {
