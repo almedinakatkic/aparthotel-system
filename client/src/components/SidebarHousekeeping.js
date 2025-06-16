@@ -8,8 +8,6 @@ import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
-
-
 const SidebarHousekeeping = () => (
   <div className="sidebar">
     <div className="sidebar-content">
@@ -41,6 +39,15 @@ const SidebarHousekeeping = () => (
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
           <span className="nav-text">Calendar</span>
+        </NavLink>
+
+        <NavLink
+          to="/damage-report"
+          className="nav-item"
+          activeClassName="active-nav-item"
+        >
+          <span className="nav-icon"><FontAwesomeIcon icon={faClipboardList} /></span>
+          <span className="nav-text">Damage Report</span>
         </NavLink>
 
         

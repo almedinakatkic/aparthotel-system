@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import '../assets/styles/WeeklyHousekeepingSpread.css'; 
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import '../assets/styles/WeeklyHousekeepingSpread.css';
 
 const WeeklyHousekeepingCalendar = () => {
-  const [tasks, setTasks] = useState([
-    { id: 1, room: '202 — Apt B202', date: '2025-06-10', time: '14:00', issue: 'Leaky faucet in bathroom', type: 'maintenance', status: 'pending' },
-    { id: 2, room: '304 — Apt C304', date: '2025-06-11', time: '09:30', issue: 'AC not working', type: 'maintenance', status: 'pending' },
-    { id: 3, room: '105 — Apt A105', date: '2025-06-12', time: '11:00', issue: 'Broken window in living room', type: 'maintenance', status: 'pending' },
-    { id: 4, room: '401 — Apt D401', date: '2025-06-13', time: '08:00', issue: 'Water heater malfunction', type: 'maintenance', status: 'pending' },
-    { id: 5, room: '212 — Apt B212', date: '2025-06-10', time: '10:00', issue: 'Regular cleaning', type: 'cleaning', status: 'pending' },
-    { id: 6, room: '309 — Apt C309', date: '2025-06-11', time: '13:00', issue: 'Deep cleaning', type: 'cleaning', status: 'pending' }
-  ]);
+  const { user, token } = useAuth();
+  const [tasks, setTasks] = useState([]);
+  const [currentWeekStart, setCurrentWeekStart] = useState(getStartOfCurrentWeek());
 
-  const [currentWeekStart, setCurrentWeekStart] = useState(new Date('2025-06-09'));
+  function getStartOfCurrentWeek() {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    return new Date(today.setDate(diff));
+  }
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const res = await api.get(`/tasks/${user.propertyGroupId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setTasks(res.data);
+      } catch (err) {
+        console.error('Failed to fetch tasks:', err);
+      }
+    };
+
+    fetchTasks();
+  }, [user.propertyGroupId, token]);
 
   const getWeekDates = () => {
     const dates = [];
@@ -37,26 +54,19 @@ const WeeklyHousekeepingCalendar = () => {
   };
 
   const goToCurrentWeek = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    const monday = new Date(today.setDate(diff));
-    setCurrentWeekStart(monday);
+    setCurrentWeekStart(getStartOfCurrentWeek());
   };
 
   const formatDate = (date) => {
     return date.toISOString().split('T')[0];
   };
 
-  const getTasksForDate = (date) => {
-    const dateStr = formatDate(date);
-    return tasks.filter(task => task.date === dateStr);
-  };
-
   const formatTime = (time) => {
     const [hours, minutes] = time.split(':');
     const hour = parseInt(hours, 10);
-    return hour > 12 ? `${hour - 12}:${minutes} PM` : `${hour}:${minutes} AM`;
+    return hour >= 12
+      ? `${hour === 12 ? 12 : hour - 12}:${minutes} PM`
+      : `${hour}:${minutes} AM`;
   };
 
   const formatWeekRange = () => {
@@ -68,12 +78,26 @@ const WeeklyHousekeepingCalendar = () => {
     return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
   };
 
-  const toggleTaskStatus = (taskId) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, status: task.status === 'pending' ? 'done' : 'pending' }
-        : task
-    ));
+  const getTasksForDate = (date) => {
+    const dateStr = formatDate(date);
+    return tasks.filter(task => task.date && task.date.startsWith(dateStr));
+  };
+
+  const toggleTaskStatus = async (taskId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+      await api.put(`/tasks/status/${taskId}`, { status: newStatus }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setTasks(prev =>
+        prev.map(task =>
+          task._id === taskId ? { ...task, status: newStatus } : task
+        )
+      );
+    } catch (err) {
+      console.error('Failed to update task status:', err);
+    }
   };
 
   const weekDates = getWeekDates();
@@ -114,14 +138,16 @@ const WeeklyHousekeepingCalendar = () => {
               <div className="tasks-container">
                 {dailyTasks.length > 0 ? (
                   dailyTasks.map(task => (
-                    <div key={task.id} className={`task-card ${task.type} ${task.status}`}>
+                    <div key={task._id} className={`task-card ${task.type} ${task.status}`}>
                       <div className="task-header">
-                        <span className="room">{task.room}</span>
-                        <span className="time">{formatTime(task.time)}</span>
+                        <span className="room">{task.unitId?.unitNumber || 'N/A'}</span>
+                        <span className="time">{task.time ? formatTime(task.time) : ''}</span>
                       </div>
-                      <div className="task-issue">{task.issue}</div>
+                      <div className="task-issue">
+                        {task.issue || (task.type === 'cleaning' ? 'Cleaning task' : 'Maintenance task')}
+                      </div>
                       <button
-                        onClick={() => toggleTaskStatus(task.id)}
+                        onClick={() => toggleTaskStatus(task._id, task.status)}
                         className={`status-button ${task.status}`}
                       >
                         {task.status === 'pending' ? 'Mark as Done' : 'Undo'}

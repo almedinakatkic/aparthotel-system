@@ -13,13 +13,13 @@ const getTasksByPropertyGroup = async (req, res) => {
   }
 };
 
+
 const createTask = async (req, res) => {
   try {
     const { unitId, assignedTo, type, date, propertyGroupId } = req.body;
     const newTask = new Task({ unitId, assignedTo, type, date, propertyGroupId });
     await newTask.save();
 
-    // Return populated task
     const populatedTask = await Task.findById(newTask._id)
       .populate('unitId', 'unitNumber')
       .populate('assignedTo', 'name surname');
@@ -31,6 +31,7 @@ const createTask = async (req, res) => {
   }
 };
 
+
 const deleteTask = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -41,6 +42,7 @@ const deleteTask = async (req, res) => {
     res.status(500).json({ message: 'Server error deleting task' });
   }
 };
+
 
 const completeTask = async (req, res) => {
   try {
@@ -61,9 +63,39 @@ const completeTask = async (req, res) => {
   }
 };
 
+// status (pending ↔ done)
+const updateTaskStatus = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { status } = req.body;
+
+    if (!['pending', 'done'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { status },
+      { new: true }
+    )
+      .populate('unitId', 'unitNumber')
+      .populate('assignedTo', 'name surname');
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json(updatedTask);
+  } catch (err) {
+    console.error('Error updating task status:', err);
+    res.status(500).json({ message: 'Server error updating task status' });
+  }
+};
+
 module.exports = {
   getTasksByPropertyGroup,
   createTask,
   deleteTask,
-  completeTask
+  completeTask,
+  updateTaskStatus
 };

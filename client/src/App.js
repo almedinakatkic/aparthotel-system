@@ -35,6 +35,7 @@ import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
 import ManageUsers from './pages/ManageUsers';
 import Reservations from './pages/Reservations';
 import HousekeepingTasks from './pages/HousekeepingTasks';
+import DamageReport from './pages/DamageReport'; 
 
 function AppContent() {
   const location = useLocation();
@@ -286,9 +287,8 @@ function AppContent() {
             />
             <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-            <Route path="/reset-user-password" element={<ProtectedRoute><ResetUserPassword /></ProtectedRoute>
-  }
-/>
+            <Route path="/reset-user-password" element={<ProtectedRoute><ResetUserPassword /></ProtectedRoute>} />
+            <Route path="/damage-report" element={<ProtectedRoute><DamageReport /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>
