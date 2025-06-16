@@ -4,6 +4,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import OwnerReportPDF from '../components/OwnerReportPDF';
 import '../assets/styles/ownerReport.css';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const OwnerReport = () => {
   const [reports, setReports] = useState([]);
@@ -24,13 +25,12 @@ const OwnerReport = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const res = await fetch(`http://localhost:5050/api/owner/${user.id}/reports`, {
+        const res = await api.get(`/owner/${user.id}/reports`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        const data = await res.json();
-        setReports(data);
+        setReports(res.data);
       } catch (err) {
         console.error('Failed to fetch reports:', err);
       }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import '../assets/styles/ownerApartmentList.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,7 +18,7 @@ const OwnerApartmentList = ({ refreshFlag }) => {
           return;
         }
 
-        const unitsRes = await axios.get(`http://localhost:5050/api/units/owner/${user.id}`, {
+        const unitsRes = await api.get(`/units/owner/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -27,7 +27,7 @@ const OwnerApartmentList = ({ refreshFlag }) => {
         const unitsWithStatus = await Promise.all(
           allUnits.map(async (unit) => {
             try {
-              const bookingsRes = await axios.get(`http://localhost:5050/api/bookings/unit/${unit._id}`, {
+              const bookingsRes = await api.get(`/bookings/unit/${unit._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
 
@@ -54,7 +54,7 @@ const OwnerApartmentList = ({ refreshFlag }) => {
     };
 
     fetchUnitsWithStatus();
-  }, [user, token, refreshFlag]); // Dodali smo refreshFlag
+  }, [user, token, refreshFlag]);
 
   return (
     <div className="owner-apartment-container">

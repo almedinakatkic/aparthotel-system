@@ -15,6 +15,7 @@ import {
 } from 'date-fns';
 import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const OwnerBookingCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -27,14 +28,14 @@ const OwnerBookingCalendar = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch(`http://localhost:5050/api/owner/${user.id}/bookings`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await api.get(`/owner/${user.id}/bookings`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
 
-        const data = await res.json();
+        const data = res.data;
         const parsed = data.map(b => ({
           ...b,
-          apartment: String(b.apartment), // dodano!
+          apartment: String(b.apartment),
           start: new Date(b.start),
           end: new Date(b.end)
         }));

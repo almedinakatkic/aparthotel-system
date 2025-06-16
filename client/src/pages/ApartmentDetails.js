@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import '../assets/styles/apartmentDetails.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,7 +25,7 @@ const ApartmentDetails = () => {
           return;
         }
 
-        const res = await axios.get(`http://localhost:5050/api/owner/${user.id}/apartments/details`, {
+        const res = await api.get(`/owner/${user.id}/apartments/details`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -45,7 +45,6 @@ const ApartmentDetails = () => {
 
   return (
     <div className="apartment-details-wrapper">
-
       {loading && <div>Loading apartment details...</div>}
       {error && <div className="error">Error: {error}</div>}
       
