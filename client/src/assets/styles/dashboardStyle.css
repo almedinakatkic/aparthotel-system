@@ -84,6 +84,7 @@
   display: flex;
   gap: 20px;
   width: 102%;
+  margin-bottom: 25px;
 }
 
 .occupancy,
