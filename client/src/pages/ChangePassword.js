@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import {useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import '../assets/styles/loginStyle.css';
 
 const ChangePassword = () => {
   const { token } = useAuth();
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -33,6 +35,12 @@ const ChangePassword = () => {
       });
       setMessage('Password updated successfully.');
       setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
+      // Redirect to login after 1 sec
+      setTimeout(() => {
+        navigate('/login');
+      }, 1000);
+      
     } catch (err) {
       setError(err.response?.data?.message || 'Password update failed.');
     }
