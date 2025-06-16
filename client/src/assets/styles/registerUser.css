@@ -38,7 +38,8 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  width: 100%;
+  margin-bottom: 10px;
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
@@ -46,7 +47,7 @@
 
 .form-group input,
 .form-group select {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
