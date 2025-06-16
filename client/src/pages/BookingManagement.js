@@ -206,7 +206,7 @@ const BookingManagement = () => {
       <button className="new-booking-button" onClick={() => navigate('/create-booking')}>+ Create New Booking</button>
 
       <div className="filter-container">
-        <label>Property:</label>
+        <label style={{ fontWeight: "bolder" }}>Property:</label>
         <select value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (
@@ -214,7 +214,7 @@ const BookingManagement = () => {
           ))}
         </select>
 
-        <label>Month:</label>
+        <label style={{ fontWeight: "bolder" }}>Month:</label>
         <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
           {Array.from({ length: 12 }).map((_, i) => (
             <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>

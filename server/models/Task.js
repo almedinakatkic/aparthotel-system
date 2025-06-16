@@ -16,6 +16,12 @@ const taskSchema = new mongoose.Schema({
     enum: ['cleaning', 'maintenance'],
     required: true
   },
+  cleaningType: {
+    type: String,
+    enum: ['regular', 'deep'],
+    default: 'regular',
+    required: true
+  },
   date: {
     type: Date,
     required: true

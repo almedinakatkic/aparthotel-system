@@ -26,23 +26,13 @@ const SidebarHousekeeping = () => (
                 </NavLink> */}
 
         <NavLink 
-          to="/cleaning" 
+          to="/housekeeping-tasks" 
           className="nav-item"
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faBroom} /></span>
           <span className="nav-text">Cleaning Tasks</span>
         </NavLink>
-
-        <NavLink 
-          to="/maintanance" 
-          className="nav-item"
-          activeClassName="active-nav-item"
-        >
-          <span className="nav-icon"><FontAwesomeIcon icon={faWrench} /></span>
-          <span className="nav-text">Maintenance Tasks</span>
-        </NavLink>
-
 
          <NavLink 
           to="/week" 

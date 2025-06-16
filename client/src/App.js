@@ -8,7 +8,6 @@ import ApartmentDetails from './pages/ApartmentDetails';
 import BookingManagement from './pages/BookingManagement';
 import Calendar from './pages/Calendar';
 import ChangePassword from './pages/ChangePassword';
-import CleanerDashboard from './pages/CleanerDashboard';
 import CreateBooking from './pages/CreateBooking';
 import CreatePropertyGroup from './pages/CreatePropertyGroup';
 import CreateUnit from './pages/CreateUnit';
@@ -18,7 +17,6 @@ import ForgotPasswordForm from './pages/ForgotPasswordForm';
 import GeneralReports from './pages/GeneralReports';
 import GuestList from './pages/GuestList';
 import LoginForm from './pages/LoginForm';
-import MaintenanceDashboard from './pages/MaintenanceDashboard';
 import OwnerApartmentList from './pages/OwnerApartmentList';
 import OwnerBookingCalendar from './pages/OwnerBookingCalendar';
 import OwnerDashboard from './pages/OwnerDashboard';
@@ -36,6 +34,7 @@ import UnitManagement from './pages/UnitManagement';
 import WeeklyHousekeepingSpread from './pages/WeeklyHousekeepingSpread';
 import ManageUsers from './pages/ManageUsers';
 import Reservations from './pages/Reservations';
+import HousekeepingTasks from './pages/HousekeepingTasks';
 
 function AppContent() {
   const location = useLocation();
@@ -237,10 +236,10 @@ function AppContent() {
               }
             />
             <Route
-              path="/cleaning"
+              path="/housekeeping-tasks"
               element={
                 <ProtectedRoute>
-                  <CleanerDashboard />
+                  <HousekeepingTasks />
                 </ProtectedRoute>
               }
             />
@@ -258,14 +257,6 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <OwnerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/maintanance"
-              element={
-                <ProtectedRoute>
-                  <MaintenanceDashboard />
                 </ProtectedRoute>
               }
             />

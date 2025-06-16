@@ -21,6 +21,10 @@ const LoginForm = () => {
       const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
 
+      if (user.id && !user._id) {
+        user._id = user.id;
+      }
+
       login(user, token); 
 
       if (user.firstLogin) {
@@ -28,7 +32,7 @@ const LoginForm = () => {
       } else {
         if (user.role === 'manager') navigate('/dashboard');
         else if (user.role === 'frontoffice') navigate('/dashboard');
-        else if (user.role === 'housekeeping') navigate('/cleaning');
+        else if (user.role === 'housekeeping') navigate('/housekeeping-tasks');
         else if (user.role === 'owner') navigate('/owner-dashboard');
         else navigate('/');
       }
@@ -48,7 +52,7 @@ const LoginForm = () => {
         {error && <div className="error-message-login">{error}</div>}
         
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email:</label>
           <input
             id="email"
             type="email"
@@ -60,7 +64,7 @@ const LoginForm = () => {
         </div>
         
         <div className="form-group">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Password:</label>
           <input
             id="password"
             type="password"
@@ -73,7 +77,7 @@ const LoginForm = () => {
         
         <div className="forgot">
           <a onClick={() => navigate('/forgot-password')} className="forgot-password" style={{ cursor: 'pointer' }}>
-  Forgot your password?</a>
+            Forgot your password?</a>
         </div>
         
         <button type="submit" className="login-button-auth" disabled={isLoading}>

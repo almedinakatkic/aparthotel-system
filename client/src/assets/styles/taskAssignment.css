@@ -1,3 +1,4 @@
+/* taskAssignment.css */
 .task-assignment-container {
   margin-top: 150px;
   margin-left: auto;
@@ -12,11 +13,11 @@
 }
 
 .task-assignment-container h2 {
-    text-align: center;
-    font-size: 38px;
-    font-weight: bolder;
-    color: #193A6F;
-    margin-bottom: 30px;
+  text-align: center;
+  font-size: 38px;
+  font-weight: bolder;
+  color: #193A6F;
+  margin-bottom: 30px;
 }
 
 .form-group {
@@ -24,14 +25,23 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.filter-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 30px;
 }
 
 .form-group select,
 .form-group input[type="date"],
-.form-group button {
+.form-group button,
+.filter-row select {
   height: 50px;
   width: 180px;
   min-width: 180px;
@@ -44,7 +54,8 @@
   cursor: pointer;
 }
 
-.form-group select {
+.form-group select,
+.filter-row select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -55,7 +66,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: #193A6F;
+  background-color: #193A6F !important;
   color: white;
   border: none;
   padding: 12px 16px;
@@ -74,19 +85,20 @@
   gap: 1rem;
 }
 
-.task-card {
+.task-card,
+.task-card.done {
   padding: 1rem;
   border-radius: 8px;
   color: black;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  background-color: rgb(62, 62, 62);
+  background-color: #f7f7f7;
+  border: none;
   outline: none;
-  border-left: none;
+  box-shadow: none;
 }
 
 .task-card.done {
-  background-color: #27ae60;
+  background-color: #d4f4dc;
 }
 
 .task-card p {
@@ -97,7 +109,7 @@
   margin-top: 0.5rem;
   padding: 0.3rem 0.6rem;
   font-size: 0.9rem;
-  background-color: #e74c3c;
+  background-color: #b30d0d;
   border: none;
   border-radius: 4px;
   color: white;
@@ -106,4 +118,37 @@
 
 .task-card button:hover {
   background-color: #c0392b;
+}
+
+.cleaning-type-row {
+  margin-top: 10px;
+}
+
+.cleaning-type-select {
+  height: 40px;
+  width: 180px;
+  font-size: 14px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.mark-done-row {
+  margin-top: 12px;
+}
+
+.mark-done-button {
+  background-color: #b30d0d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mark-done-button:hover {
+  background-color: #a83226;
 }

@@ -85,7 +85,7 @@ const ManageUsers = () => {
     <div className="manage-users-container">
       <h1 className="title">Manage Users</h1>
 
-      <button className="register-button" onClick={() => navigate('/register-user')}>Register New User</button>
+      <button className="register-button" onClick={() => navigate('/register-user')}>+ Register New User</button>
 
       <div className="filters">
         <select name="role" value={filters.role} onChange={handleFilterChange}>
