@@ -10,7 +10,7 @@
 }
 
 .damage-report-container h2 {
-  color: #2c3e50;
+  color: #07227b;
   margin-bottom: 25px;
   text-align: center;
   font-size: 1.8rem;
@@ -59,7 +59,7 @@
 
 .damage-form button {
   padding: 12px 24px;
-  background-color: #4CAF50;
+  background-color: #4c70af;
   border: none;
   color: white;
   font-weight: 600;
@@ -71,7 +71,7 @@
 }
 
 .damage-form button:hover {
-  background-color: #3d8b40;
+  background-color: #3d578b;
 }
 
 .damage-form button:active {
