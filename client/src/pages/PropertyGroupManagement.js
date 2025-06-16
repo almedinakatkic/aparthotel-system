@@ -97,10 +97,11 @@ const PropertyGroupManagement = () => {
         />
 
         <select
-          className="property-input"
+          className="property-input custom-select"
           value={filterLocation}
           onChange={(e) => setFilterLocation(e.target.value)}
         >
+
           <option value="">Filter by Location</option>
           {[...new Set(groups.map(g => g.location))].map(loc => (
             <option key={loc} value={loc}>{loc}</option>
@@ -108,7 +109,7 @@ const PropertyGroupManagement = () => {
         </select>
 
         <select
-          className="property-input"
+          className="property-input custom-select"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
