@@ -159,7 +159,7 @@ const TaskAssignment = () => {
                 <p><strong>Cleaning Type:</strong> {task.cleaningType}</p>
               )}
               {task.status === 'done' && (
-                <button onClick={() => handleDeleteTask(task._id)}>Remove</button>
+                <button className='remove-button' onClick={() => handleDeleteTask(task._id)}>Remove</button>
               )}
             </div>
           );
