@@ -27,24 +27,45 @@
 }
 
 .room-card {
-  padding: 1rem;
-  border-radius: 8px;
-  color: black;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  background-color: white;
-  outline: none;
-  border-left: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+.room-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #193A6F;
+  transition: width 0.3s ease;
 }
 
 .room-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .room-card h2 {
-  margin-bottom: 0.5rem;
-  color: black;
+  margin-bottom: 0.75rem;
+  color: #193A6F;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.room-card h2::before {
+  content: '🏨';
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .room-card p {
