@@ -115,12 +115,11 @@
 }
 
 .success-message {
-  color: #15803d;
-  background-color: #dcfce7;
+  color: #0e5c2b;
   padding: 0.75rem;
   border-radius: 6px;
   margin-bottom: 1.5rem;
-  font-size: 0.875rem;
+  font-size: 15px;
 }
 
 .signup-link {
