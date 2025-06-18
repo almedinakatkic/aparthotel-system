@@ -32,7 +32,6 @@ app.use('/api/tasks', taskRoutes);
 const damageReportRoutes = require('./routes/damageReportRoutes');
 app.use('/uploads', express.static('uploads'));
 app.use('/api/damage-reports', damageReportRoutes);
-
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

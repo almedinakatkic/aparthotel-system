@@ -8,6 +8,7 @@ const Dashboard = () => {
   const { token } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [units, setUnits] = useState([]);
+  const [damageReports, setDamageReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const today = new Date().toISOString().slice(0, 10);
@@ -15,12 +16,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resBookings, resUnits] = await Promise.all([
+        const [resBookings, resUnits, resReports] = await Promise.all([
           api.get('/bookings', { headers: { Authorization: `Bearer ${token}` } }),
-          api.get('/units', { headers: { Authorization: `Bearer ${token}` } })
+          api.get('/units', { headers: { Authorization: `Bearer ${token}` } }),
+          api.get('/damage-reports', { headers: { Authorization: `Bearer ${token}` } })
         ]);
         setBookings(resBookings.data);
         setUnits(resUnits.data);
+        setDamageReports(resReports.data);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
       } finally {
@@ -110,17 +113,22 @@ const Dashboard = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+
+        {/* Damage Reports Section */}
         <div className="feedback">
-          <h3>Customers Feedback</h3>
+          <h3>Recent Damage Reports</h3>
           <ul>
-            <li>Jane ⭐⭐⭐⭐</li>
-            <hr />
-            <li>Mark ⭐⭐</li>
-            <hr />
-            <li>Lily ⭐⭐⭐</li>
-            <p>Room cleaning could be better.</p>
-            <hr />
-            <li>Jack ⭐⭐⭐⭐⭐</li>
+            {damageReports.length > 0 ? (
+              damageReports.slice(0, 5).map((report, index) => (
+                <li key={report._id || index}>
+                  <strong>Apt {report.unitNumber}</strong> - {new Date(report.date).toLocaleDateString()}
+                  <p>{report.description}</p>
+                  <hr />
+                </li>
+              ))
+            ) : (
+              <li>No recent damage reports.</li>
+            )}
           </ul>
         </div>
       </div>
