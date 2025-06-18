@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [damageReports, setDamageReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10); // Format: YYYY-MM-DD
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +38,15 @@ const Dashboard = () => {
 
   // ----- Stats calculations -----
   const todayCheckIn = bookings.filter(b => b.checkIn?.slice(0, 10) === today).length;
-  const todayCheckOut = bookings.filter(b => b.checkOut?.slice(0, 10) === today).length;
+
+  // Count guests that should check out today
+  const todayCheckOut = bookings.filter(b => {
+    const checkOutDate = new Date(b.checkOut).toISOString().slice(0, 10);
+    return checkOutDate === today;
+    
+    // return checkOutDate <= today;
+  }).length;
+
   const totalGuests = bookings.reduce((sum, b) => sum + (b.numGuests || 0), 0);
 
   const occupiedUnitIds = new Set(bookings.map(b => b.unitId?._id || b.unitId));
