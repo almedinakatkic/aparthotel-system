@@ -8,6 +8,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 const resetLinksMap = {};
+let latestResetEmails = [];
 
 // LOGIN
 router.post('/login', async (req, res) => {
@@ -88,7 +89,6 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      // Don't reveal user existence
       return res.status(200).json({ message: 'If this email is registered, a password reset link has been generated.' });
     }
 
@@ -100,9 +100,11 @@ router.post('/forgot-password', async (req, res) => {
     await user.save();
 
     const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
-
-    //Save the link in memory for manager access
     resetLinksMap[user._id] = resetLink;
+
+    if (!latestResetEmails.includes(email)) {
+      latestResetEmails.push(email);
+    }
 
     return res.status(200).json({
       message: 'Reset link generated successfully.'
@@ -128,31 +130,6 @@ router.get('/latest-reset-link/:email', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
-
-// Generate reset link for any user (manager-triggered)
-router.post('/manager-reset-link', authMiddleware, async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
-
-    user.resetToken = resetToken;
-    user.resetTokenExpiry = resetTokenExpiry;
-    await user.save();
-
-    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
-    resetLinksMap[user._id] = resetLink;
-
-    res.status(200).json({ resetLink });
-  } catch (err) {
-    res.status(500).json({ message: 'Manager reset failed', error: err.message });
-  }
-});
-
 
 // RESET PASSWORD
 router.post('/reset-password/:token', async (req, res) => {
@@ -182,6 +159,25 @@ router.post('/reset-password/:token', async (req, res) => {
     console.error(err);
     res.status(500).json({ message: 'Something went wrong', error: err.message });
   }
+});
+
+// STORE EMAIL REQUESTS FOR MANAGER UI
+router.post('/latest-reset-request', (req, res) => {
+  const { email } = req.body;
+  if (!latestResetEmails.includes(email)) {
+    latestResetEmails.push(email);
+  }
+  res.status(200).json({ message: 'Stored latest reset request' });
+});
+
+router.get('/all-reset-requests', (req, res) => {
+  res.status(200).json(latestResetEmails);
+});
+
+router.post('/remove-reset-request', (req, res) => {
+  const { email } = req.body;
+  latestResetEmails = latestResetEmails.filter(e => e !== email);
+  res.status(200).json({ message: 'Removed reset request' });
 });
 
 module.exports = router;
