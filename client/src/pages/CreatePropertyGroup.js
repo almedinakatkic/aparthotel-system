@@ -9,16 +9,22 @@ const CreatePropertyGroup = () => {
     name: '',
     location: '',
     address: '',
-    type: 'hotel'
+    type: 'hotel',
+    companyShare: 30,
+    ownerShare: 70
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    let updatedValue = value;
+    if (name === 'companyShare' || name === 'ownerShare') {
+      updatedValue = Math.max(0, Math.min(100, Number(value))); // clamp between 0–100
+    }
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: updatedValue,
       ...(name === 'type' && value === 'apartment' ? { address: '' } : {})
     }));
   };
@@ -28,23 +34,32 @@ const CreatePropertyGroup = () => {
     setError('');
     setMessage('');
 
+    if (Number(formData.companyShare) + Number(formData.ownerShare) !== 100) {
+      setError('Company and Owner shares must total 100%');
+      return;
+    }
+
     try {
       const payload = {
         ...formData,
         address: formData.type === 'hotel' ? formData.address : ''
       };
 
-      await api.post(
-        '/property-group/create',
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      await api.post('/property-group/create', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
+
       setMessage('Property group created');
-      setFormData({ name: '', location: '', address: '', type: 'hotel' });
+      setFormData({
+        name: '',
+        location: '',
+        address: '',
+        type: 'hotel',
+        companyShare: 30,
+        ownerShare: 70
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Creation failed');
     }
@@ -61,36 +76,18 @@ const CreatePropertyGroup = () => {
 
         <div className="form-group">
           <label>Name</label>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="e.g. Hotel Orion"
-            required
-          />
+          <input name="name" value={formData.name} onChange={handleChange} required />
         </div>
 
         <div className="form-group">
           <label>Location</label>
-          <input
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="e.g. Sarajevo"
-            required
-          />
+          <input name="location" value={formData.location} onChange={handleChange} required />
         </div>
 
         {formData.type === 'hotel' && (
           <div className="form-group">
             <label>Address</label>
-            <input
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="e.g. Marsala Tita 12"
-              required={formData.type === 'hotel'}
-            />
+            <input name="address" value={formData.address} onChange={handleChange} required />
           </div>
         )}
 
@@ -100,6 +97,32 @@ const CreatePropertyGroup = () => {
             <option value="hotel">Hotel</option>
             <option value="apartment">Apartment</option>
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Company Share (%)</label>
+          <input
+            name="companyShare"
+            type="number"
+            min="0"
+            max="100"
+            value={formData.companyShare}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Owner Share (%)</label>
+          <input
+            name="ownerShare"
+            type="number"
+            min="0"
+            max="100"
+            value={formData.ownerShare}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <button className="login-button" type="submit">Add</button>

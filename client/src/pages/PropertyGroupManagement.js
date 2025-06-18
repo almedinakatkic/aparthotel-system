@@ -48,24 +48,37 @@ const PropertyGroupManagement = () => {
 
   const handleEdit = (group) => {
     setEditingId(group._id);
-    setFormData({ ...group });
+    setFormData({
+      ...group,
+      companyShare: group.companyShare ?? 30,
+      ownerShare: group.ownerShare ?? 70
+    });
   };
 
   const handleCancel = () => {
     setEditingId(null);
     setFormData({});
+    setError('');
+    setMessage('');
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const num = ['companyShare', 'ownerShare'].includes(name) ? Number(value) : value;
+    setFormData(prev => ({ ...prev, [name]: num }));
   };
 
   const handleUpdate = async () => {
+    if (Number(formData.companyShare) + Number(formData.ownerShare) !== 100) {
+      setError('Company and Owner shares must add up to 100%');
+      return;
+    }
     try {
       await api.put(`/property-group/update/${editingId}`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Property group updated');
+      setError('');
       setEditingId(null);
       fetchGroups();
     } catch (err) {
@@ -97,8 +110,8 @@ const PropertyGroupManagement = () => {
     const ownerName = getOwnerName(group._id).toLowerCase();
     return (
       (group.name.toLowerCase().includes(search) ||
-       (group.address || '').toLowerCase().includes(search) ||
-       ownerName.includes(search)) &&
+        (group.address || '').toLowerCase().includes(search) ||
+        ownerName.includes(search)) &&
       (filterLocation === '' || group.location === filterLocation) &&
       (filterType === '' || group.type === filterType)
     );
@@ -162,21 +175,55 @@ const PropertyGroupManagement = () => {
               <tr key={group._id}>
                 <td>{editingId === group._id ? <input name="name" value={formData.name} onChange={handleChange} /> : group.name}</td>
                 <td>{editingId === group._id ? <input name="location" value={formData.location} onChange={handleChange} /> : group.location}</td>
-                <td>{editingId === group._id ? <input name="address" value={formData.address} onChange={handleChange} /> : (group.address || '-')}</td>
-                <td>{editingId === group._id ? (
-                  <select name="type" value={formData.type} onChange={handleChange}>
-                    <option value="hotel">Hotel</option>
-                    <option value="apartment">Apartment</option>
-                  </select>
-                ) : (
-                  group.type.replace('_', ' ')
-                )}</td>
+                <td>
+                  {editingId === group._id ? (
+                    formData.type === 'hotel' ? (
+                      <input name="address" value={formData.address} onChange={handleChange} />
+                    ) : (
+                      <input name="address" value="-" disabled />
+                    )
+                  ) : (
+                    group.type === 'hotel' ? (group.address || '-') : '-'
+                  )}
+                </td>
+                <td>
+                  {editingId === group._id ? (
+                    <select name="type" value={formData.type} onChange={handleChange}>
+                      <option value="hotel">Hotel</option>
+                      <option value="apartment">Apartment</option>
+                    </select>
+                  ) : (
+                    group.type
+                  )}
+                </td>
                 <td>{getOwnerName(group._id)}</td>
                 <td>
                   {editingId === group._id ? (
                     <>
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <label>Company Share (%)</label><br />
+                        <input
+                          type="number"
+                          name="companyShare"
+                          value={formData.companyShare}
+                          onChange={handleChange}
+                          min={0}
+                          max={100}
+                          style={{ width: '80px', marginRight: '1rem' }}
+                        />
+                        <label>Owner Share (%)</label><br />
+                        <input
+                          type="number"
+                          name="ownerShare"
+                          value={formData.ownerShare}
+                          onChange={handleChange}
+                          min={0}
+                          max={100}
+                          style={{ width: '80px' }}
+                        />
+                      </div>
                       <button onClick={handleUpdate}>Save</button>
-                      <button onClick={handleCancel}>Cancel</button>
+                      <button onClick={handleCancel} style={{ marginLeft: '0.5rem' }}>Cancel</button>
                     </>
                   ) : (
                     <>

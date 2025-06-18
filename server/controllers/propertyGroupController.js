@@ -1,10 +1,10 @@
 const PropertyGroup = require('../models/PropertyGroup');
 
 exports.createPropertyGroup = async (req, res) => {
-  const { name, location, address, type } = req.body;
+  const { name, location, address, type, companyShare, ownerShare } = req.body;
 
-  if (!name || !location || !type) {
-    return res.status(400).json({ message: 'Name, location, and type are required' });
+  if (!name || !location || !type || !companyShare || !ownerShare) {
+    return res.status(400).json({ message: 'Name, location, type, company, and owner share are required' });
   }
 
   if (type === 'hotel' && !address) {
@@ -17,7 +17,9 @@ exports.createPropertyGroup = async (req, res) => {
       location,
       address: type === 'hotel' ? address : '',
       type,
-      companyId: req.user.companyId
+      companyId: req.user.companyId,
+      companyShare,
+      ownerShare
     });
 
     await newGroup.save();

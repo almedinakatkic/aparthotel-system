@@ -21,14 +21,6 @@ const FinancialReportPDF = ({ report, totals }) => (
       <View style={styles.section}>
         <Text>Expenses:</Text>
         <View style={styles.row}>
-          <Text>Maintenance:</Text>
-          <Text>${report.expenses.maintenance.toFixed(2)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text>Cleaning:</Text>
-          <Text>${report.expenses.cleaning.toFixed(2)}</Text>
-        </View>
-        <View style={styles.row}>
           <Text style={styles.label}>Total Expenses:</Text>
           <Text>${totals.totalExpenses.toFixed(2)}</Text>
         </View>
@@ -42,11 +34,11 @@ const FinancialReportPDF = ({ report, totals }) => (
         </View>
         <View style={styles.row}>
           <Text>Company Share ({report.companyShare}%):</Text>
-          <Text>${(totals.netIncome * report.companyShare/100).toFixed(2)}</Text>
+          <Text>${(totals.netIncome * report.companyShare / 100).toFixed(2)}</Text>
         </View>
         <View style={styles.row}>
           <Text>Owner Share ({report.ownerShare}%):</Text>
-          <Text>${(totals.netIncome * report.ownerShare/100).toFixed(2)}</Text>
+          <Text>${(totals.netIncome * report.ownerShare / 100).toFixed(2)}</Text>
         </View>
       </View>
     </Page>

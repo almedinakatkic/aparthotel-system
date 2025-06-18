@@ -37,6 +37,20 @@
   padding-top: 10px;
 }
 
+.expenses-inline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.expenses-inline input {
+  width: 120px;
+  padding: 5px;
+  font-size: 1rem;
+}
+
 .distribution-grid {
   display: grid;
   grid-template-columns: 1fr;

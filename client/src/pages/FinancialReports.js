@@ -16,12 +16,17 @@ const FinancialReports = () => {
   const [enteredYear, setEnteredYear] = useState(new Date().getFullYear());
   const [report, setReport] = useState(null);
   const [hasData, setHasData] = useState(false);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [shares, setShares] = useState({ companyShare: 30, ownerShare: 70 });
+
   const navigate = useNavigate();
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
+
+  const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - 5 + i);
 
   useEffect(() => {
     const fetchPropertyGroups = async () => {
@@ -64,16 +69,16 @@ const FinancialReports = () => {
 
         const rental = filtered.reduce((sum, b) => sum + b.fullPrice, 0);
 
+        const selected = propertyGroups.find(pg => pg._id === selectedProperty);
+        const companyShare = selected?.companyShare ?? 30;
+        const ownerShare = selected?.ownerShare ?? 70;
+
+        setShares({ companyShare, ownerShare });
+
         const generatedReport = {
           reportID: Math.floor(1000 + Math.random() * 9000),
           date: new Date().toLocaleDateString(),
-          rental,
-          expenses: {
-            maintenance: 0,
-            cleaning: 0
-          },
-          companyShare: 30,
-          ownerShare: 70
+          rental
         };
 
         setReport(generatedReport);
@@ -84,15 +89,14 @@ const FinancialReports = () => {
     };
 
     fetchBookings();
-  }, [selectedProperty, selectedMonth, enteredYear, token]);
+  }, [selectedProperty, selectedMonth, enteredYear, propertyGroups]);
 
-  const totalExpenses = (report?.expenses.maintenance || 0) + (report?.expenses.cleaning || 0);
   const netIncome = (report?.rental || 0) - totalExpenses;
 
   return (
     <div className="financial-report-container">
       <div className="report-header">
-        <h2>Financial Report</h2>
+        <h2 style={{ color: 'black' }}>Financial Report</h2>
         <p className="report-date">{report?.date || new Date().toLocaleDateString()}</p>
 
         <div className='filter-row'>
@@ -128,16 +132,18 @@ const FinancialReports = () => {
           </div>
 
           <div style={{ flex: '1 1 30%' }}>
-            <label htmlFor="year-input"><strong>Year:</strong></label><br />
-            <input
-              type="number"
-              id="year-input"
+            <label htmlFor="year-select"><strong>Year:</strong></label><br />
+            <select
+              id="year-select"
               value={enteredYear}
               onChange={(e) => setEnteredYear(e.target.value)}
               className="search-bar"
               style={{ width: '100%' }}
-              placeholder="e.g. 2025"
-            />
+            >
+              {years.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -148,27 +154,30 @@ const FinancialReports = () => {
         <p style={{ marginTop: '2rem' }}>No bookings found for the selected filters.</p>
       ) : report && (
         <>
-
           <div className="report-section">
-            <h3>Expenses</h3>
-            <ul className="expenses-list">
-              <li>Maintenance: ${report.expenses.maintenance.toFixed(2)}</li>
-              <li>Cleaning: ${report.expenses.cleaning.toFixed(2)}</li>
-              <li className="total">Total Expenses: ${totalExpenses.toFixed(2)}</li>
-            </ul>
+            <div className="expenses-inline">
+              <label><strong>Expenses:</strong></label>
+              <input
+                type="number"
+                value={totalExpenses}
+                onChange={(e) => setTotalExpenses(Math.max(0, parseFloat(e.target.value) || 0))}
+                step="0.01"
+                min="0"
+              />
+            </div>
           </div>
 
           <div className="report-section">
-            <h3>Distribution</h3>
+            <label><strong>Distribution:</strong></label>
             <div className="distribution-grid">
               <div>
                 <p>Net Income: ${netIncome.toFixed(2)}</p>
-                <p>Company Share ({report.companyShare}%): ${
-                  (netIncome * (report.companyShare / 100)).toFixed(2)
-                }</p>
-                <p>Owner Share ({report.ownerShare}%): ${
-                  (netIncome * (report.ownerShare / 100)).toFixed(2)
-                }</p>
+                <p>Company Share ({shares.companyShare}%): ${(
+                  netIncome * (shares.companyShare / 100)
+                ).toFixed(2)}</p>
+                <p>Owner Share ({shares.ownerShare}%): ${(
+                  netIncome * (shares.ownerShare / 100)
+                ).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -177,7 +186,14 @@ const FinancialReports = () => {
             <PDFDownloadLink
               document={
                 <FinancialReportPDF
-                  report={report}
+                  report={{
+                    ...report,
+                    expenses: {
+                      total: totalExpenses
+                    },
+                    companyShare: shares.companyShare,
+                    ownerShare: shares.ownerShare
+                  }}
                   totals={{ totalExpenses, netIncome }}
                 />
               }

@@ -14,7 +14,9 @@ const propertyGroupSchema = new mongoose.Schema({
     type: String,
     enum: ['hotel', 'apartment'],
     required: true
-  }
+  },
+  companyShare: { type: Number, default: 30, required: true },
+  ownerShare: { type: Number, default: 70, required: true }
 });
 
 module.exports = mongoose.model('PropertyGroup', propertyGroupSchema);
