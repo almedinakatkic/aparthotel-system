@@ -30,20 +30,25 @@ const ManageUsers = () => {
   };
 
   const filteredUsers = users
-  .filter(u => u.role !== 'manager') 
-  .filter(u => {
-    const roleMatch = filters.role ? u.role === filters.role : true;
-    const propertyMatch = filters.propertyGroupId ? (u.propertyGroupId?._id || u.propertyGroupId) === filters.propertyGroupId : true;
-    const searchMatch = u.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-                        u.email.toLowerCase().includes(filters.search.toLowerCase());
-    return roleMatch && propertyMatch && searchMatch;
-  });
+    .filter(u => u.role !== 'manager')
+    .filter(u => {
+      const roleMatch = filters.role ? u.role === filters.role : true;
+      const propertyMatch = filters.propertyGroupId
+        ? (u.propertyGroupId?._id || u.propertyGroupId) === filters.propertyGroupId
+        : true;
+      const searchMatch =
+        u.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        u.email.toLowerCase().includes(filters.search.toLowerCase()) ||
+        u.phone?.toLowerCase().includes(filters.search.toLowerCase());
+      return roleMatch && propertyMatch && searchMatch;
+    });
 
   const openEdit = (u) => {
     setEditingUser(u);
     setEditData({
       name: u.name,
       email: u.email,
+      phone: u.phone || '',
       role: u.role,
       propertyGroupId: u.propertyGroupId?._id || u.propertyGroupId || ''
     });
@@ -105,7 +110,7 @@ const ManageUsers = () => {
         <input
           type="text"
           name="search"
-          placeholder="Search by name/email"
+          placeholder="Search by name / email / phone"
           value={filters.search}
           onChange={handleFilterChange}
         />
@@ -114,7 +119,12 @@ const ManageUsers = () => {
       <table className="users-table">
         <thead>
           <tr>
-            <th>Name</th><th>Email</th><th>Role</th><th>Property</th><th>Actions</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Property</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -122,6 +132,7 @@ const ManageUsers = () => {
             <tr key={u._id}>
               <td>{u.name}</td>
               <td>{u.email}</td>
+              <td>{u.phone || '-'}</td>
               <td>{u.role}</td>
               <td>{propertyGroups.find(p => p._id === (u.propertyGroupId?._id || u.propertyGroupId))?.name || '-'}</td>
               <td>
@@ -145,6 +156,8 @@ const ManageUsers = () => {
             <input name="name" value={editData.name} onChange={handleEditChange} placeholder="Name" />
             <label>Email</label>
             <input name="email" value={editData.email} onChange={handleEditChange} placeholder="Email" />
+            <label>Phone</label>
+            <input name="phone" value={editData.phone} onChange={handleEditChange} placeholder="Phone" />
             <label>Role</label>
             <select name="role" value={editData.role} onChange={handleEditChange}>
               <option value="owner">Owner</option>

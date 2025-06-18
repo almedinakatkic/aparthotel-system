@@ -87,16 +87,22 @@ const PropertyGroupManagement = () => {
     }
   };
 
-  const filteredGroups = groups.filter(group =>
-    group.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (filterLocation === '' || group.location === filterLocation) &&
-    (filterType === '' || group.type === filterType)
-  );
-
   const getOwnerName = (groupId) => {
     const matched = owners.find(o => o.propertyGroupId === groupId);
     return matched ? matched.name : '-';
   };
+
+  const filteredGroups = groups.filter(group => {
+    const search = searchTerm.toLowerCase();
+    const ownerName = getOwnerName(group._id).toLowerCase();
+    return (
+      (group.name.toLowerCase().includes(search) ||
+       (group.address || '').toLowerCase().includes(search) ||
+       ownerName.includes(search)) &&
+      (filterLocation === '' || group.location === filterLocation) &&
+      (filterType === '' || group.type === filterType)
+    );
+  });
 
   return (
     <div className="property-container">
@@ -109,7 +115,7 @@ const PropertyGroupManagement = () => {
         <input
           type="text"
           className="property-input"
-          placeholder="Search by name..."
+          placeholder="Search by name, owner, or address..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

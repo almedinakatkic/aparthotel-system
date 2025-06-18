@@ -8,6 +8,7 @@ const RegisterUser = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     role: 'frontoffice',
     propertyGroupId: ''
   });
@@ -87,6 +88,18 @@ const RegisterUser = () => {
             value={formData.email}
             onChange={handleChange}
             placeholder={`e.g. sara@${user?.companyName?.toLowerCase()}.com`}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Phone</label>
+          <input
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="e.g. +38761234567"
             required
           />
         </div>

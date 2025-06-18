@@ -2,10 +2,10 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 exports.createUser = async (req, res) => {
-  const { name, email, role, propertyGroupId, unitId } = req.body;
+  const { name, email, phone, role, propertyGroupId, unitId } = req.body;
 
-  if (!name || !email || !role) {
-    return res.status(400).json({ message: 'Name, email, and role are required' });
+  if (!name || !email || !role || !phone) {
+    return res.status(400).json({ message: 'Name, email, phone and role are required' });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,6 +25,7 @@ exports.createUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      phone,
       role,
       companyId: req.user.companyId,
       propertyGroupId: propertyGroupId || null,
@@ -53,13 +54,14 @@ exports.getAllUsersInCompany = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, role, propertyGroupId } = req.body;
+    const { name, email, phone, role, propertyGroupId } = req.body;
 
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     user.name = name || user.name;
     user.email = email || user.email;
+    user.phone = phone || user.phone;
     user.role = role || user.role;
     user.propertyGroupId = propertyGroupId || null;
 

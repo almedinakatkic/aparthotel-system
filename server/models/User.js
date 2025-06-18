@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Unit'
   },
+  phone: {
+    type: String,
+    required: true
+  },
   firstLogin: {
     type: Boolean,
     default: true
