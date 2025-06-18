@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {
+  format,
   startOfMonth,
   endOfMonth,
   startOfWeek,
   endOfWeek,
-  eachDayOfInterval,
-  format,
-  isSameMonth,
+  addDays,
   addMonths,
   subMonths,
+  isSameMonth,
   isWithinInterval,
-  parseISO
+  parseISO,
+  startOfDay,
+  isToday
 } from 'date-fns';
-import '../assets/styles/calendar.css';
+import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -25,11 +27,12 @@ const Calendar = () => {
   const [selectedUnitId, setSelectedUnitId] = useState('');
   const [filteredUnits, setFilteredUnits] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedBookings, setSelectedBookings] = useState([]);
+  const [showDetails, setShowDetails] = useState(false);
   const [guestNotesMap, setGuestNotesMap] = useState({});
 
+  // Fetch all units
   useEffect(() => {
     const fetchUnits = async () => {
       try {
@@ -44,6 +47,7 @@ const Calendar = () => {
     if (propertyGroupId) fetchUnits();
   }, [propertyGroupId, token]);
 
+  // Filter units by floor when floor is selected
   useEffect(() => {
     if (selectedFloor) {
       const filtered = units
@@ -55,11 +59,19 @@ const Calendar = () => {
     }
   }, [selectedFloor, units]);
 
+  // Fetch bookings: ALL if no unit selected, or bookings for that unit
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!selectedUnitId) return;
       try {
-        const res = await api.get(`/bookings/unit/${selectedUnitId}`, {
+        let url = '';
+
+        if (selectedUnitId) {
+          url = `/bookings/unit/${selectedUnitId}`;
+        } else {
+          url = `/bookings/property/${propertyGroupId}`;
+        }
+
+        const res = await api.get(url, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookings(res.data);
@@ -67,32 +79,22 @@ const Calendar = () => {
         console.error('Failed to fetch bookings:', err);
       }
     };
-    fetchBookings();
-  }, [selectedUnitId, token]);
 
-  const days = eachDayOfInterval({
-    start: startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 }),
-    end: endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 })
-  });
+    if (propertyGroupId) fetchBookings();
+  }, [selectedUnitId, propertyGroupId, token]);
 
-  const getBookingsForDay = (day) => {
-    return bookings.filter((b) =>
-      isWithinInterval(day, {
-        start: parseISO(b.checkIn),
-        end: parseISO(b.checkOut)
-      })
-    );
-  };
+  const handleDateClick = async (date) => {
+    const bookingsOnDay = bookings.filter((b) => {
+      return isWithinInterval(startOfDay(date), {
+        start: startOfDay(parseISO(b.checkIn)),
+        end: startOfDay(parseISO(b.checkOut))
+      });
+    });
 
-  const handleDayClick = (day) => {
-    const matches = getBookingsForDay(day);
-    setSelectedDate(format(day, 'yyyy-MM-dd'));
-    setModalOpen(true);
-
-    const fetchNotes = async () => {
+    if (bookingsOnDay.length > 0) {
       const notesMap = {};
       await Promise.all(
-        matches.map(async (b) => {
+        bookingsOnDay.map(async (b) => {
           const guestId = b.guestId || b.guestID;
           try {
             const res = await api.get(`/guests/${guestId}/notes`, {
@@ -105,117 +107,163 @@ const Calendar = () => {
         })
       );
       setGuestNotesMap(notesMap);
-    };
+    }
 
-    fetchNotes();
+    setSelectedBookings(bookingsOnDay);
+    setShowDetails(bookingsOnDay.length > 0);
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedDate(null);
-    setGuestNotesMap({});
-  };
+  const renderHeader = () => (
+    <div className="calendar-header">
+      <button className="nav-btn" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>❮</button>
+      <span className="month-label">{format(currentMonth, 'MMMM yyyy')}</span>
+      <button className="nav-btn" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>❯</button>
+    </div>
+  );
 
-  const allFloors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
+  const renderFilter = () => {
+    const allFloors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
 
-  return (
-    <div className="calendar-container">
-      <div className="unit-selector" style={{ marginBottom: '20px' }}>
-        <label style={{ color: '#193A6F', fontWeight: 'bolder' }}>Select Floor: </label>
+    return (
+      <div className="calendar-filter">
+        <label>Select Floor: </label>
         <select value={selectedFloor} onChange={(e) => setSelectedFloor(e.target.value)}>
-          <option value="">Choose floor</option>
+          <option value="">All floors</option>
           {allFloors.map((f) => (
             <option key={f} value={f}>{f}</option>
           ))}
         </select>
 
-        {selectedFloor && (
-          <>
-            <label style={{ marginLeft: '20px', color: '#193A6F', fontWeight: 'bolder' }}>Select Unit:</label>
-            <select value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
-              <option value="">Choose unit</option>
-              {filteredUnits.map((u) => (
-                <option key={u._id} value={u._id}>
-                  {u.unitNumber}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
+        <label style={{ marginLeft: '20px' }}>Select Unit:</label>
+        <select value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
+          <option value="">All units</option>
+          {filteredUnits.map((u) => (
+            <option key={u._id} value={u._id}>
+              {u.unitNumber}
+            </option>
+          ))}
+        </select>
       </div>
+    );
+  };
 
-      {selectedFloor && selectedUnitId && (
-        <>
-          <div className="calendar-header">
-            <button onClick={() => setCurrentDate(subMonths(currentDate, 1))}>{'<'}</button>
-            <h2>{format(currentDate, 'MMMM yyyy')}</h2>
-            <button onClick={() => setCurrentDate(addMonths(currentDate, 1))}>{'>'}</button>
-          </div>
+  const renderDays = () => {
+    const days = [];
+    const dateFormat = 'EEE';
+    let startDate = startOfWeek(currentMonth);
 
-          <div className="calendar-grid">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-              <div key={day} className="calendar-day-name">{day}</div>
-            ))}
-
-            {days.map((day) => {
-              const isBooked = getBookingsForDay(day).length > 0;
-              return (
-                <div
-                  key={day}
-                  className={`calendar-cell ${!isSameMonth(day, currentDate) ? 'outside-month' : ''} ${isBooked ? 'booked' : ''}`}
-                  onClick={() => handleDayClick(day)}
-                >
-                  <div className="date-number">{format(day, 'd')}</div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {modalOpen && (
-        <div className="reservation-modal">
-          <div className="reservation-modal-content">
-            <button className="close-modal" onClick={closeModal}>×</button>
-            <h3>Guest Info for {selectedDate}</h3>
-            <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-              {bookings
-                .filter((b) =>
-                  isWithinInterval(parseISO(selectedDate), {
-                    start: parseISO(b.checkIn),
-                    end: parseISO(b.checkOut)
-                  })
-                )
-                .map((b, idx) => {
-                  const guestId = b.guestId || b.guestID;
-                  const notes = guestNotesMap[guestId] || [];
-                  return (
-                    <li key={idx} style={{ marginBottom: '20px' }}>
-                      <strong>Name: </strong>{b.guestName || b.guestFullName}<br />
-                      <strong>ID: </strong>{guestId}<br />
-                      <strong>Email: </strong>{b.guestEmail}<br />
-                      <strong>Phone: </strong>{b.phone}<br />
-                      <strong>Guests: </strong>{b.numGuests}<br />
-                      <strong>Stay: </strong>{format(parseISO(b.checkIn), 'yyyy-MM-dd')} → {format(parseISO(b.checkOut), 'yyyy-MM-dd')}<br />
-                      {notes.length > 0 && (
-                        <>
-                          <strong>Notes:</strong>
-                          <ul>
-                            {notes.map((n) => (
-                              <li key={n._id || n.createdAt}>
-                                {n.content || n.note} <small>({format(new Date(n.createdAt), 'yyyy-MM-dd HH:mm')})</small>
-                              </li>
-                            ))}
-                          </ul>
-                        </>
-                      )}
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
+    for (let i = 0; i < 7; i++) {
+      days.push(
+        <div key={i} className="day-name">
+          {format(addDays(startDate, i), dateFormat)}
         </div>
-      )}
+      );
+    }
+
+    return <div className="calendar-days">{days}</div>;
+  };
+
+  const renderCells = () => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(monthStart);
+    const startDate = startOfWeek(monthStart);
+    const endDate = endOfWeek(monthEnd);
+
+    const rows = [];
+    let days = [];
+    let day = startDate;
+
+    while (day <= endDate) {
+      for (let i = 0; i < 7; i++) {
+        const currentDate = startOfDay(day);
+        const isCurrentMonth = isSameMonth(currentDate, monthStart);
+        const today = isToday(currentDate);
+
+        const dayBookings = bookings.filter((b) => {
+          return isWithinInterval(currentDate, {
+            start: startOfDay(parseISO(b.checkIn)),
+            end: startOfDay(parseISO(b.checkOut))
+          });
+        });
+
+        days.push(
+          <div
+            key={currentDate.toISOString()}
+            className={`calendar-cell 
+              ${!isCurrentMonth ? 'disabled' : ''}
+              ${dayBookings.length > 0 ? 'booked' : ''}
+              ${today ? 'today' : ''}`}
+            onClick={() => handleDateClick(currentDate)}
+          >
+            <div className="date-number">{format(currentDate, 'd')}</div>
+            {dayBookings.length > 0 && (
+              <div className="booking-info">
+                <span>🏨 {dayBookings.length}</span>
+              </div>
+            )}
+          </div>
+        );
+
+        day = addDays(day, 1);
+      }
+
+      rows.push(
+        <div className="calendar-row" key={`row-${day.toISOString()}`}>
+          {days}
+        </div>
+      );
+      days = [];
+    }
+
+    return <div>{rows}</div>;
+  };
+
+  const renderBookingDetails = () => {
+    if (!selectedBookings || selectedBookings.length === 0) return null;
+
+    return (
+      <div className="booking-details">
+        <h3>Guest Info for {format(new Date(selectedBookings[0].checkIn), 'yyyy-MM-dd')}</h3>
+        <p><strong>Total Bookings:</strong> {selectedBookings.length}</p>
+        <hr />
+        {selectedBookings.map((b, idx) => {
+          const guestId = b.guestId || b.guestID;
+          const notes = guestNotesMap[guestId] || [];
+          return (
+            <div key={idx} className="booking-card">
+              <p><strong>Name: </strong>{b.guestName || b.guestFullName}</p>
+              <p><strong>ID: </strong>{guestId}</p>
+              <p><strong>Email: </strong>{b.guestEmail}</p>
+              <p><strong>Phone: </strong>{b.phone}</p>
+              <p><strong>Guests: </strong>{b.numGuests}</p>
+              <p><strong>Stay: </strong>{format(parseISO(b.checkIn), 'yyyy-MM-dd')} → {format(parseISO(b.checkOut), 'yyyy-MM-dd')}</p>
+              {notes.length > 0 && (
+                <>
+                  <strong>Notes:</strong>
+                  <ul>
+                    {notes.map((n) => (
+                      <li key={n._id || n.createdAt}>
+                        {n.content || n.note} <small>({format(new Date(n.createdAt), 'yyyy-MM-dd HH:mm')})</small>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          );
+        })}
+        <button onClick={() => setShowDetails(false)}>Close</button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="owner-calendar">
+      {renderFilter()}
+      {renderHeader()}
+      {renderDays()}
+      {renderCells()}
+      {showDetails && renderBookingDetails()}
     </div>
   );
 };
