@@ -3,15 +3,19 @@ const PropertyGroup = require('../models/PropertyGroup');
 exports.createPropertyGroup = async (req, res) => {
   const { name, location, address, type } = req.body;
 
-  if (!name || !location || !address || !type) {
-    return res.status(400).json({ message: 'Name, location, address, and type are required' });
+  if (!name || !location || !type) {
+    return res.status(400).json({ message: 'Name, location, and type are required' });
+  }
+
+  if (type === 'hotel' && !address) {
+    return res.status(400).json({ message: 'Address is required for hotels' });
   }
 
   try {
     const newGroup = new PropertyGroup({
       name,
       location,
-      address,
+      address: type === 'hotel' ? address : '',
       type,
       companyId: req.user.companyId
     });
@@ -29,15 +33,12 @@ exports.getPropertyGroupsByCompany = async (req, res) => {
     const { companyId } = req.params;
     const mongoose = require('mongoose');
 
-    console.log('Raw companyId param:', companyId);
-
     const groups = await PropertyGroup.find({
       companyId: new mongoose.Types.ObjectId(companyId)
     });
 
     res.status(200).json(groups);
   } catch (err) {
-    console.error('Error:', err);
     res.status(500).json({ message: 'Failed to fetch property groups', error: err.message });
   }
 };
@@ -67,5 +68,3 @@ exports.deletePropertyGroup = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete property group', error: err.message });
   }
 };
-
-

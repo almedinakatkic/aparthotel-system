@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import '../assets/styles/loginStyle.css';
@@ -15,7 +15,12 @@ const CreatePropertyGroup = () => {
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'type' && value === 'apartment' ? { address: '' } : {})
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -24,9 +29,14 @@ const CreatePropertyGroup = () => {
     setMessage('');
 
     try {
+      const payload = {
+        ...formData,
+        address: formData.type === 'hotel' ? formData.address : ''
+      };
+
       await api.post(
         '/property-group/create',
-        formData,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -71,16 +81,18 @@ const CreatePropertyGroup = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label>Address</label>
-          <input
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="e.g. Marsala Tita 12"
-            required
-          />
-        </div>
+        {formData.type === 'hotel' && (
+          <div className="form-group">
+            <label>Address</label>
+            <input
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="e.g. Marsala Tita 12"
+              required={formData.type === 'hotel'}
+            />
+          </div>
+        )}
 
         <div className="form-group">
           <label>Type</label>

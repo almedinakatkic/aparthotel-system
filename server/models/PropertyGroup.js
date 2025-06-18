@@ -4,7 +4,12 @@ const propertyGroupSchema = new mongoose.Schema({
   companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
   name: { type: String, required: true },
   location: { type: String, required: true },
-  address: { type: String, required: true },
+  address: {
+    type: String,
+    required: function () {
+      return this.type === 'hotel';
+    }
+  },
   type: {
     type: String,
     enum: ['hotel', 'apartment'],

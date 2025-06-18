@@ -3,26 +3,34 @@ const PropertyGroup = require('../models/PropertyGroup');
 const User = require('../models/User');
 
 exports.createUnit = async (req, res) => {
-  const { unitNumber, floor, beds, pricePerNight, status, propertyGroupId } = req.body;
+  const { unitNumber, floor, beds, pricePerNight, propertyGroupId, address } = req.body;
 
   if (!unitNumber || !propertyGroupId || !floor || !beds || !pricePerNight) {
-    console.log('❌ Missing fields:', req.body);
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
+    const propertyGroup = await PropertyGroup.findById(propertyGroupId);
+    if (!propertyGroup) {
+      return res.status(404).json({ message: 'Property group not found' });
+    }
+
+    if (propertyGroup.type === 'apartment' && !address) {
+      return res.status(400).json({ message: 'Address is required for apartment units' });
+    }
+
     const unit = new Unit({
       unitNumber,
       floor,
       beds,
       pricePerNight,
-      propertyGroupId
+      propertyGroupId,
+      address: propertyGroup.type === 'apartment' ? address : ''
     });
 
     await unit.save();
     res.status(201).json({ message: 'Unit created successfully', unit });
   } catch (err) {
-    console.error('❌ Save failed:', err.message);
     res.status(500).json({ message: 'Failed to create unit', error: err.message });
   }
 };
@@ -42,7 +50,6 @@ exports.getUnitsByProperty = async (req, res) => {
     const units = await Unit.find({ propertyGroupId }).populate('propertyGroupId');
     res.status(200).json(units);
   } catch (err) {
-    console.error('Failed to fetch units by property:', err.message);
     res.status(500).json({ message: 'Failed to fetch units', error: err.message });
   }
 };
@@ -63,7 +70,6 @@ exports.getUnitsByOwner = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch units for owner', error: err.message });
   }
 };
-
 
 exports.updateUnit = async (req, res) => {
   try {

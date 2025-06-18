@@ -14,8 +14,11 @@ const UnitManagement = () => {
     unitNumber: '',
     floor: '',
     beds: '',
-    maxPrice: ''
+    maxPrice: '',
+    address: '',
+    location: ''
   });
+  const [selectedPropertyType, setSelectedPropertyType] = useState('');
   const [editingUnit, setEditingUnit] = useState(null);
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState('');
@@ -50,7 +53,13 @@ const UnitManagement = () => {
   }, []);
 
   const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFilters({ ...filters, [name]: value });
+
+    if (name === 'propertyGroupId') {
+      const selected = propertyGroups.find(pg => pg._id === value);
+      setSelectedPropertyType(selected?.type || '');
+    }
   };
 
   const filteredUnits = units
@@ -60,13 +69,18 @@ const UnitManagement = () => {
       const matchesFloor = !filters.floor || String(unit.floor) === filters.floor;
       const matchesBeds = !filters.beds || String(unit.beds) === filters.beds;
       const matchesPrice = !filters.maxPrice || unit.pricePerNight <= parseFloat(filters.maxPrice);
-      return matchesProperty && matchesUnit && matchesFloor && matchesBeds && matchesPrice;
+      const matchesAddress = !filters.address || (unit.address || '').toLowerCase().includes(filters.address.toLowerCase());
+      const matchesLocation = !filters.location || (unit.propertyGroupId?.location || '').toLowerCase().includes(filters.location.toLowerCase());
+      return matchesProperty && matchesUnit && matchesFloor && matchesBeds && matchesPrice && matchesAddress && matchesLocation;
     })
     .sort((a, b) => parseInt(a.unitNumber) - parseInt(b.unitNumber));
 
   const handleEdit = (unit) => {
     setEditingUnit(unit._id);
-    setFormData({ ...unit });
+    setFormData({
+      ...unit,
+      location: unit.propertyGroupId?.location || '',
+    });
     setMessage('');
     setError('');
   };
@@ -133,6 +147,28 @@ const UnitManagement = () => {
               <option key={pg._id} value={pg._id}>{pg.name}</option>
             ))}
           </select>
+          {selectedPropertyType === 'apartment' && (
+            <>
+              <input
+                type="text"
+                name="address"
+                value={filters.address}
+                onChange={handleFilterChange}
+                placeholder="Filter by Address"
+                className="unit-input"
+                style={{ flex: 1 }}
+              />
+              <input
+                type="text"
+                name="location"
+                value={filters.location}
+                onChange={handleFilterChange}
+                placeholder="Filter by Location"
+                className="unit-input"
+                style={{ flex: 1 }}
+              />
+            </>
+          )}
         </div>
 
         {filters.propertyGroupId && (
@@ -158,6 +194,8 @@ const UnitManagement = () => {
                   <th>Floor</th>
                   <th>Beds</th>
                   <th>Price</th>
+                  {selectedPropertyType === 'apartment' && <th>Address</th>}
+                  {selectedPropertyType === 'apartment' && <th>Location</th>}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -168,6 +206,12 @@ const UnitManagement = () => {
                     <td>{editingUnit === unit._id ? <input name="floor" type="number" value={formData.floor} onChange={handleChange} /> : unit.floor}</td>
                     <td>{editingUnit === unit._id ? <input name="beds" type="number" value={formData.beds} onChange={handleChange} /> : unit.beds}</td>
                     <td>{editingUnit === unit._id ? <input name="pricePerNight" type="number" value={formData.pricePerNight} onChange={handleChange} /> : `${unit.pricePerNight}€`}</td>
+                    {selectedPropertyType === 'apartment' && (
+                      <td>{editingUnit === unit._id ? <input name="address" value={formData.address || ''} onChange={handleChange} /> : (unit.address || '-')}</td>
+                    )}
+                    {selectedPropertyType === 'apartment' && (
+                      <td>{editingUnit === unit._id ? <input name="location" value={formData.location || ''} onChange={handleChange} /> : (unit.propertyGroupId?.location || '-')}</td>
+                    )}
                     <td>
                       {editingUnit === unit._id ? (
                         <>

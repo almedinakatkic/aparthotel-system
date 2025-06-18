@@ -6,29 +6,44 @@ import '../assets/styles/loginStyle.css';
 const CreateUnit = () => {
   const { user, token } = useAuth();
   const [propertyGroups, setPropertyGroups] = useState([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState('');
+  const [propertyType, setPropertyType] = useState('');
+
   const [formData, setFormData] = useState({
     unitNumber: '',
     floor: '',
     beds: '',
     pricePerNight: '',
+    address: '',
     propertyGroupId: ''
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchGroups = async () => {
       try {
-        const pgRes = await api.get(`/property-group/company/${user.companyId}`, {
+        const res = await api.get(`/property-group/company/${user.companyId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setPropertyGroups(pgRes.data);
+        setPropertyGroups(res.data);
       } catch (err) {
-        setError('Failed to load data');
+        setError('Failed to load property groups');
       }
     };
-    fetchData();
-  }, [user.companyId, token]);
+    fetchGroups();
+  }, [user.companyId]);
+
+  const handlePropertyChange = (e) => {
+    const propertyId = e.target.value;
+    setSelectedPropertyId(propertyId);
+    setFormData({ ...formData, propertyGroupId: propertyId });
+
+    const selected = propertyGroups.find(pg => pg._id === propertyId);
+    if (selected) {
+      setPropertyType(selected.type);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,35 +55,32 @@ const CreateUnit = () => {
     setMessage('');
 
     try {
-      await api.post('/units/create', formData, {
+      const payload = {
+        ...formData,
+        address: propertyType === 'apartment' ? formData.address : ''
+      };
+      await api.post('/units/create', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Unit created');
-      setFormData({
-        unitNumber: '',
-        floor: '',
-        beds: '',
-        pricePerNight: '',
-        propertyGroupId: ''
-      });
+      setFormData({ unitNumber: '', floor: '', beds: '', pricePerNight: '', address: '', propertyGroupId: '' });
+      setSelectedPropertyId('');
     } catch (err) {
-      console.error('CREATE UNIT ERROR:', err.response?.data || err.message);
-      setError(err.response?.data?.message || 'Failed to create unit');
+      setError(err.response?.data?.message || 'Creation failed');
     }
   };
 
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title" style={{ color: '#193A6F' }}>Add New Apartment / Unit</h1>
-        <p className="subtitle">Link it to a property group</p>
+        <h1 className="title" style={{ color: '#193A6F' }}>Add Unit</h1>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
 
         <div className="form-group">
           <label>Property Group</label>
-          <select name="propertyGroupId" value={formData.propertyGroupId} onChange={handleChange} required>
+          <select name="propertyGroupId" value={selectedPropertyId} onChange={handlePropertyChange} required>
             <option value="">Select Property</option>
             {propertyGroups.map(pg => (
               <option key={pg._id} value={pg._id}>{pg.name}</option>
@@ -78,25 +90,38 @@ const CreateUnit = () => {
 
         <div className="form-group">
           <label>Unit Number</label>
-          <input name="unitNumber" type="number" value={formData.unitNumber} onChange={handleChange} required />
+          <input name="unitNumber" value={formData.unitNumber} onChange={handleChange} type="number" required />
         </div>
 
         <div className="form-group">
           <label>Floor</label>
-          <input name="floor" type="number" value={formData.floor} onChange={handleChange} required />
+          <input name="floor" value={formData.floor} onChange={handleChange} type="number" required />
         </div>
 
         <div className="form-group">
           <label>Beds</label>
-          <input name="beds" type="number" value={formData.beds} onChange={handleChange} required />
+          <input name="beds" value={formData.beds} onChange={handleChange} type="number" required />
         </div>
 
         <div className="form-group">
-          <label>Price per Night</label>
-          <input name="pricePerNight" type="number" value={formData.pricePerNight} onChange={handleChange} required />
+          <label>Price Per Night (€)</label>
+          <input name="pricePerNight" value={formData.pricePerNight} onChange={handleChange} type="number" required />
         </div>
 
-        <button className="login-button" type="submit">Add</button>
+        {propertyType === 'apartment' && (
+          <div className="form-group">
+            <label>Unit Address</label>
+            <input
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="e.g. Skenderija 10"
+              required
+            />
+          </div>
+        )}
+
+        <button className="login-button" type="submit">Add Unit</button>
       </form>
     </div>
   );

@@ -17,6 +17,10 @@ const unitSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  address: {
+    type: String
+    // address is optional here, validation is handled in controller
+  },
   propertyGroupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PropertyGroup',

@@ -8,6 +8,7 @@ const PropertyGroupManagement = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
+  const [owners, setOwners] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
@@ -21,7 +22,6 @@ const PropertyGroupManagement = () => {
       const res = await api.get(`/property-group/company/${user.companyId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       const sortedGroups = res.data.sort((a, b) => a.name.localeCompare(b.name));
       setGroups(sortedGroups);
     } catch (err) {
@@ -29,8 +29,21 @@ const PropertyGroupManagement = () => {
     }
   };
 
+  const fetchOwners = async () => {
+    try {
+      const res = await api.get(`/users/company/${user.companyId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const ownerUsers = res.data.filter(u => u.role === 'owner');
+      setOwners(ownerUsers);
+    } catch (err) {
+      console.error('Failed to fetch owners', err);
+    }
+  };
+
   useEffect(() => {
     fetchGroups();
+    fetchOwners();
   }, [user.companyId]);
 
   const handleEdit = (group) => {
@@ -80,6 +93,11 @@ const PropertyGroupManagement = () => {
     (filterType === '' || group.type === filterType)
   );
 
+  const getOwnerName = (groupId) => {
+    const matched = owners.find(o => o.propertyGroupId === groupId);
+    return matched ? matched.name : '-';
+  };
+
   return (
     <div className="property-container">
       <h1 className="property-title" style={{ color: '#193A6F' }}>Manage Properties</h1>
@@ -101,7 +119,6 @@ const PropertyGroupManagement = () => {
           value={filterLocation}
           onChange={(e) => setFilterLocation(e.target.value)}
         >
-
           <option value="">Filter by Location</option>
           {[...new Set(groups.map(g => g.location))].map(loc => (
             <option key={loc} value={loc}>{loc}</option>
@@ -130,6 +147,7 @@ const PropertyGroupManagement = () => {
               <th>Location</th>
               <th>Address</th>
               <th>Type</th>
+              <th>Owner</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -138,7 +156,7 @@ const PropertyGroupManagement = () => {
               <tr key={group._id}>
                 <td>{editingId === group._id ? <input name="name" value={formData.name} onChange={handleChange} /> : group.name}</td>
                 <td>{editingId === group._id ? <input name="location" value={formData.location} onChange={handleChange} /> : group.location}</td>
-                <td>{editingId === group._id ? <input name="address" value={formData.address} onChange={handleChange} /> : group.address}</td>
+                <td>{editingId === group._id ? <input name="address" value={formData.address} onChange={handleChange} /> : (group.address || '-')}</td>
                 <td>{editingId === group._id ? (
                   <select name="type" value={formData.type} onChange={handleChange}>
                     <option value="hotel">Hotel</option>
@@ -147,6 +165,7 @@ const PropertyGroupManagement = () => {
                 ) : (
                   group.type.replace('_', ' ')
                 )}</td>
+                <td>{getOwnerName(group._id)}</td>
                 <td>
                   {editingId === group._id ? (
                     <>
