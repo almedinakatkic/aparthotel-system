@@ -1,81 +1,281 @@
-.guest-list-container {
-  max-width: 1100px;
-  margin: 120px auto;
-  padding: 30px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+/* guestList.css */
+
+.booking-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 130 auto 100px auto;
+  padding: 20px;
+  color: #333;
 }
 
-.guest-list-container h2 {
-  text-align: center;
-  color: #193a6f;
-  margin-bottom: 25px;
+.booking-container h1 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 28px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
 }
 
-.guest-table-wrapper {
-  overflow-x: auto;
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.guest-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.guest-table th,
-.guest-table td {
-  padding: 35px 16px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-}
-
-.guest-table th {
-  background-color: #f5f5f5;
-  color: #193a6f;
-}
-
-.status {
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 6px;
-  text-transform: capitalize;
-}
-
-.status.staying {
-  background-color: #e69c2d;
-  color: white;
-  margin-top:20px;
-  padding: 20px 40px; 
-  font-size: 13px;   
-}
-
-
-.status.checking-out-today {
-  background-color: #e69c2d;
-  color: white;
-}
-
-.status.checked-out {
-  background-color: #bdc3c7;
-  color: white;
-}
-
-.guest-table input {
-  width: 100%;
-  padding: 5px;
-  box-sizing: border-box;
+.filter-container input,
+.filter-container select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 14px;
+  min-width: 200px;
 }
 
-.guest-table button {
-  padding: 10px 20px;
-  background-color: #1b2a4e;
+.filter-container input:focus,
+.filter-container select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.new-booking-button {
+  background-color: #193A6F;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.new-booking-button:hover {
+  background-color: #4d5665;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-table th {
+  background-color: #193A6F;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.bookings-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.bookings-table tr {
+  transition: background-color 0.2s;
+}
+
+.bookings-table tr:hover {
+  background-color: #f5f5f5;
   cursor: pointer;
 }
 
-.guest-table button:hover {
-  background-color: #324f7b;
+.bookings-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.bookings-table tr:nth-child(even):hover {
+  background-color: #f0f0f0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.modal label {
+  display: block;
+  margin: 15px 0 5px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.modal input,
+.modal select,
+.modal textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.modal textarea {
+  min-height: 80px;
+  resize: vertical;
+  margin-top: 10px;
+}
+
+.modal-save-button {
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 15px;
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+.modal-save-button:hover {
+  background-color: #255029e9;
+}
+
+.modal-delete-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 15px;
+  transition: background-color 0.2s;
+}
+
+.modal-delete-button:hover {
+  background-color: #c0392b;
+}
+
+.modal-close-x {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #7f8c8d;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close-x:hover {
+  color: #34495e;
+}
+
+/* Notes Section */
+.modal h4 {
+  margin: 25px 0 10px;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+
+.modal ul li {
+  background-color: #f8f9fa;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border-left: 3px solid #3498db;
+}
+
+.modal ul li p {
+  margin: 0 0 5px;
+}
+
+.modal ul li small {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.modal ul li button {
+  color: #e74c3c;
+  background-color: transparent;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background-color 0.2s;
+
+}
+
+.modal ul li button:hover {
+  text-decoration: underline;
+  color: red;
+}
+
+.modal ul li button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bookings-table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-container input,
+  .filter-container select,
+  .filter-container button {
+    width: 100%;
+  }
 }

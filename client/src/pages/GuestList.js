@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import * as XLSX from 'xlsx';
-import '../assets/styles/BookingManagement.css';
+import '../assets/styles/guestList.css';
 
 const GuestList = () => {
   const { user, token } = useAuth();
