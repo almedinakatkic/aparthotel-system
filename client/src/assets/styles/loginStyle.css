@@ -9,9 +9,10 @@ body{
     margin-right: auto;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: 90vh;
     padding: 20px;
     margin-top: auto;
+    width: 500px
   }
   
   .login-form {
@@ -57,6 +58,9 @@ body{
     font-size: 1rem;
     transition: border-color 0.3s;
     margin: 0;
+    height: 40px;
+    border: 1px solid #d1d5db;
+    padding-left: 10px;
   }
   
   .form-group input:focus {
