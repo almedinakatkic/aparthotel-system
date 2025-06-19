@@ -124,7 +124,7 @@ const PropertyGroupManagement = () => {
         + Add Property
       </button>
 
-      <div className="form-group">
+      <div className="property-form-group">
         <input
           type="text"
           className="property-input"
@@ -158,7 +158,6 @@ const PropertyGroupManagement = () => {
       {error && <div className="error-message">{error}</div>}
       {message && <div className="success-message">{message}</div>}
 
-      <div className="rooms-table-container">
         <table className="rooms-table">
           <thead>
             <tr>
@@ -229,8 +228,8 @@ const PropertyGroupManagement = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEdit(group)}>Edit</button>
-                      <button onClick={() => handleDelete(group._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
+                      <button onClick={() => handleEdit(group)} className="save-button">Edit</button>
+                      <button onClick={() => handleDelete(group._id)} className="cancel-button">Delete</button>
                     </>
                   )}
                 </td>
@@ -239,7 +238,6 @@ const PropertyGroupManagement = () => {
           </tbody>
         </table>
       </div>
-    </div>
   );
 };
 

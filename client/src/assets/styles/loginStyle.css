@@ -40,7 +40,6 @@ body{
   .form-group {
     margin-bottom: 1.5rem;
     width: 100%;
-    margin-left: 15px;
   }
   
   .form-group label {
@@ -103,7 +102,7 @@ body{
     transition: background-color 0.3s;
     box-shadow: 0 4px 6px 2px rgb(188, 188, 188);
     letter-spacing: 1px;
-    width: 110px;
+    width: 150px;
     text-align: center;
     height: 50px;
   }
