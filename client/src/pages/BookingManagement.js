@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import '../assets/styles/BookingManagement.css';
 import * as XLSX from 'xlsx';
+import api from '../api/axios';
+import '../App.css';
+import '../assets/styles/BookingManagement.css';
+import { useAuth } from '../context/AuthContext';
 
 const BookingManagement = () => {
   const { user, token } = useAuth();
@@ -207,7 +208,7 @@ const BookingManagement = () => {
 
       <div className="filter-container">
         <label style={{ fontWeight: "bolder" }}>Property:</label>
-        <select value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
+        <select className="custom-select" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
           <option value="">Select Property</option>
           {propertyGroups.map(pg => (
             <option key={pg._id} value={pg._id}>{pg.name}</option>
@@ -215,7 +216,7 @@ const BookingManagement = () => {
         </select>
 
         <label style={{ fontWeight: "bolder" }}>Month:</label>
-        <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
+        <select className="custom-select" value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
           {Array.from({ length: 12 }).map((_, i) => (
             <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
           ))}
@@ -271,7 +272,7 @@ const BookingManagement = () => {
             <label>Phone</label>
             <input value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} />
             <label>Unit</label>
-            <select value={editData.unitId} onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}>
+            <select className="custom-select" value={editData.unitId} onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}>
               <option value="">Select Unit</option>
               {units
                 .filter(u => u.propertyGroupId === selectedProperty || u.propertyGroupId?._id === selectedProperty)
