@@ -40,6 +40,9 @@ const Calendar = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUnits(res.data);
+        // Reset filters when new units are loaded
+        setSelectedFloor('');
+        setSelectedUnitId('');
       } catch (err) {
         console.error('Failed to fetch units:', err);
       }
@@ -51,15 +54,17 @@ const Calendar = () => {
   useEffect(() => {
     if (selectedFloor) {
       const filtered = units
-        .filter((u) => u.floor === parseInt(selectedFloor))
+        .filter((u) => u.floor.toString() === selectedFloor)
         .sort((a, b) => a.unitNumber - b.unitNumber);
       setFilteredUnits(filtered);
+      // Reset unit selection when floor changes
+      setSelectedUnitId('');
     } else {
-      setFilteredUnits([]);
+      setFilteredUnits(units); // Show all units when no floor is selected
     }
   }, [selectedFloor, units]);
 
-  // Fetch bookings: ALL if no unit selected, or bookings for that unit
+  // Fetch bookings
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -67,6 +72,19 @@ const Calendar = () => {
 
         if (selectedUnitId) {
           url = `/bookings/unit/${selectedUnitId}`;
+        } else if (selectedFloor) {
+          // Get bookings for all units on the selected floor
+          const unitIds = filteredUnits.map(u => u._id);
+          if (unitIds.length > 0) {
+            const res = await api.post('/bookings/by-units', { unitIds }, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            setBookings(res.data);
+            return;
+          }
+          // If no units on this floor, set empty bookings
+          setBookings([]);
+          return;
         } else {
           url = `/bookings/property/${propertyGroupId}`;
         }
@@ -81,7 +99,7 @@ const Calendar = () => {
     };
 
     if (propertyGroupId) fetchBookings();
-  }, [selectedUnitId, propertyGroupId, token]);
+  }, [selectedUnitId, selectedFloor, filteredUnits, propertyGroupId, token]);
 
   const handleDateClick = async (date) => {
     const bookingsOnDay = bookings.filter((b) => {
@@ -122,24 +140,31 @@ const Calendar = () => {
   );
 
   const renderFilter = () => {
-    const allFloors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
+    const allFloors = [...new Set(units.map((u) => u.floor.toString()))].sort((a, b) => parseInt(a) - parseInt(b));
 
     return (
       <div className="calendar-filter">
         <label>Select Floor: </label>
-        <select value={selectedFloor} onChange={(e) => setSelectedFloor(e.target.value)}>
+        <select 
+          value={selectedFloor} 
+          onChange={(e) => setSelectedFloor(e.target.value)}
+        >
           <option value="">All floors</option>
           {allFloors.map((f) => (
-            <option key={f} value={f}>{f}</option>
+            <option key={f} value={f}>Floor {f}</option>
           ))}
         </select>
 
         <label style={{ marginLeft: '20px' }}>Select Unit:</label>
-        <select value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
+        <select 
+          value={selectedUnitId} 
+          onChange={(e) => setSelectedUnitId(e.target.value)}
+          disabled={!selectedFloor}
+        >
           <option value="">All units</option>
           {filteredUnits.map((u) => (
             <option key={u._id} value={u._id}>
-              {u.unitNumber}
+              Unit {u.unitNumber}
             </option>
           ))}
         </select>
