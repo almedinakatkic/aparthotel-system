@@ -47,13 +47,123 @@
   font-weight: bold;
 }
 
-.room-status {
-  background: white;
-  padding: 20px;
+.room-status-section {
+  margin-top: 10px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  position: relative;
-  height: 220px;
-  width: 99%;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  width: 100%;
+}
+
+.section-heading {
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
+  color: #2c2c2c;
+  font-weight: 600;
+}
+
+.activity-blocks-horizontal {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.status-block {
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  flex: 1;
+  min-width: 300px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.status-block h4 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+
+.upcoming-checkins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.checkin-day-block {
+  background-color: #e3eefc;
+  padding: 0.7rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  margin-bottom: 0.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.checkin-day-block:nth-child(2n) {
+  background-color: #d7f6db;
+  border-left-color: #2ab573;
+}
+
+.checkin-day-block:nth-child(3n) {
+  background-color: #ffe5b7;
+  border-left-color: #f5a623;
+}
+
+.checkin-day-block h5 {
+  margin-bottom: 0.6rem;
+  color: #2c2c2c;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkin-day-block ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.checkin-day-block li {
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 5px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-left: 3px solid #757575;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 0.3rem;
+}
+
+.checkin-day-block li:hover {
+  background-color: #e6edff;
+  border-left-color: #2a4cdf;
+}
+
+.checkin-day-block li::before {
+  content: "🛎️";
+  font-size: 1.1rem;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.checkin-day-block li:last-child {
+  margin-bottom: 0;
 }
 
 .room-status h3 {
@@ -61,38 +171,6 @@
   text-align: left;
 }
 
-.status-blocks-container {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 50px;
-}
-
-.status-block {
-  width: 45%;
-}
-
-.status-block p {
-  margin: 20px 0;
-  padding: 10px;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 20px;
-  color: #797979;
-}
-
-#available-occupied-rooms {
-  color: #000;
-}
-
-.divider {
-  position: absolute;
-  left: 50%;
-  top: 60px;
-  bottom: 20px;
-  width: 1px;
-  background-color: #ccc;
-}
 
 .bottom-sections {
   display: flex;

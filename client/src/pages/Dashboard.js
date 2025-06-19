@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +38,7 @@ const Dashboard = () => {
   if (loading) return <div>Loading dashboard...</div>;
 
   const todayCheckIn = bookings.filter(b => b.checkIn?.slice(0, 10) === today).length;
-  const todayCheckOut = bookings.filter(b => {
-    const checkOutDate = new Date(b.checkOut).toISOString().slice(0, 10);
-    return checkOutDate === today;
-  }).length;
+  const todayCheckOut = bookings.filter(b => new Date(b.checkOut).toISOString().slice(0, 10) === today).length;
   const totalGuests = bookings.reduce((sum, b) => sum + (b.numGuests || 0), 0);
 
   const occupiedUnitIds = new Set(bookings.map(b => b.unitId?._id || b.unitId));
@@ -48,12 +46,13 @@ const Dashboard = () => {
   const totalOccupiedRooms = occupiedUnitIds.size;
   const totalAvailableRooms = totalUnits - totalOccupiedRooms;
 
-  const cleanUnits = units.filter(u => u.status === 'clean');
-  const dirtyUnits = units.filter(u => u.status === 'dirty');
-  const availableClean = cleanUnits.filter(u => !occupiedUnitIds.has(u._id)).length;
-  const availableDirty = dirtyUnits.filter(u => !occupiedUnitIds.has(u._id)).length;
-  const occupiedClean = cleanUnits.filter(u => occupiedUnitIds.has(u._id)).length;
-  const occupiedDirty = dirtyUnits.filter(u => occupiedUnitIds.has(u._id)).length;
+  const upcomingCheckIns = bookings.filter(b =>
+    [today, tomorrow].includes(b.checkIn?.slice(0, 10))
+  );
+
+  const upcomingCheckOuts = bookings.filter(b =>
+    [today, tomorrow].includes(new Date(b.checkOut).toISOString().slice(0, 10))
+  );
 
   const bookingsPerMonth = Array.from({ length: 12 }, (_, i) => ({
     month: new Date(0, i).toLocaleString('default', { month: 'short' }),
@@ -77,22 +76,92 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="room-status">
-        <h3>Room Status</h3>
-        <div className="status-blocks-container">
+
+      <div className="room-status-section">
+        <h3 className="section-heading">Upcoming Guest Activity (Next 7 Days)</h3>
+        <div className="activity-blocks-horizontal">
+          {/* Check-ins */}
           <div className="status-block">
-            <p id='available-occupied-rooms'>Occupied Rooms: {totalOccupiedRooms}</p>
-            <p>Clean: {occupiedClean}</p>
-            <p>Dirty: {occupiedDirty}</p>
+            <h4>Check-ins</h4>
+            {(() => {
+              const next7Days = Array.from({ length: 7 }, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                return date.toISOString().slice(0, 10);
+              });
+
+              const groupedCheckIns = next7Days.map(date => {
+                const bookingsForDate = bookings.filter(b => b.checkIn?.slice(0, 10) === date);
+                return {
+                  date,
+                  bookings: bookingsForDate
+                };
+              }).filter(group => group.bookings.length > 0);
+
+              return groupedCheckIns.length > 0 ? (
+                <div className="upcoming-checkins-list">
+                  {groupedCheckIns.map(({ date, bookings }) => (
+                    <div key={date} className="checkin-day-block">
+                      <h5>{new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
+                      <ul>
+                        {bookings.map((b, idx) => (
+                          <li key={idx}>
+                            <strong>{b.guestName || 'Guest'} </strong> ({b.numGuests} guests) – Apt {b.unitId?.unitNumber || b.unitNumber}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No upcoming check-ins.</p>
+              );
+            })()}
           </div>
+
+          {/* Check-outs */}
           <div className="status-block">
-            <p id='available-occupied-rooms'>Available Rooms: {totalAvailableRooms}</p>
-            <p>Clean: {availableClean}</p>
-            <p>Dirty: {availableDirty}</p>
+            <h4>Check-outs</h4>
+            {(() => {
+              const next7Days = Array.from({ length: 7 }, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                return date.toISOString().slice(0, 10);
+              });
+
+              const groupedCheckOuts = next7Days.map(date => {
+                const bookingsForDate = bookings.filter(b =>
+                  new Date(b.checkOut).toISOString().slice(0, 10) === date
+                );
+                return {
+                  date,
+                  bookings: bookingsForDate
+                };
+              }).filter(group => group.bookings.length > 0);
+
+              return groupedCheckOuts.length > 0 ? (
+                <div className="upcoming-checkins-list">
+                  {groupedCheckOuts.map(({ date, bookings }) => (
+                    <div key={date} className="checkin-day-block">
+                      <h5>{new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
+                      <ul>
+                        {bookings.map((b, idx) => (
+                          <li key={idx}>
+                            <strong>{b.guestName || 'Guest'}</strong> ({b.numGuests} guests) – Apt {b.unitId?.unitNumber || b.unitNumber}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No upcoming check-outs.</p>
+              );
+            })()}
           </div>
         </div>
-        <div className="divider" />
       </div>
+
 
       <div className="bottom-sections">
         <div className="occupancy">
@@ -105,7 +174,7 @@ const Dashboard = () => {
               <XAxis dataKey="month" />
               <YAxis allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="count" fill="#8884d8" />
+              <Bar dataKey="count" fill="#fab972" />
             </BarChart>
           </ResponsiveContainer>
         </div>
