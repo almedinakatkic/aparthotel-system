@@ -5,11 +5,6 @@ const damageReportSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
   description: {
     type: String,
     required: true
@@ -19,12 +14,17 @@ const damageReportSchema = new mongoose.Schema({
     required: true
   },
   image: {
-    type: String // putanja ili URL slike
+    type: String
   },
   reportedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'in-progress', 'completed'],
+    default: 'pending'
   }
 }, { timestamps: true });
 
