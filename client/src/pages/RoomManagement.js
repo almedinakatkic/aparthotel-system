@@ -35,7 +35,9 @@ const RoomManagement = () => {
 
       const filtered = res.data.filter(unit => {
         const userProp = user.propertyGroupId?._id || user.propertyGroupId;
-        const unitProp = unit.propertyGroupId?._id || unit.propertyGroupId;
+        const unitProp = unit.propertyGroupId
+          ? (typeof unit.propertyGroupId === 'object' ? unit.propertyGroupId._id : unit.propertyGroupId)
+          : null;
         return unitProp === userProp;
       });
 
@@ -69,12 +71,11 @@ const RoomManagement = () => {
 
   const sendTask = async (unitId, taskType) => {
     try {
-      await axios.post(`/housekeeping/notify`, {
-        unitId,
-        taskType
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(
+        `/housekeeping/notify`,
+        { unitId, taskType },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert(`${taskType} request sent for unit ${unitId}`);
     } catch (error) {
       console.error(`Failed to send ${taskType} task:`, error.response?.data || error.message);
@@ -86,7 +87,7 @@ const RoomManagement = () => {
       const checkIn = new Date(b.checkIn).setHours(0, 0, 0, 0);
       const checkOut = new Date(b.checkOut).setHours(0, 0, 0, 0);
       const todayDate = new Date().setHours(0, 0, 0, 0);
-      const bUnitId = typeof b.unitId === 'object' ? b.unitId._id : b.unitId;
+      const bUnitId = typeof b.unitId === 'object' ? b.unitId?._id : b.unitId;
       return (
         bUnitId === unitId &&
         checkIn <= todayDate &&
@@ -123,7 +124,10 @@ const RoomManagement = () => {
   const filteredUnits = units
     .filter(unit => {
       const unitStatus = getTodayStatus(unit._id);
-      const matchesProperty = !filters.propertyGroupId || unit.propertyGroupId?._id === filters.propertyGroupId;
+      const unitPropId = unit.propertyGroupId
+        ? (typeof unit.propertyGroupId === 'object' ? unit.propertyGroupId._id : unit.propertyGroupId)
+        : null;
+      const matchesProperty = !filters.propertyGroupId || (unitPropId === filters.propertyGroupId);
       const matchesUnit = !filters.unitNumber || String(unit.unitNumber).includes(filters.unitNumber.trim());
       const matchesFloor = !filters.floor || String(unit.floor) === filters.floor;
       const matchesStatus = filters.status === 'All' || unitStatus === filters.status;
