@@ -4,7 +4,8 @@ import {
   faChartLine, faHotel, faMoneyBillWave, faUsers, faCalendarAlt, faStar
 } from '@fortawesome/free-solid-svg-icons';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
+  ResponsiveContainer, Legend, ComposedChart, Line, LineChart
 } from 'recharts';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -17,11 +18,12 @@ const OwnerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [damageReports, setDamageReports] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 
-  // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true);
@@ -51,7 +53,6 @@ const OwnerDashboard = () => {
     }
   }, [timeRange, token, user?.id]);
 
-  // Fetch damage reports
   useEffect(() => {
     const fetchDamageReports = async () => {
       try {
@@ -60,7 +61,6 @@ const OwnerDashboard = () => {
           params: { ownerId: user.id }
         });
 
-        console.log('Damage reports response:', response.data); // Debug log
         setDamageReports(response.data || []);
       } catch (err) {
         console.error('Error fetching damage reports:', err);
@@ -80,6 +80,33 @@ const OwnerDashboard = () => {
     occupancyRate, revenue, expenses, guestSatisfaction,
     upcomingBookings, maintenanceIssues, revenueTrend, occupancyTrend
   } = dashboardData;
+
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip" style={{
+          backgroundColor: '#fff',
+          padding: '10px',
+          border: '1px solid #ccc',
+          borderRadius: '4px'
+        }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>{label}</p>
+          {payload.map((item, index) => (
+            <p key={index} style={{ 
+              color: item.color,
+              margin: '3px 0'
+            }}>
+              {item.name}: {item.dataKey === 'revenue' ? 
+                formatCurrency(item.value) : 
+                `${item.value}%`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="owner-dashboard-container">
@@ -124,47 +151,73 @@ const OwnerDashboard = () => {
               <p className="metric-value">{formatCurrency(revenue - expenses)}</p>
             </div>
           </div>
-
-          <div className="metric-card">
-            <div className="metric-icon"><FontAwesomeIcon icon={faStar} /></div>
-            <div className="metric-info">
-              <h3>Guest Satisfaction</h3>
-              <p className="metric-value">{guestSatisfaction}/5</p>
-            </div>
-          </div>
         </section>
 
         <section className="charts-section">
-          {Array.isArray(revenueTrend) && revenueTrend.length > 0 && (
-            <div className="chart-container">
-              <h2>Revenue Trend</h2>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={revenueTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+          <div className="chart-container">
+            <h2>Revenue Trend</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={revenueTrend}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="month" 
+                  tick={{ fill: '#666' }}
+                  tickMargin={10}
+                />
+                <YAxis 
+                  tickFormatter={(value) => `$${value}`}
+                  tick={{ fill: '#666' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar 
+                  dataKey="revenue" 
+                  name="Revenue" 
+                  fill="#8884d8" 
+                  barSize={30}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
-          {Array.isArray(occupancyTrend) && occupancyTrend.length > 0 && (
-            <div className="chart-container">
-              <h2>Occupancy Trend</h2>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={occupancyTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis unit="%" />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="occupancy" stroke="#82ca9d" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+          <div className="chart-container">
+              <h2>Owner Notes</h2>
+
+              <div className="owner-notes">
+                <div className="notes-list">
+                  {notes.length === 0 ? (
+                    <p className="empty-notes">Notes will show here.</p>
+                  ) : (
+                    <ul>
+                      {notes.map((note, index) => (
+                        <li key={index}>{note}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Type a note and press Enter"
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newNote.trim() !== '') {
+                      setNotes([newNote, ...notes]);
+                      setNewNote('');
+                    }
+                  }}
+                  className="note-input"
+                />
+              </div>
             </div>
-          )}
-        </section>
+
+          
+
+      </section>
 
         <section className="activities-section">
           <div className="upcoming-bookings">
@@ -191,7 +244,6 @@ const OwnerDashboard = () => {
 
           <div className="maintenance-issues">
             <h2><FontAwesomeIcon icon={faUsers} /> Maintenance Issues</h2>
-
             <h3 style={{ marginTop: '2rem' }}>Recent Damage Reports</h3>
             <ul>
               {Array.isArray(damageReports) && damageReports.length > 0 ? (
