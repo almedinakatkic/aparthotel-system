@@ -215,8 +215,8 @@ const UnitManagement = () => {
                     <td>
                       {editingUnit === unit._id ? (
                         <>
-                          <button onClick={handleUpdate}>Save</button>
-                          <button onClick={handleCancel}>Cancel</button>
+                          <button onClick={handleUpdate} className='action-button-edit'>Save</button>
+                          <button onClick={handleCancel} className='action-button-delete'>Cancel</button>
                         </>
                       ) : (
                         <>

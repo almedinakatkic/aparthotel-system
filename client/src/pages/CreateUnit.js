@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/loginStyle.css';
+import '../assets/styles/CreateProperty.css';
 
 const CreateUnit = () => {
   const { user, token } = useAuth();
@@ -71,15 +71,15 @@ const CreateUnit = () => {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
+    <div className="create-property-container">
+      <form className="create-property-form" onSubmit={handleSubmit}>
         <h1 className="title" style={{ color: '#193A6F' }}>Add Unit</h1>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
 
-        <div className="form-group">
-          <label>Property Group</label>
+        <div className="create-property-form-group">
+          <label>Property Group:</label>
           <select name="propertyGroupId" value={selectedPropertyId} onChange={handlePropertyChange} required>
             <option value="">Select Property</option>
             {propertyGroups.map(pg => (
@@ -88,29 +88,29 @@ const CreateUnit = () => {
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Unit Number</label>
+        <div className="create-property-form-group">
+          <label>Unit Number:</label>
           <input name="unitNumber" value={formData.unitNumber} onChange={handleChange} type="number" required />
         </div>
 
-        <div className="form-group">
-          <label>Floor</label>
+        <div className="create-property-form-group">
+          <label>Floor:</label>
           <input name="floor" value={formData.floor} onChange={handleChange} type="number" required />
         </div>
 
-        <div className="form-group">
-          <label>Beds</label>
+        <div className="create-property-form-group">
+          <label>Beds:</label>
           <input name="beds" value={formData.beds} onChange={handleChange} type="number" required />
         </div>
 
-        <div className="form-group">
-          <label>Price Per Night (€)</label>
+        <div className="create-property-form-group">
+          <label>Price Per Night (€):</label>
           <input name="pricePerNight" value={formData.pricePerNight} onChange={handleChange} type="number" required />
         </div>
 
         {propertyType === 'apartment' && (
-          <div className="form-group">
-            <label>Unit Address</label>
+          <div className="create-property-form-group">
+            <label>Unit Address:</label>
             <input
               name="address"
               value={formData.address}
@@ -121,7 +121,7 @@ const CreateUnit = () => {
           </div>
         )}
 
-        <button className="login-button" type="submit">Add Unit</button>
+        <button className="create-property-button" type="submit">Add Unit</button>
       </form>
     </div>
   );

@@ -109,6 +109,10 @@
   opacity: 0.85;
 }
 
+.action-button-edit, .action-button-delete {
+  width: 70px;
+}
+
 .action-button-edit {
   background-color: #39623c;
   color: white;
@@ -117,6 +121,11 @@
 .action-button-delete {
   background-color: #b30d0d;
   color: white;
+  margin-left: 0.5rem;
+}
+
+#propertySelect {
+  cursor: pointer;
 }
 
 .error-message {

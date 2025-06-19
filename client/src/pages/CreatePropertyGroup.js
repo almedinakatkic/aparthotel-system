@@ -125,7 +125,7 @@ const CreatePropertyGroup = () => {
           />
         </div>
 
-        <button className="create-property-button" type="submit">Add</button>
+        <button className="create-property-button" type="submit">Add Property</button>
       </form>
     </div>
   );

@@ -62,7 +62,7 @@ body {
   }
 
   .create-property-form-group input {
-    cursor: text;
+    cursor: text !important;
   }
 
   .create-property-form-group select {
@@ -92,7 +92,7 @@ body {
     transition: background-color 0.3s;
     box-shadow: 0 4px 6px 2px rgb(188, 188, 188);
     letter-spacing: 1px;
-    width: 110px;
+    width: 170px;
     text-align: center;
     height: 50px;
   }
