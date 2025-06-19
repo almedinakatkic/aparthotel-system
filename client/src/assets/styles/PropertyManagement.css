@@ -28,7 +28,7 @@
   
   .form-group {
     margin-bottom: 1.5rem;
-    margin-right: 30px;
+    display: flex;
   }
   
   .form-group label {
@@ -46,6 +46,8 @@
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.3s;
+    margin-right: 30px;
+    height: 24px;
   }
   
   .form-group input:focus {
@@ -53,7 +55,15 @@
     border-color: #4f46e5;
     box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   }
+
+  .property-first-select {
+    margin-right: 30px;
+  }
   
+  .form-group select {
+    height: 22px;
+  }
+
   .forgot {
     display: flex;
     justify-content: center;
@@ -84,21 +94,17 @@
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s;
     box-shadow: 0 4px 6px 2px rgb(188, 188, 188);
     letter-spacing: 1px;
     width: 40%;
   }
-  
-  .add-property-button-auth:hover {
-    background-color: #d69d17;
-  }
 
-  .add-property-button-auth:disabled {
-    background-color: #a5b4fc;
-    cursor: not-allowed;
+  .add-property-button:hover {
+    background-color: #5c5d60 !important;
   }
   
   .error-message-login {
@@ -125,7 +131,50 @@
   .signup-anchor:hover {
     text-decoration: underline;
   }
-  
+
+  .shares {
+    display: flex;
+    gap: 2rem; /* spacing between the two columns */
+    margin-bottom: 10px;
+  }
+
+.share-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.share-column label {
+  margin-bottom: 5px;
+}
+
+.filter-type {
+  width: 93px;
+  font-size: 13px;
+  height: 30px;
+  padding-left: 5px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg fill='navy' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+  background-color: #fff;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #39623c !important;
+}
+
+.cancel-button {
+  background-color: #b30d0d;
+  margin-left: 0.5rem;
+  color: white;
+}
+
+button {
+  width: 65px;
+}
+
   .custom-select {
   appearance: none;
   -webkit-appearance: none;

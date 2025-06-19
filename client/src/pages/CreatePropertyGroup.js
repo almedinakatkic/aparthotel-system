@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/loginStyle.css';
+import '../assets/styles/CreateProperty.css';
 
 const CreatePropertyGroup = () => {
   const { user, token } = useAuth();
@@ -66,41 +66,41 @@ const CreatePropertyGroup = () => {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title" style={{ color: '#193A6F' }}>Add Property</h1>
+    <div className="create-property-container">
+      <form className="create-property-form" onSubmit={handleSubmit}>
+        <h1 className="title">Add Property</h1>
         <p className="subtitle">Add a new hotel or apartment</p>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
 
-        <div className="form-group">
-          <label>Name</label>
+        <div className="create-property-form-group">
+          <label>Name:</label>
           <input name="name" value={formData.name} onChange={handleChange} required />
         </div>
 
-        <div className="form-group">
-          <label>Location</label>
+        <div className="create-property-form-group">
+          <label>Location:</label>
           <input name="location" value={formData.location} onChange={handleChange} required />
         </div>
 
         {formData.type === 'hotel' && (
-          <div className="form-group">
-            <label>Address</label>
+          <div className="create-property-form-group">
+            <label>Address:</label>
             <input name="address" value={formData.address} onChange={handleChange} required />
           </div>
         )}
 
-        <div className="form-group">
-          <label>Type</label>
+        <div className="create-property-form-group">
+          <label>Type:</label>
           <select name="type" value={formData.type} onChange={handleChange}>
             <option value="hotel">Hotel</option>
             <option value="apartment">Apartment</option>
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Company Share (%)</label>
+        <div className="create-property-form-group">
+          <label>Company Share (%):</label>
           <input
             name="companyShare"
             type="number"
@@ -112,8 +112,8 @@ const CreatePropertyGroup = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label>Owner Share (%)</label>
+        <div className="create-property-form-group">
+          <label>Owner Share (%):</label>
           <input
             name="ownerShare"
             type="number"
@@ -125,7 +125,7 @@ const CreatePropertyGroup = () => {
           />
         </div>
 
-        <button className="login-button" type="submit">Add</button>
+        <button className="create-property-button" type="submit">Add</button>
       </form>
     </div>
   );

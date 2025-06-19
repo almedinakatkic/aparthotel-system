@@ -202,7 +202,7 @@ const BookingManagement = () => {
 
   return (
     <div className="booking-container">
-      <h1>Booking Management</h1>
+      <h1 style={{ color: "#193A6F" }}>Booking Management</h1>
       <button className="new-booking-button" onClick={() => navigate('/create-booking')}>+ Create New Booking</button>
 
       <div className="filter-container">
@@ -308,7 +308,7 @@ const BookingManagement = () => {
               {isAddingNote ? 'Adding...' : 'Add Note'}
             </button>
             <button className="modal-close-x" onClick={() => setShowGuestModal(false)}>×</button>
-            <button className="modal-save-button" style={{ backgroundColor: '#8F291D' }} onClick={() => setShowGuestModal(false)}>Close</button>
+            <button className="modal-save-button" onClick={() => setShowGuestModal(false)}>Close</button>
           </div>
         </div>
       )}

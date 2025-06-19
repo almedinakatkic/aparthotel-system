@@ -1,9 +1,9 @@
-body{
+body {
   margin: 0;
   padding: 0;
 }
 
-.login-container {
+.create-property-container {
     display: flex;
     margin-left: auto;
     margin-right: auto;
@@ -11,16 +11,16 @@ body{
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    margin-top: auto;
+    margin-top: 120px;
   }
   
-  .login-form {
+  .create-property-form {
     width: 100%;
+    max-width: 520px;
     background: white;
     padding: 2.5rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
   }
   
   .title {
@@ -37,13 +37,12 @@ body{
     margin-bottom: 2rem;
   }
   
-  .form-group {
+  .create-property-form-group {
     margin-bottom: 1.5rem;
     width: 100%;
-    margin-left: 15px;
   }
   
-  .form-group label {
+  .create-property-form-group label {
     width: 100%; 
     display: block;
     margin-bottom: 0.5rem;
@@ -52,41 +51,23 @@ body{
     color: #374151;
   }
   
-  .form-group input {
+  .create-property-form-group input, .create-property-form-group select {
     width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.3s;
-    margin: 0;
+    box-sizing: border-box;
   }
   
-  .form-group input:focus {
+  .create-property-form-group input:focus, .create-property-form-group select:focus {
     outline: none;
     border-color: #4f46e5;
     box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   }
-  
-  .forgot {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    margin-top: 30px;
-  }
-  
-  .forgot-password {
-    font-size: 18px;
-    color: #193A6F;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .forgot-password:hover {
-    text-decoration: underline;
-    color: #cb3737;
-  }
-  
-  .login-button-auth {
+
+  .create-property-button {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -108,37 +89,12 @@ body{
     height: 50px;
   }
   
-  .login-button-auth:hover {
+  .create-property-button:hover {
     background-color: #6b7280 !important;
   }
 
-  .login-button-auth:disabled {
+  .create-property-button:disabled {
     background-color: #a5b4fc;
     cursor: not-allowed;
-  }
-  
-  .error-message-login {
-    color: #ef4444;
-    border-radius: 6px;
-    margin-bottom: 1.5rem;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .signup-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: #6b7280;
-  }
-  
-  .signup-anchor {
-    color: #4f46e5;
-    text-decoration: none;
-  }
-  
-  .signup-anchor:hover {
-    text-decoration: underline;
   }
   

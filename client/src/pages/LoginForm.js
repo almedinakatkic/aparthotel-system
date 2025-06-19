@@ -46,7 +46,7 @@ const LoginForm = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1 className="title" style={{ color: '#193A6F' }}>Sign In</h1>
+        <h1 className="title">Sign In</h1>
         <p className="subtitle">Please enter your credentials to login</p>
         
         {error && <div className="error-message-login">{error}</div>}
@@ -76,7 +76,7 @@ const LoginForm = () => {
         </div>
         
         <div className="forgot">
-          <a onClick={() => navigate('/forgot-password')} className="forgot-password" style={{ cursor: 'pointer' }}>
+          <a onClick={() => navigate('/forgot-password')} className="forgot-password">
             Forgot your password?</a>
         </div>
         

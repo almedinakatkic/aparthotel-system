@@ -119,12 +119,12 @@ const PropertyGroupManagement = () => {
 
   return (
     <div className="property-container">
-      <h1 className="property-title" style={{ color: '#193A6F' }}>Manage Properties</h1>
+      <h1 className="property-title">Manage Properties</h1>
       <button className="add-property-button" onClick={() => navigate('/create-property-group')}>
         + Add Property
       </button>
 
-      <div className="form-group" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="form-group">
         <input
           type="text"
           className="property-input"
@@ -134,7 +134,7 @@ const PropertyGroupManagement = () => {
         />
 
         <select
-          className="property-input custom-select"
+          className="property-input custom-select property-first-select"
           value={filterLocation}
           onChange={(e) => setFilterLocation(e.target.value)}
         >
@@ -188,7 +188,7 @@ const PropertyGroupManagement = () => {
                 </td>
                 <td>
                   {editingId === group._id ? (
-                    <select name="type" value={formData.type} onChange={handleChange}>
+                    <select className="filter-type" name="type" value={formData.type} onChange={handleChange}>
                       <option value="hotel">Hotel</option>
                       <option value="apartment">Apartment</option>
                     </select>
@@ -200,30 +200,32 @@ const PropertyGroupManagement = () => {
                 <td>
                   {editingId === group._id ? (
                     <>
-                      <div style={{ marginBottom: '0.5rem' }}>
-                        <label>Company Share (%)</label><br />
-                        <input
-                          type="number"
-                          name="companyShare"
-                          value={formData.companyShare}
-                          onChange={handleChange}
-                          min={0}
-                          max={100}
-                          style={{ width: '80px', marginRight: '1rem' }}
-                        />
-                        <label>Owner Share (%)</label><br />
-                        <input
-                          type="number"
-                          name="ownerShare"
-                          value={formData.ownerShare}
-                          onChange={handleChange}
-                          min={0}
-                          max={100}
-                          style={{ width: '80px' }}
-                        />
-                      </div>
-                      <button onClick={handleUpdate}>Save</button>
-                      <button onClick={handleCancel} style={{ marginLeft: '0.5rem' }}>Cancel</button>
+                      <div className="shares">
+                        <div className="share-column">
+                          <label>Company Share (%)</label>
+                          <input
+                            type="number"
+                            name="companyShare"
+                            value={formData.companyShare}
+                            onChange={handleChange}
+                            min={0}
+                            max={100}
+                          />
+                        </div>
+                        <div className="share-column">
+                          <label>Owner Share (%)</label>
+                          <input
+                            type="number"
+                            name="ownerShare"
+                            value={formData.ownerShare}
+                            onChange={handleChange}
+                            min={0}
+                            max={100}
+                          />
+                        </div>
+                    </div>
+                      <button className="save-button" onClick={handleUpdate}>Save</button>
+                      <button className="cancel-button" onClick={handleCancel}>Cancel</button>
                     </>
                   ) : (
                     <>
