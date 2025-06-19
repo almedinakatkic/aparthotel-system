@@ -15,7 +15,7 @@ import {
 } from 'date-fns';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
-import '../App.css'; // Include to ensure .custom-select applies
+import '../App.css';
 import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -47,15 +47,13 @@ const Calendar = () => {
     if (propertyGroupId) fetchUnits();
   }, [propertyGroupId, token]);
 
+
   useEffect(() => {
-    if (selectedFloor) {
-      const filtered = units
-        .filter((u) => u.floor === parseInt(selectedFloor))
-        .sort((a, b) => a.unitNumber - b.unitNumber);
-      setFilteredUnits(filtered);
-    } else {
-      setFilteredUnits([]);
-    }
+    const filtered = selectedFloor
+      ? units.filter((u) => u.floor === parseInt(selectedFloor))
+      : units;
+
+    setFilteredUnits(filtered.sort((a, b) => a.unitNumber - b.unitNumber));
   }, [selectedFloor, units]);
 
   useEffect(() => {
