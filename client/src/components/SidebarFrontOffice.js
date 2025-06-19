@@ -1,15 +1,14 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import '../assets/styles/sidebar.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBellConcierge,
-  faUsers,
   faBed,
+  faBellConcierge,
+  faBroom,
   faCalendarDays,
   faChartPie,
-  faBroom
+  faUsers
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
+import '../assets/styles/sidebar.css';
 
 const SidebarFrontOffice = () => (
   <div className="sidebar">
@@ -60,7 +59,7 @@ const SidebarFrontOffice = () => (
           activeClassName="active-nav-item"
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faBed} /></span>
-          <span className="nav-text">Rooms</span>
+          <span className="nav-text">Apartments</span>
         </NavLink>
 
             <NavLink 
