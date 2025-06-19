@@ -16,10 +16,12 @@ const OwnerDashboard = () => {
   const [timeRange, setTimeRange] = useState('month');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [damageReports, setDamageReports] = useState([]);
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 
+  // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true);
@@ -49,6 +51,27 @@ const OwnerDashboard = () => {
     }
   }, [timeRange, token, user?.id]);
 
+  // Fetch damage reports
+  useEffect(() => {
+    const fetchDamageReports = async () => {
+      try {
+        const response = await api.get('/damage-reports', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { ownerId: user.id }
+        });
+
+        console.log('Damage reports response:', response.data); // Debug log
+        setDamageReports(response.data || []);
+      } catch (err) {
+        console.error('Error fetching damage reports:', err);
+      }
+    };
+
+    if (user?.id && token) {
+      fetchDamageReports();
+    }
+  }, [token, user?.id]);
+
   if (isLoading) return <div className="loading-indicator">Loading dashboard data...</div>;
   if (error) return <div className="error-indicator">Error: {error}</div>;
   if (!dashboardData) return <div className="error-indicator">No data to show.</div>;
@@ -67,9 +90,7 @@ const OwnerDashboard = () => {
             <select
               id="timeRange"
               value={timeRange}
-              onChange={(e) => {
-                setTimeRange(e.target.value);
-              }}
+              onChange={(e) => setTimeRange(e.target.value)}
             >
               <option value="week">This Week</option>
               <option value="month">This Month</option>
@@ -170,23 +191,21 @@ const OwnerDashboard = () => {
 
           <div className="maintenance-issues">
             <h2><FontAwesomeIcon icon={faUsers} /> Maintenance Issues</h2>
-            <table className="table-container">
-              <thead>
-                <tr>
-                  <th>Room</th><th>Issue</th><th>Priority</th><th>Reported</th>
-                </tr>
-              </thead>
-              <tbody>
-                {maintenanceIssues.map(issue => (
-                  <tr key={issue.id}>
-                    <td>{issue.room}</td>
-                    <td>{issue.issue}</td>
-                    <td className={`priority-${issue.priority.toLowerCase()}`}>{issue.priority}</td>
-                    <td>{issue.reported}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+            <h3 style={{ marginTop: '2rem' }}>Recent Damage Reports</h3>
+            <ul>
+              {Array.isArray(damageReports) && damageReports.length > 0 ? (
+                damageReports.slice(0, 5).map((report, index) => (
+                  <li key={report._id || index}>
+                    <strong>Apt {report.unitNumber}</strong> – {new Date(report.date).toLocaleDateString()}
+                    <p>{report.description}</p>
+                    <hr />
+                  </li>
+                ))
+              ) : (
+                <li>No recent damage reports.</li>
+              )}
+            </ul>
           </div>
         </section>
       </main>
