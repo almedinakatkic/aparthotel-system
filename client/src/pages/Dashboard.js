@@ -63,6 +63,21 @@ const Dashboard = () => {
     bookingsPerMonth[monthIndex].count += 1;
   });
 
+  const handleDeleteReport = async (reportId) => {
+  if (!window.confirm('Are you sure you want to delete this report?')) return;
+
+  try {
+    await api.delete(`/damage-reports/${reportId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setDamageReports(prev => prev.filter(r => r._id !== reportId));
+  } catch (err) {
+    console.error('Error deleting report:', err);
+    alert('Failed to delete the report. Try again.');
+  }
+};
+
+
   return (
     <div className="dashboard">
       <div className="overview">
@@ -181,19 +196,36 @@ const Dashboard = () => {
 
         <div className="feedback">
           <h3>Recent Damage Reports</h3>
-          <ul>
+          <div className="damage-report-scroll-container">
             {damageReports.length > 0 ? (
-              damageReports.slice(0, 5).map((report, index) => (
-                <li key={report._id || index}>
-                  <strong>Apt {report.unitNumber}</strong> - {new Date(report.date).toLocaleDateString()}
+              damageReports.map((report, index) => (
+                <div key={report._id || index} className="damage-report-item">
+                  <div className="damage-report-header">
+                    <strong>Apt {report.unitNumber}</strong> {new Date(report.date).toLocaleDateString()}
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDeleteReport(report._id)}
+                      title="Delete report"
+                    >
+                      Delete
+                    </button>
+                  </div>
                   <p>{report.description}</p>
-                  <hr />
-                </li>
+                  {report.image && (
+                    <img
+                      src={`/uploads/${report.image}`}
+                      alt="Damage"
+                      className="damage-report-image"
+                    />
+                  )}
+                </div>
+
               ))
             ) : (
-              <li>No recent damage reports.</li>
+              <p>No damage reports found.</p>
             )}
-          </ul>
+          </div>
+
         </div>
       </div>
     </div>

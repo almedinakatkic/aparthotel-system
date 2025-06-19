@@ -242,3 +242,50 @@
   font-size: 18px;
   font-weight: normal;
 }
+
+.damage-report-scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.damage-report-item {
+  margin-bottom: 15px;
+}
+
+.damage-report-image {
+  max-width: 100%;
+  max-height: 200px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.damage-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.damage-report-info {
+  flex-grow: 1;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #b62a1a;
+  background-color: rgba(247, 152, 142, 0.1);
+}

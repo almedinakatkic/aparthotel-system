@@ -27,4 +27,14 @@ const createDamageReport = async (req, res) => {
   }
 };
 
-module.exports = { createDamageReport };
+const getAllDamageReports = async (req, res) => {
+  try {
+    const reports = await DamageReport.find().sort({ createdAt: -1 });
+    res.status(200).json(reports);
+  } catch (err) {
+    console.error('Error fetching damage reports:', err);
+    res.status(500).json({ message: 'Server error fetching damage reports' });
+  }
+};
+
+module.exports = { createDamageReport, getAllDamageReports };
