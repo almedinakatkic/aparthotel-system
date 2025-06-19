@@ -47,7 +47,6 @@ const Calendar = () => {
     if (propertyGroupId) fetchUnits();
   }, [propertyGroupId, token]);
 
-
   useEffect(() => {
     const filtered = selectedFloor
       ? units.filter((u) => u.floor === parseInt(selectedFloor))
@@ -118,21 +117,29 @@ const Calendar = () => {
 
     return (
       <div className="calendar-filter">
-        <label>Select Floor: </label>
-        <select className="custom-select" value={selectedFloor} onChange={(e) => setSelectedFloor(e.target.value)}>
-          <option value="">All floors</option>
-          {allFloors.map((f) => (
-            <option key={f} value={f}>{f}</option>
-          ))}
-        </select>
-
-        <label style={{ marginLeft: '20px' }}>Select Unit:</label>
-        <select className="custom-select" value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
+        <label>Select Unit:</label>
+        <select
+          className="custom-select"
+          value={selectedUnitId}
+          onChange={(e) => setSelectedUnitId(e.target.value)}
+        >
           <option value="">All units</option>
           {filteredUnits.map((u) => (
             <option key={u._id} value={u._id}>
               {u.unitNumber}
             </option>
+          ))}
+        </select>
+
+        <label style={{ marginLeft: '20px' }}>Select Floor:</label>
+        <select
+          className="custom-select"
+          value={selectedFloor}
+          onChange={(e) => setSelectedFloor(e.target.value)}
+        >
+          <option value="">All floors</option>
+          {allFloors.map((f) => (
+            <option key={f} value={f}>{f}</option>
           ))}
         </select>
       </div>
