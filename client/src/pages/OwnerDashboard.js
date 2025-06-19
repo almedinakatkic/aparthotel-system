@@ -21,6 +21,7 @@ const OwnerDashboard = () => {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [notesLoading, setNotesLoading] = useState(true);
+  const [bookings, setBookings] = useState([]);
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -45,6 +46,22 @@ const OwnerDashboard = () => {
 
     if (user?.id && token) fetchDashboardData();
   }, [timeRange, token, user?.id]);
+
+  // Fetch bookings data for the occupancy chart
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await api.get('/bookings', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setBookings(response.data || []);
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+      }
+    };
+
+    if (token) fetchBookings();
+  }, [token]);
 
   // Fetch damage reports
   useEffect(() => {
@@ -81,6 +98,23 @@ const OwnerDashboard = () => {
     if (user?.id && token) fetchNotes();
   }, [token, user?.id]);
 
+  // Prepare data for occupancy chart
+  const prepareOccupancyData = () => {
+    const bookingsPerMonth = Array.from({ length: 12 }, (_, i) => ({
+      month: new Date(0, i).toLocaleString('default', { month: 'short' }),
+      count: 0
+    }));
+    
+    bookings.forEach(b => {
+      if (b.checkIn) {
+        const monthIndex = new Date(b.checkIn).getMonth();
+        bookingsPerMonth[monthIndex].count += 1;
+      }
+    });
+    
+    return bookingsPerMonth;
+  };
+
   const handleAddNote = async () => {
     if (newNote.trim() === '') return;
     try {
@@ -111,26 +145,10 @@ const OwnerDashboard = () => {
 
   const {
     occupancyRate, revenue, expenses,
-    upcomingBookings, revenueTrend
+    upcomingBookings
   } = dashboardData;
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip" style={{
-          backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '4px'
-        }}>
-          <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>{label}</p>
-          {payload.map((item, index) => (
-            <p key={index} style={{ color: item.color, margin: '3px 0' }}>
-              {item.name}: {item.dataKey === 'revenue' ? formatCurrency(item.value) : `${item.value}%`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  const occupancyData = prepareOccupancyData();
 
   return (
     <div className="owner-dashboard-container">
@@ -166,15 +184,13 @@ const OwnerDashboard = () => {
 
         <section className="charts-section">
           <div className="chart-container">
-            <h2>Revenue Trend</h2>
+            <h2>Occupancy Statistics</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={revenueTrend} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" tick={{ fill: '#666' }} tickMargin={10} />
-                <YAxis tickFormatter={(value) => `$${value}`} tick={{ fill: '#666' }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="revenue" name="Revenue" fill="#8884d8" barSize={30} />
+              <BarChart data={occupancyData}>
+                <XAxis dataKey="month" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#fab972" name="Bookings" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -222,8 +238,6 @@ const OwnerDashboard = () => {
                   Add
                 </button>
               </div>
-
-
             </div>
           </div>
         </section>
