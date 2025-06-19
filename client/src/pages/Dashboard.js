@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [damageReports, setDamageReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const today = new Date().toISOString().slice(0, 10); // Format: YYYY-MM-DD
+  const today = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,17 +36,11 @@ const Dashboard = () => {
 
   if (loading) return <div>Loading dashboard...</div>;
 
-  // ----- Stats calculations -----
   const todayCheckIn = bookings.filter(b => b.checkIn?.slice(0, 10) === today).length;
-
-  // Count guests that should check out today
   const todayCheckOut = bookings.filter(b => {
     const checkOutDate = new Date(b.checkOut).toISOString().slice(0, 10);
     return checkOutDate === today;
-    
-    // return checkOutDate <= today;
   }).length;
-
   const totalGuests = bookings.reduce((sum, b) => sum + (b.numGuests || 0), 0);
 
   const occupiedUnitIds = new Set(bookings.map(b => b.unitId?._id || b.unitId));
@@ -56,18 +50,15 @@ const Dashboard = () => {
 
   const cleanUnits = units.filter(u => u.status === 'clean');
   const dirtyUnits = units.filter(u => u.status === 'dirty');
-
   const availableClean = cleanUnits.filter(u => !occupiedUnitIds.has(u._id)).length;
   const availableDirty = dirtyUnits.filter(u => !occupiedUnitIds.has(u._id)).length;
   const occupiedClean = cleanUnits.filter(u => occupiedUnitIds.has(u._id)).length;
   const occupiedDirty = dirtyUnits.filter(u => occupiedUnitIds.has(u._id)).length;
 
-  // ----- Graph data (bookings per month) -----
   const bookingsPerMonth = Array.from({ length: 12 }, (_, i) => ({
     month: new Date(0, i).toLocaleString('default', { month: 'short' }),
     count: 0
   }));
-
   bookings.forEach(b => {
     const monthIndex = new Date(b.checkIn).getMonth();
     bookingsPerMonth[monthIndex].count += 1;
@@ -75,19 +66,17 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      {/* Overview Section */}
       <div className="overview">
         <h3 className='overview-heading'>Overview</h3>
-        <div className="overview-stats">
-          <div>Today's Check-in <span>{todayCheckIn}</span></div>
-          <div>Today's Check-out <span>{todayCheckOut}</span></div>
-          <div>Total Guests <span>{totalGuests}</span></div>
-          <div>Total Available Rooms <span>{totalAvailableRooms}</span></div>
-          <div>Total Occupied Rooms <span>{totalOccupiedRooms}</span></div>
+        <div className="overview-stats spaced-overview">
+          <div className="overview-item">Today's Check-in <span>{todayCheckIn}</span></div>
+          <div className="overview-item">Today's Check-out <span>{todayCheckOut}</span></div>
+          <div className="overview-item">Total Guests <span>{totalGuests}</span></div>
+          <div className="overview-item">Total Available Rooms <span>{totalAvailableRooms}</span></div>
+          <div className="overview-item">Total Occupied Rooms <span>{totalOccupiedRooms}</span></div>
         </div>
       </div>
 
-      {/* Room Status Section */}
       <div className="room-status">
         <h3>Room Status</h3>
         <div className="status-blocks-container">
@@ -105,7 +94,6 @@ const Dashboard = () => {
         <div className="divider" />
       </div>
 
-      {/* Bottom Sections */}
       <div className="bottom-sections">
         <div className="occupancy">
           <div className="occupancy-header">
@@ -122,7 +110,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Damage Reports Section */}
         <div className="feedback">
           <h3>Recent Damage Reports</h3>
           <ul>
