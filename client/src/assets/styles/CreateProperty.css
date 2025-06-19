@@ -60,6 +60,14 @@ body {
     transition: border-color 0.3s;
     box-sizing: border-box;
   }
+
+  .create-property-form-group input {
+    cursor: text;
+  }
+
+  .create-property-form-group select {
+    cursor: pointer;
+  }
   
   .create-property-form-group input:focus, .create-property-form-group select:focus {
     outline: none;

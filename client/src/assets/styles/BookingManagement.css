@@ -14,7 +14,7 @@
   align-items: center;
 }
 
-.guests-page h1 {
+.booking-title {
   color: #193A6F;
   margin-bottom: 20px;
   font-size: 30px;
@@ -43,6 +43,7 @@
   font-size: 14px;
   min-width: 200px;
   background-color: white;
+  cursor: pointer;
 }
 
 .filter-container input {
@@ -51,7 +52,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  height: 11px;
+  height: 17px;
 }
 
 .filter-container input:focus {
@@ -71,9 +72,10 @@
   padding: 12px 16px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   width: 50%;
   transition: background-color 0.3s;
+  height: 45px;
 }
 
 .new-booking-button:hover {

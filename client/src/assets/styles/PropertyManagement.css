@@ -50,9 +50,14 @@
   .property-form-group input, .property-first-select {
     margin-right: 30px;
   }
+
+  .property-form-group input {
+    cursor: text;
+  }
   
   .property-form-group select {
     height: 50px;
+    cursor: pointer;
   }
 
   .add-property-button {
@@ -119,41 +124,6 @@
   margin-left: 0.5rem;
   color: white;
   width: 70px;
-}
-
-.rooms-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.rooms-table th, .rooms-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-}
-
-.rooms-table thead {
-  background-color: white;
-}
-
-.rooms-table tbody tr {
-  background-color: white;
-  border-bottom: 1px solid #444;
-}
-
-.rooms-table tbody tr:hover {
-  background-color: #dedede;
-}
-
-.rooms-table input {
-  width: 100%;
-  padding: 0.4rem;
-  border: 1px solid #777;
-  border-radius: 8px;
-  background-color: #1a1a2a;
-  color: #fff;
 }
 
   .custom-select {
