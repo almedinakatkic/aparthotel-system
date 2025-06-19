@@ -25,14 +25,17 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 20px;
 }
 
 .filter-row {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 30px;
+  background-color: white;
 }
 
 .form-group select,
@@ -49,6 +52,7 @@
   background-color: white;
   box-sizing: border-box;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 .form-group select,
@@ -84,6 +88,8 @@
 
 .task-card,
 .task-card.done {
+  position: relative; 
+  padding-bottom: 3rem; 
   padding: 1rem;
   border-radius: 8px;
   color: black;
@@ -104,14 +110,18 @@
 }
 
 .remove-button {
-  margin-top: 0.5rem;
-  padding: 0.3rem 0.6rem;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  margin-top: 0;
+  padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   background-color: #b30d0d;
   border: none;
   border-radius: 4px;
   color: white;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .remove-button:hover {
@@ -151,3 +161,4 @@
 .mark-done-button:hover {
   background-color: #5c5d60;
 }
+
