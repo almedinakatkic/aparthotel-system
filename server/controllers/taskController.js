@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const Unit = require('../models/Unit');
 
 const getTasksByPropertyGroup = async (req, res) => {
   try {
@@ -45,21 +46,35 @@ const deleteTask = async (req, res) => {
 
 
 const completeTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { cleaningType } = req.body;
+
   try {
-    const { taskId } = req.params;
-    const { cleaningType } = req.body;
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    const update = { status: 'done' };
-    if (cleaningType) update.cleaningType = cleaningType;
+    task.status = 'done';
 
-    const task = await Task.findByIdAndUpdate(taskId, update, { new: true })
-      .populate('unitId', 'unitNumber')
-      .populate('assignedTo', 'name');
+    if (task.type === 'cleaning' && cleaningType) {
+      task.cleaningType = cleaningType;
+    }
 
-    res.json(task);
+    await task.save();
+
+    // Update corresponding unit with lastCleaned or lastMaintenance
+    const updateField = task.type === 'cleaning' ? 'lastCleaned' :
+                        task.type === 'maintenance' ? 'lastMaintenance' : null;
+
+    if (updateField) {
+      await Unit.findByIdAndUpdate(task.unitId, {
+        [updateField]: task.date
+      });
+    }
+
+    res.status(200).json({ message: 'Task completed successfully' });
   } catch (err) {
     console.error('Error completing task:', err);
-    res.status(500).json({ message: 'Server error completing task' });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

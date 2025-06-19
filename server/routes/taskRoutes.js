@@ -5,7 +5,7 @@ const {
   createTask, 
   deleteTask,
   completeTask,
-  updateTaskStatus // novo dodano
+  updateTaskStatus 
 } = require('../controllers/taskController');
 const authMiddleware = require('../middleware/authMiddleware');
 

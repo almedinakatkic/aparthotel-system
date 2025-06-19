@@ -8,6 +8,7 @@ const RoomManagement = () => {
   const [units, setUnits] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [propertyGroups, setPropertyGroups] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [filters, setFilters] = useState({
     propertyGroupId: '',
     unitNumber: '',
@@ -55,6 +56,17 @@ const RoomManagement = () => {
     }
   };
 
+  const fetchTasks = async () => {
+    try {
+      const res = await axios.get(`/tasks/${user.propertyGroupId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTasks(res.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error.response?.data || error.message);
+    }
+  };
+
   const sendTask = async (unitId, taskType) => {
     try {
       await axios.post(`/housekeeping/notify`, {
@@ -83,6 +95,18 @@ const RoomManagement = () => {
     }) ? 'Booked' : 'Free';
   };
 
+  const getLastTaskDate = (unitId, type) => {
+    const unitTasks = tasks
+      .filter(task =>
+        (task.unitId === unitId || task.unitId?._id === unitId) &&
+        task.type === type &&
+        task.status === 'done'
+      )
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return unitTasks.length > 0 ? new Date(unitTasks[0].date).toLocaleDateString() : 'N/A';
+  };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
@@ -93,6 +117,7 @@ const RoomManagement = () => {
     fetchPropertyGroups();
     fetchUnits();
     fetchBookings();
+    fetchTasks();
   }, [user]);
 
   const filteredUnits = units
@@ -177,8 +202,8 @@ const RoomManagement = () => {
                     <td className={`status-cell ${status.toLowerCase()}`}>
                       {status}
                     </td>
-                    <td>{unit.lastCleaned ? new Date(unit.lastCleaned).toLocaleDateString() : 'N/A'}</td>
-                    <td>{unit.lastMaintenance ? new Date(unit.lastMaintenance).toLocaleDateString() : 'N/A'}</td>
+                    <td>{getLastTaskDate(unit._id, 'cleaning')}</td>
+                    <td>{getLastTaskDate(unit._id, 'maintenance')}</td>
                     <td className="action-cell">
                       <button
                         className="action-button-cleaning"

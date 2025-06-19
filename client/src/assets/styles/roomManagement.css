@@ -65,7 +65,8 @@
 .rooms-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .rooms-table th {
@@ -74,7 +75,6 @@
   padding: 12px 15px;
   text-align: left;
   font-weight: 500;
-  border-bottom: 2px solid #ddd;
 }
 
 .rooms-table td {
@@ -82,7 +82,15 @@
   border-bottom: 1px solid #ddd;
 }
 
+.bookings-table tr {
+  transition: background-color 0.2s;
+}
+
 .rooms-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.rooms-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 

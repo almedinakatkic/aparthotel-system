@@ -19,12 +19,20 @@ const unitSchema = new mongoose.Schema({
   },
   address: {
     type: String
-    // address is optional here, validation is handled in controller
+    // address is optional, validation is handled in controller
   },
   propertyGroupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PropertyGroup',
     required: true
+  },
+  lastCleaned: {
+    type: Date,
+    default: null
+  },
+  lastMaintenance: {
+    type: Date,
+    default: null
   }
 });
 
