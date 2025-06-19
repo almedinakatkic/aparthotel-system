@@ -186,10 +186,11 @@ const RoomManagement = () => {
               <tr>
                 <th>Room Number</th>
                 <th>Floor</th>
+                <th>Beds</th>
                 <th>Status</th>
                 <th>Last Cleaned</th>
                 <th>Last Maintenance</th>
-                <th>Actions</th>
+                <th>Price</th>
               </tr>
             </thead>
             <tbody>
@@ -199,25 +200,13 @@ const RoomManagement = () => {
                   <tr key={unit._id}>
                     <td>{unit.unitNumber}</td>
                     <td>{unit.floor}</td>
+                    <td>{unit.beds}</td>
                     <td className={`status-cell ${status.toLowerCase()}`}>
                       {status}
                     </td>
                     <td>{getLastTaskDate(unit._id, 'cleaning')}</td>
                     <td>{getLastTaskDate(unit._id, 'maintenance')}</td>
-                    <td className="action-cell">
-                      <button
-                        className="action-button-cleaning"
-                        onClick={() => sendTask(unit._id, 'cleaning')}
-                      >
-                        Cleaning
-                      </button>
-                      <button
-                        className="action-button-maintenance"
-                        onClick={() => sendTask(unit._id, 'maintenance')}
-                      >
-                        Maintenance
-                      </button>
-                    </td>
+                    <td>{unit.pricePerNight ? `$${unit.pricePerNight.toFixed(2)}` : 'N/A'}</td>
                   </tr>
                 );
               })}
