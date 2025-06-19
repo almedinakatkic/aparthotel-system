@@ -220,8 +220,8 @@ const UnitManagement = () => {
                         </>
                       ) : (
                         <>
-                          <button onClick={() => handleEdit(unit)}>Edit</button>
-                          <button onClick={() => handleDelete(unit._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
+                          <button className='action-button-edit' onClick={() => handleEdit(unit)}>Edit</button>
+                          <button className='action-button-delete' onClick={() => handleDelete(unit._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
                         </>
                       )}
                     </td>

@@ -96,7 +96,8 @@
 }
 
 .rooms-table button {
-  padding: 0.4rem 0.8rem;
+  padding: 10px 15px;
+  font-size: 13px;
   margin-right: 0.3rem;
   border: none;
   border-radius: 6px;
@@ -108,12 +109,12 @@
   opacity: 0.85;
 }
 
-.rooms-table button:nth-child(1) {
+.action-button-edit {
   background-color: #39623c;
   color: white;
 }
 
-.rooms-table button:nth-child(2) {
+.action-button-delete {
   background-color: #b30d0d;
   color: white;
 }

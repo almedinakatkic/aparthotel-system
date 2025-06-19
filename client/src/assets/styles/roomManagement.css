@@ -1,84 +1,153 @@
+/* roomManagement.css */
+
 .room-management-page {
-  margin-top: 150px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
+  margin: 130px auto;
+  padding: 20px;
   max-width: 1200px;
   background: #ffffff;
   color: #193A6F;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
-.room-management-page h1 {
-  text-align: center;
-  font-size: 38px;
-  font-weight: bolder;
-  color: #193A6F;
-  margin-bottom: 0.5rem;
-}
-
-.room-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.room-card {
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-.room-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: #193A6F;
-  transition: width 0.3s ease;
-}
-
-.room-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.room-card h2 {
-  margin-bottom: 0.75rem;
-  color: #193A6F;
-  font-size: 1.4rem;
+.room-management-title {
+  font-size: 1.8rem;
   font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #193A6F;
+}
+
+.section-title {
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #193A6F;
 }
 
-.room-card h2::before {
-  content: '🏨';
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
+.filters-container {
+  margin-bottom: 1.5rem;
 }
 
-.room-card p {
-  margin: 0.25rem 0;
+.filter-row-rooms {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.room-card label {
-  display: block;
-  margin-top: 0.75rem;
+.filter-input,
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-input {
+  flex: 1;
+  max-width: 200px;
+}
+
+.filter-select {
+  flex: 1;
+  max-width: 200px;
+  background-color: white;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.rooms-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.rooms-table th {
+  background-color: #193A6F;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
   font-weight: 500;
+  border-bottom: 2px solid #ddd;
 }
 
-.room-card input[type="checkbox"] {
-  margin-right: 0.5rem;
-  transform: scale(1.2);
+.rooms-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.rooms-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.status-cell {
+  font-weight: bold;
+}
+
+.status-cell.booked {
+  color: red;
+}
+
+.status-cell.free {
+  color: green;
+}
+
+.action-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.action-button-cleaning {
+  background-color: #626662;
+  color: white;
+}
+
+.action-button-maintenance {
+  background-color: #30466e;
+  color: white;
+}
+
+.action-button:hover {
+  opacity: 0.9;
+}
+
+.no-units-message {
+  color: red;
+  text-align: center;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  
+  .filter-input,
+  .filter-select {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .rooms-table {
+    display: block;
+  }
+  
+  .action-cell {
+    flex-direction: column;
+  }
 }
