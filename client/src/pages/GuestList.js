@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import * as XLSX from 'xlsx';
-import api from '../api/axios';
-import '../App.css'; // ensure custom-select is loaded
-import '../assets/styles/guestList.css';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import * as XLSX from 'xlsx';
+import '../assets/styles/guestList.css';
 
 const GuestList = () => {
   const { user, token } = useAuth();
@@ -206,7 +205,7 @@ const GuestList = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <select className="custom-select" value={selectedMonth} onChange={handleMonthChange}>
+        <select value={selectedMonth} onChange={handleMonthChange}>
           {Array.from({ length: 12 }, (_, i) => (
             <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
           ))}
@@ -214,15 +213,55 @@ const GuestList = () => {
         <button className='new-booking-button' style={{ width: '200px', height: '35px' }} onClick={exportToExcel}>Export to Excel</button>
       </div>
 
-      {/* rest unchanged */}
+      {filteredBookings.length > 0 ? (
+        <table className="bookings-table">
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Guest ID</th>
+              <th>Unit</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Guests</th>
+              <th>Total KM</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBookings.map(b => (
+              <tr key={b._id} onClick={() => handleEditClick(b)}>
+                <td>{b.guestName}{noteGuests.has(b.guestId) && <span title="Has notes"> ⚠️</span>}</td>
+                <td>{b.guestEmail}</td>
+                <td>{b.phone}</td>
+                <td>{b.guestId}</td>
+                <td>{b.unitId?.unitNumber}</td>
+                <td>{b.checkIn?.slice(0, 10)}</td>
+                <td>{b.checkOut?.slice(0, 10)}</td>
+                <td>{b.numGuests}</td>
+                <td>{b.fullPrice}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No bookings found for the selected month.</p>
+      )}
 
       {showGuestModal && selectedGuest && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>Edit Booking</h2>
-            {/* input fields */}
+            <label>Name</label>
+            <input value={editData.guestName} onChange={(e) => setEditData({ ...editData, guestName: e.target.value })} />
+            <label>Email</label>
+            <input value={editData.guestEmail} onChange={(e) => setEditData({ ...editData, guestEmail: e.target.value })} />
+            <label>Guest ID</label>
+            <input value={editData.guestId} onChange={(e) => setEditData({ ...editData, guestId: e.target.value })} />
+            <label>Phone</label>
+            <input value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} />
             <label>Unit</label>
-            <select className="custom-select" value={editData.unitId} onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}>
+            <select value={editData.unitId} onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}>
               <option value="">Select Unit</option>
               {units
                 .filter(u => u.propertyGroupId === user.propertyGroupId || u.propertyGroupId?._id === user.propertyGroupId)
@@ -232,7 +271,34 @@ const GuestList = () => {
                   </option>
                 ))}
             </select>
-            {/* rest unchanged */}
+            <label>Check-in</label>
+            <input type="date" value={editData.checkIn} onChange={(e) => setEditData({ ...editData, checkIn: e.target.value })} />
+            <label>Check-out</label>
+            <input type="date" value={editData.checkOut} onChange={(e) => setEditData({ ...editData, checkOut: e.target.value })} />
+            <label>Guests</label>
+            <input type="number" min="1" value={editData.numGuests} onChange={(e) => setEditData({ ...editData, numGuests: e.target.value })} />
+
+            <button className="modal-save-button" onClick={handleEditSubmit}>Save Changes</button>
+            <button className="modal-delete-button" onClick={handleGuestDelete}>Delete Guest</button>
+
+            <h4>Guest Notes</h4>
+            <ul>
+              {guestNotes.map(n => (
+                <li key={n._id}>
+                  <p>{n.content || n.note}</p>
+                  <small>{new Date(n.createdAt).toLocaleString()}</small>
+                  <button onClick={() => handleDeleteNote(n._id)} disabled={isDeletingNote === n._id}>
+                    {isDeletingNote === n._id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add note..." />
+            <button onClick={handleNoteSubmit} disabled={!note.trim() || isAddingNote}>
+              {isAddingNote ? 'Adding...' : 'Add Note'}
+            </button>
+            <button className="modal-close-x" onClick={() => setShowGuestModal(false)}>×</button>
+            <button className="modal-save-button" style={{ backgroundColor: '#8F291D' }} onClick={() => setShowGuestModal(false)}>Close</button>
           </div>
         </div>
       )}

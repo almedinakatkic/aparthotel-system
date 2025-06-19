@@ -1,23 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
   addDays,
   addMonths,
-  endOfMonth,
-  endOfWeek,
-  format,
+  subMonths,
   isSameMonth,
-  isToday,
   isWithinInterval,
   parseISO,
   startOfDay,
-  startOfMonth,
-  startOfWeek,
-  subMonths
+  isToday
 } from 'date-fns';
-import { useEffect, useState } from 'react';
-import api from '../api/axios';
-import '../App.css'; // Include to ensure .custom-select applies
 import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const Calendar = () => {
   const { user, token } = useAuth();
@@ -33,6 +32,7 @@ const Calendar = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [guestNotesMap, setGuestNotesMap] = useState({});
 
+  // Fetch all units
   useEffect(() => {
     const fetchUnits = async () => {
       try {
@@ -47,6 +47,7 @@ const Calendar = () => {
     if (propertyGroupId) fetchUnits();
   }, [propertyGroupId, token]);
 
+  // Filter units by floor when floor is selected
   useEffect(() => {
     if (selectedFloor) {
       const filtered = units
@@ -58,12 +59,17 @@ const Calendar = () => {
     }
   }, [selectedFloor, units]);
 
+  // Fetch bookings: ALL if no unit selected, or bookings for that unit
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        let url = selectedUnitId
-          ? `/bookings/unit/${selectedUnitId}`
-          : `/bookings/property/${propertyGroupId}`;
+        let url = '';
+
+        if (selectedUnitId) {
+          url = `/bookings/unit/${selectedUnitId}`;
+        } else {
+          url = `/bookings/property/${propertyGroupId}`;
+        }
 
         const res = await api.get(url, {
           headers: { Authorization: `Bearer ${token}` }
@@ -121,7 +127,7 @@ const Calendar = () => {
     return (
       <div className="calendar-filter">
         <label>Select Floor: </label>
-        <select className="custom-select" value={selectedFloor} onChange={(e) => setSelectedFloor(e.target.value)}>
+        <select value={selectedFloor} onChange={(e) => setSelectedFloor(e.target.value)}>
           <option value="">All floors</option>
           {allFloors.map((f) => (
             <option key={f} value={f}>{f}</option>
@@ -129,7 +135,7 @@ const Calendar = () => {
         </select>
 
         <label style={{ marginLeft: '20px' }}>Select Unit:</label>
-        <select className="custom-select" value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
+        <select value={selectedUnitId} onChange={(e) => setSelectedUnitId(e.target.value)}>
           <option value="">All units</option>
           {filteredUnits.map((u) => (
             <option key={u._id} value={u._id}>

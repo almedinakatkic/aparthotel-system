@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import axios from '../api/axios';
-import '../App.css'; // Ensure custom-select is loaded
-import '../assets/styles/roomManagement.css';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import axios from '../api/axios';
+import '../assets/styles/roomManagement.css';
 
 const RoomManagement = () => {
   const { user, token } = useAuth();
@@ -87,18 +86,17 @@ const RoomManagement = () => {
 
   return (
     <div className="room-management-page">
-      <h1>Apartment Management</h1>
+      <h1>Room Management</h1>
 
       <div className="filters">
         <input
           type="text"
-          placeholder="Search by Apartment Number"
+          placeholder="Search by Room Number"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           style={{ width: '190px', height: '17px' }}
         />
         <select
-          className="custom-select"
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
           style={{ width: '200px' }}
@@ -115,7 +113,7 @@ const RoomManagement = () => {
         <div className="room-grid">
           {filteredUnits.map(unit => (
             <div key={unit._id} className="room-card">
-              <h2>Apartment Number: {unit.unitNumber}</h2>
+              <h2>Room Number: {unit.unitNumber}</h2>
               <p>Status: <strong>{getTodayStatus(unit._id)}</strong></p>
               <p>Last Cleaned: {unit.lastCleaned ? new Date(unit.lastCleaned).toLocaleDateString() : 'N/A'}</p>
               <p>Last Maintenance: {unit.lastMaintenance ? new Date(unit.lastMaintenance).toLocaleDateString() : 'N/A'}</p>

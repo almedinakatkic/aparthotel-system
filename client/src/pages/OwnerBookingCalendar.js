@@ -1,21 +1,21 @@
+import React, { useState, useEffect } from 'react';
 import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
   addDays,
   addMonths,
-  endOfMonth,
-  endOfWeek,
-  format,
+  subMonths,
   isSameMonth,
-  isToday,
   isWithinInterval,
   startOfDay,
-  startOfMonth,
-  startOfWeek,
-  subMonths
+  isToday
 } from 'date-fns';
-import { useEffect, useState } from 'react';
-import api from '../api/axios';
 import '../assets/styles/ownerCalendar.css';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const OwnerBookingCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -86,7 +86,6 @@ const OwnerBookingCalendar = () => {
       <label htmlFor="apartment-filter">Filter by Apartment:</label>
       <select
         id="apartment-filter"
-        className="custom-select"
         value={selectedApartment}
         onChange={handleApartmentChange}
       >

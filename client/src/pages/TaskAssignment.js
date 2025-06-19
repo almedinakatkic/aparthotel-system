@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import '../assets/styles/taskAssignment.css';
 import { useAuth } from '../context/AuthContext';
+import '../assets/styles/taskAssignment.css';
 
 const TaskAssignment = () => {
   const { user, token } = useAuth();
@@ -97,22 +97,22 @@ const TaskAssignment = () => {
     <div className="task-assignment-container">
       <h2>Task Assignment</h2>
 
-      <div className="form-group" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-        <select className="custom-select" value={selectedUnit} onChange={e => setSelectedUnit(e.target.value)}>
+      <div className="form-group">
+        <select value={selectedUnit} onChange={e => setSelectedUnit(e.target.value)}>
           <option value="">Select Unit</option>
           {units.map(u => (
             <option key={u._id} value={u._id}>{u.unitNumber}</option>
           ))}
         </select>
 
-        <select className="custom-select" value={selectedCleaner} onChange={e => setSelectedCleaner(e.target.value)}>
+        <select value={selectedCleaner} onChange={e => setSelectedCleaner(e.target.value)}>
           <option value="">Assign to Staff</option>
           {cleaners.map(c => (
             <option key={c._id} value={c._id}>{c.name} {c.surname}</option>
           ))}
         </select>
 
-        <select className="custom-select" value={taskType} onChange={e => setTaskType(e.target.value)}>
+        <select value={taskType} onChange={e => setTaskType(e.target.value)}>
           <option value="">Select Task Type</option>
           <option value="cleaning">Cleaning</option>
           <option value="maintenance">Maintenance</option>
@@ -124,19 +124,19 @@ const TaskAssignment = () => {
       </div>
 
       <div className="filter-row">
-        <select className="custom-select" value={filterType} onChange={e => setFilterType(e.target.value)}>
+        <select value={filterType} onChange={e => setFilterType(e.target.value)}>
           <option value="">All Types</option>
           <option value="cleaning">Cleaning</option>
           <option value="maintenance">Maintenance</option>
         </select>
 
-        <select className="custom-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="done">Done</option>
         </select>
 
-        <select className="custom-select" value={filterCleaner} onChange={e => setFilterCleaner(e.target.value)}>
+        <select value={filterCleaner} onChange={e => setFilterCleaner(e.target.value)}>
           <option value="">All Staff</option>
           {cleaners.map(c => (
             <option key={c._id} value={c._id}>{c.name} {c.surname}</option>

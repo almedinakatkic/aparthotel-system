@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import api from '../api/axios';
-import '../App.css'; // Needed for custom-select
-import '../assets/styles/createBooking.css';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import '../assets/styles/createBooking.css';
 
 const Reservations = () => {
   const { user, token } = useAuth();
@@ -111,7 +110,7 @@ const Reservations = () => {
         <input type="number" name="numGuests" value={formData.numGuests} onChange={handleChange} min="1" placeholder="Number of Guests" required />
 
         <h2>Booking Info</h2>
-        <select className="custom-select" name="unitId" value={formData.unitId} onChange={handleChange} required>
+        <select name="unitId" value={formData.unitId} onChange={handleChange} required>
           <option value="">Select Unit</option>
           {units
             .filter(u => {
