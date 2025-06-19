@@ -16,6 +16,14 @@ const BookingManagement = () => {
   const [units, setUnits] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [note, setNote] = useState('');
+  const [guestNotes, setGuestNotes] = useState([]);
+  const [editData, setEditData] = useState({});
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [isDeletingNote, setIsDeletingNote] = useState(null);
+  const [noteGuests, setNoteGuests] = useState(new Set());
 
   useEffect(() => {
     const fetchPropsAndUnits = async () => {
@@ -39,11 +47,136 @@ const BookingManagement = () => {
       headers: { Authorization: `Bearer ${token}` }
     });
     setBookings(res.data);
+    const guestsWithNotes = new Set();
+    res.data.forEach(b => {
+      if (b.notes?.length) guestsWithNotes.add(b.guestId);
+    });
+    setNoteGuests(guestsWithNotes);
   };
 
   useEffect(() => {
     fetchBookings();
   }, [selectedProperty, token]);
+
+  const fetchGuestNotes = async (guestId) => {
+    const res = await api.get(`/guests/${guestId}/notes`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setGuestNotes(res.data);
+  };
+
+  const handleEditClick = (b) => {
+    setSelectedGuest(b);
+    setEditData({
+      guestName: b.guestName,
+      guestEmail: b.guestEmail,
+      guestId: b.guestId,
+      phone: b.phone,
+      numGuests: b.numGuests,
+      unitId: b.unitId?._id || '',
+      checkIn: b.checkIn?.slice(0, 10) || '',
+      checkOut: b.checkOut?.slice(0, 10) || ''
+    });
+    setNote('');
+    fetchGuestNotes(b.guestId);
+    setShowGuestModal(true);
+  };
+
+  const handleNoteSubmit = async () => {
+    if (!note.trim()) return;
+    setIsAddingNote(true);
+    try {
+      const res = await api.post(`/guests/${selectedGuest.guestId}/notes`, { note }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const newNote = res.data;
+      setGuestNotes(prev => [...prev, newNote]);
+      setNote('');
+      setNoteGuests(new Set([...noteGuests, selectedGuest.guestId]));
+      setBookings(prev =>
+        prev.map(b =>
+          b.guestId === selectedGuest.guestId ? { ...b, notes: [...(b.notes || []), newNote] } : b
+        )
+      );
+    } catch {
+      alert("Failed to add note.");
+    } finally {
+      setIsAddingNote(false);
+    }
+  };
+
+  const handleDeleteNote = async (noteId) => {
+    try {
+      setIsDeletingNote(noteId);
+      await api.delete(`/guests/${selectedGuest.guestId}/notes/${noteId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const updated = guestNotes.filter(n => n._id !== noteId);
+      setGuestNotes(updated);
+      setIsDeletingNote(null);
+      if (updated.length === 0) {
+        const newSet = new Set(noteGuests);
+        newSet.delete(selectedGuest.guestId);
+        setNoteGuests(newSet);
+      }
+      setBookings(prev =>
+        prev.map(b =>
+          b.guestId === selectedGuest.guestId ? { ...b, notes: updated } : b
+        )
+      );
+    } catch {
+      alert("Failed to delete note.");
+      setIsDeletingNote(null);
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    const { guestName, guestEmail, guestId, phone, unitId, checkIn, checkOut, numGuests } = editData;
+    if (!guestName || !guestEmail || !guestId || !phone || !unitId || !checkIn || !checkOut || !numGuests) return alert("All fields required.");
+    const unit = units.find(u => u._id === unitId);
+    if (!unit) return alert("Invalid unit.");
+    if (Number(numGuests) > unit.beds) return alert(`Max ${unit.beds} guests allowed.`);
+    if (new Date(checkIn) >= new Date(checkOut)) return alert("Check-in must be before check-out.");
+    if (new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) return alert("Check-in cannot be in the past.");
+
+    const overlaps = await api.get(`/bookings/unit/${unitId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const conflict = overlaps.data.some(b =>
+      b._id !== selectedGuest._id &&
+      new Date(checkIn) < new Date(b.checkOut) &&
+      new Date(checkOut) > new Date(b.checkIn)
+    );
+    if (conflict) return alert("Booking dates overlap.");
+
+    const res = await api.put(`/guests/${selectedGuest.guestId}`, editData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const updatedBooking = res.data.data;
+    updatedBooking.unitId = unit;
+
+    setBookings(prev =>
+      prev.map(b =>
+        b.guestId === selectedGuest.guestId ? updatedBooking : b
+      )
+    );
+    setShowGuestModal(false);
+  };
+
+  const handleGuestDelete = async () => {
+    if (!window.confirm("Delete this guest's booking?")) return;
+    try {
+      await api.delete(`/guests/${selectedGuest.guestId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBookings(prev => prev.filter(b => b.guestId !== selectedGuest.guestId));
+      setShowGuestModal(false);
+    } catch {
+      alert("Failed to delete booking.");
+    }
+  };
 
   const filteredBookings = bookings.filter(b => {
     const matchesSearch = b.guestName?.toLowerCase().includes(searchTerm.toLowerCase()) || b.guestId?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -69,106 +202,115 @@ const BookingManagement = () => {
   };
 
   return (
-    <div className="rooms-container">
-      <h1 className="title">Booking Management</h1>
-      <button className="unit-button" onClick={() => navigate('/create-booking')} style={{ marginBottom: '1rem' }}>
-        + Create New Booking
-      </button>
+    <div className="booking-container">
+      <h1>Booking Management</h1>
+      <button className="new-booking-button" onClick={() => navigate('/create-booking')}>+ Create New Booking</button>
 
-      {/* Filter Row with inline labels and Export */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div
-          className="filter-container"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            alignItems: 'center',
-            maxWidth: '1100px'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <label style={{ fontWeight: 'bold', color: '#193A6F' }}>Property:</label>
-            <select
-              className="custom-select"
-              value={selectedProperty}
-              onChange={(e) => setSelectedProperty(e.target.value)}
-            >
-              <option value="">Select</option>
-              {propertyGroups.map((pg) => (
-                <option key={pg._id} value={pg._id}>
-                  {pg.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="filter-container">
+        <label style={{ fontWeight: "bolder" }}>Property:</label>
+        <select className="custom-select" value={selectedProperty} onChange={(e) => setSelectedProperty(e.target.value)}>
+          <option value="">Select Property</option>
+          {propertyGroups.map(pg => (
+            <option key={pg._id} value={pg._id}>{pg.name}</option>
+          ))}
+        </select>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <label style={{ fontWeight: 'bold', color: '#193A6F' }}>Month:</label>
-            <select
-              className="custom-select"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            >
-              {Array.from({ length: 12 }).map((_, i) => (
-                <option key={i} value={i}>
-                  {new Date(0, i).toLocaleString('default', { month: 'long' })}
-                </option>
-              ))}
-            </select>
-          </div>
+        <label style={{ fontWeight: "bolder" }}>Month:</label>
+        <select className="custom-select" value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+          ))}
+        </select>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <label style={{ fontWeight: 'bold', color: '#193A6F' }}>Search:</label>
-            <input
-              type="text"
-              placeholder="Guest name or ID"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="custom-input"
-            />
-          </div>
+        <input
+          type="text"
+          placeholder="Search guest name or ID"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-          <button className="export-button" onClick={exportToExcel}>
-            Export to Excel
-          </button>
-        </div>
+        <button className="export-button" onClick={exportToExcel}>Export to Excel</button>
       </div>
 
-      {/* Booking Table */}
       {selectedProperty && filteredBookings.length > 0 && (
-        <div className="rooms-table-container">
-          <table className="rooms-table">
-            <thead>
-              <tr>
-                <th>Guest</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Guest ID</th>
-                <th>Unit</th>
-                <th>Check-in</th>
-                <th>Check-out</th>
-                <th>Guests</th>
-                <th>Total (€)</th>
+        <table className="bookings-table">
+          <thead>
+            <tr>
+              <th>Guest</th><th>Email</th><th>Phone</th><th>Guest ID</th>
+              <th>Unit</th><th>Check-in</th><th>Check-out</th>
+              <th>Guests</th><th>Total (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBookings.map(b => (
+              <tr key={b._id} onClick={() => handleEditClick(b)}>
+                <td>{b.guestName}{noteGuests.has(b.guestId) && <span title="Guest has notes"> ⚠️</span>}</td>
+                <td>{b.guestEmail}</td>
+                <td>{b.phone}</td>
+                <td>{b.guestId}</td>
+                <td>{b.unitId?.unitNumber}</td>
+                <td>{b.checkIn?.slice(0, 10)}</td>
+                <td>{b.checkOut?.slice(0, 10)}</td>
+                <td>{b.numGuests}</td>
+                <td>{b.fullPrice}</td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredBookings.map((b) => (
-                <tr key={b._id}>
-                  <td>{b.guestName}</td>
-                  <td>{b.guestEmail}</td>
-                  <td>{b.phone}</td>
-                  <td>{b.guestId}</td>
-                  <td>{b.unitId?.unitNumber}</td>
-                  <td>{b.checkIn?.slice(0, 10)}</td>
-                  <td>{b.checkOut?.slice(0, 10)}</td>
-                  <td>{b.numGuests}</td>
-                  <td>{b.fullPrice}</td>
-                </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {showGuestModal && selectedGuest && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Edit Booking</h2>
+            <label>Name</label>
+            <input value={editData.guestName} onChange={(e) => setEditData({ ...editData, guestName: e.target.value })} />
+            <label>Email</label>
+            <input value={editData.guestEmail} onChange={(e) => setEditData({ ...editData, guestEmail: e.target.value })} />
+            <label>Guest ID</label>
+            <input value={editData.guestId} onChange={(e) => setEditData({ ...editData, guestId: e.target.value })} />
+            <label>Phone</label>
+            <input value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} />
+            <label>Unit</label>
+            <select className="custom-select" value={editData.unitId} onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}>
+              <option value="">Select Unit</option>
+              {units
+                .filter(u => u.propertyGroupId === selectedProperty || u.propertyGroupId?._id === selectedProperty)
+                .map(u => (
+                  <option key={u._id} value={u._id}>
+                    {u.unitNumber} (floor {u.floor}, {u.beds} bed{u.beds > 1 ? 's' : ''})
+                  </option>
+                ))}
+            </select>
+            <label>Check-in</label>
+            <input type="date" value={editData.checkIn} onChange={(e) => setEditData({ ...editData, checkIn: e.target.value })} />
+            <label>Check-out</label>
+            <input type="date" value={editData.checkOut} onChange={(e) => setEditData({ ...editData, checkOut: e.target.value })} />
+            <label>Guests</label>
+            <input type="number" min="1" value={editData.numGuests} onChange={(e) => setEditData({ ...editData, numGuests: e.target.value })} />
+
+            <button className="modal-save-button" onClick={handleEditSubmit}>Save Changes</button>
+            <button className="modal-delete-button" onClick={handleGuestDelete}>Delete Guest</button>
+
+            <h4>Guest Notes</h4>
+            <ul>
+              {guestNotes.map(n => (
+                <li key={n._id}>
+                  <p>{n.content || n.note}</p>
+                  <small>{new Date(n.createdAt).toLocaleString()}</small>
+                  <button onClick={() => handleDeleteNote(n._id)} disabled={isDeletingNote === n._id}>
+                    {isDeletingNote === n._id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </li>
               ))}
-            </tbody>
-          </table>
+            </ul>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add note..." />
+            <button onClick={handleNoteSubmit} disabled={!note.trim() || isAddingNote}>
+              {isAddingNote ? 'Adding...' : 'Add Note'}
+            </button>
+            <button className="modal-close-x" onClick={() => setShowGuestModal(false)}>×</button>
+            <button className="modal-save-button" style={{ backgroundColor: '#8F291D' }} onClick={() => setShowGuestModal(false)}>Close</button>
+          </div>
         </div>
       )}
     </div>
