@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import '../assets/styles/registerUser.css';
+import '../assets/styles/CreateProperty.css';
 
 const RegisterUser = () => {
   const { user, token } = useAuth();
@@ -61,15 +61,15 @@ const RegisterUser = () => {
   };
 
   return (
-    <div className="add-user-container">
-      <form className="login-form" onSubmit={handleSubmit}>
+    <div className="create-property-container">
+      <form className="create-property-form" onSubmit={handleSubmit}>
         <h1 className="title" style={{color: '#193A6F', marginBottom: '2rem'}}>Register New User</h1>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
 
-        <div className="form-group">
-          <label>Name</label>
+        <div className="create-property-form-group">
+          <label>Name:</label>
           <input
             name="name"
             type="text"
@@ -80,8 +80,8 @@ const RegisterUser = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label>Email</label>
+        <div className="create-property-form-group">
+          <label>Email:</label>
           <input
             name="email"
             type="email"
@@ -92,8 +92,8 @@ const RegisterUser = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label>Phone</label>
+        <div className="create-property-form-group">
+          <label>Phone:</label>
           <input
             name="phone"
             type="tel"
@@ -104,8 +104,8 @@ const RegisterUser = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label>Role</label>
+        <div className="create-property-form-group">
+          <label>Role:</label>
           <select name="role" value={formData.role} onChange={handleChange}>
             <option value="frontoffice">Front Office</option>
             <option value="housekeeping">Housekeeping</option>
@@ -113,8 +113,8 @@ const RegisterUser = () => {
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Assign to Property</label>
+        <div className="create-property-form-group">
+          <label>Assign to Property:</label>
           <select
             name="propertyGroupId"
             value={formData.propertyGroupId}
@@ -128,7 +128,7 @@ const RegisterUser = () => {
           </select>
         </div>
 
-        <button type="submit" className="login-button">Register</button>
+        <button type="submit" className="create-property-button">Register</button>
       </form>
     </div>
   );

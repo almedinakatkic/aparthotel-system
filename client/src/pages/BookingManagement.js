@@ -308,7 +308,7 @@ const BookingManagement = () => {
               {isAddingNote ? 'Adding...' : 'Add Note'}
             </button>
             <button className="modal-close-x" onClick={() => setShowGuestModal(false)}>×</button>
-            <button className="modal-save-button" onClick={() => setShowGuestModal(false)}>Close</button>
+            <button className="modal-delete-button" onClick={() => setShowGuestModal(false)} style={{ backgroundColor: "grey" }}>Close</button>
           </div>
         </div>
       )}

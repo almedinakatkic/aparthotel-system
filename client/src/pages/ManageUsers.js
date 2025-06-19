@@ -110,7 +110,7 @@ const ManageUsers = () => {
         <input
           type="text"
           name="search"
-          placeholder="Search by name / email / phone"
+          placeholder="Search..."
           value={filters.search}
           onChange={handleFilterChange}
         />
@@ -136,9 +136,9 @@ const ManageUsers = () => {
               <td>{u.role}</td>
               <td>{propertyGroups.find(p => p._id === (u.propertyGroupId?._id || u.propertyGroupId))?.name || '-'}</td>
               <td>
-                <button onClick={() => openEdit(u)} className='modal-save-button'>Edit</button>
+                <button onClick={() => openEdit(u)} className='modal-edit-button' style={{ width: "70px", height: "35px" }}>Edit</button>
                 {u._id !== user._id && (
-                  <button onClick={() => handleDelete(u._id)} className="modal-cancel-btn">Delete</button>
+                  <button onClick={() => handleDelete(u._id)} className="modal-delete-btn" style={{ width: "70px", height: "35px" }}>Delete</button>
                 )}
               </td>
             </tr>
@@ -172,8 +172,8 @@ const ManageUsers = () => {
               ))}
             </select><br />
             <div className="buttons">
-              <button className="modal-save-button" onClick={handleEditSubmit}>Save</button>
-              <button className="modal-cancel-button" onClick={() => setEditingUser(null)}>Cancel</button>
+              <button className="modal-save-button" onClick={handleEditSubmit} style={{ width: "70px" }}>Save</button>
+              <button className="modal-cancel-button" onClick={() => setEditingUser(null)} style={{ width: "70px" }}>Cancel</button>
             </div>
           </div>
         </div>

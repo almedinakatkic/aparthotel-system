@@ -39,7 +39,7 @@
 }
 
 .register-button:hover {
-  background-color: #142d54;
+  background-color: #5c5d60;
 }
 
 .filters {
@@ -57,8 +57,10 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
-  min-width: 200px;
+  width: 200px;
   background-color: white;
+  cursor: pointer;
+  margin-right: 10px;
 }
 
 .filters input {
@@ -68,8 +70,7 @@
   border-radius: 6px;
   outline: none;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  width: 250px;
-  margin-left: 10px;
+  width: 200px;
 }
 
 .filters input:focus {
@@ -182,7 +183,7 @@ h2 {
 }
 
 .modal input {
-  width: 95%;
+  width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
   border: 1px solid #ddd;
@@ -206,12 +207,6 @@ h2 {
   display: block;
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .modal button {
   padding: 12px 15px;
   margin-right: 0.5rem;
@@ -229,14 +224,6 @@ h2 {
 .modal-save-button {
   background-color: #39623c;
   color: white;
-}
-
-.modal-cancel-button {
-  margin-left: 0.5rem;
-}
-
-.modal-save-button, .modal-cancel-button {
-  width: 70px;
 }
 
 .modal button:nth-of-type(2) {
