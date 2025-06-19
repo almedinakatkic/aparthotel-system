@@ -73,7 +73,7 @@ const CreateUnit = () => {
   return (
     <div className="create-property-container">
       <form className="create-property-form" onSubmit={handleSubmit}>
-        <h1 className="title" style={{ color: '#193A6F' }}>Add Unit</h1>
+        <h1 className="title">Add Unit</h1>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}

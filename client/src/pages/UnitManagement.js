@@ -127,10 +127,10 @@ const UnitManagement = () => {
   return (
     <div className="rooms-container">
       <h1 className="title">Unit Management</h1>
-      <button className="unit-button" onClick={() => navigate('/create-unit')} style={{ marginBottom: '1rem' }}>+ Add Unit</button>
+      <button className="unit-button" onClick={() => navigate('/create-unit')}>+ Add Unit</button>
 
-      <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="unit-filter-container">
+        <div className="first-row-of-filter-container">
           <label htmlFor="propertySelect" style={{ fontWeight: '700', color: '#193A6F', whiteSpace: 'nowrap' }}>
             Filter by Property:
           </label>
@@ -140,7 +140,6 @@ const UnitManagement = () => {
             name="propertyGroupId"
             value={filters.propertyGroupId}
             onChange={handleFilterChange}
-            style={{ flex: 1 }}
           >
             <option value="">Select Property</option>
             {propertyGroups.map(pg => (
@@ -156,7 +155,6 @@ const UnitManagement = () => {
                 onChange={handleFilterChange}
                 placeholder="Filter by Address"
                 className="unit-input"
-                style={{ flex: 1 }}
               />
               <input
                 type="text"
@@ -165,18 +163,17 @@ const UnitManagement = () => {
                 onChange={handleFilterChange}
                 placeholder="Filter by Location"
                 className="unit-input"
-                style={{ flex: 1 }}
               />
             </>
           )}
         </div>
 
         {filters.propertyGroupId && (
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <input type="number" name="unitNumber" value={filters.unitNumber} onChange={handleFilterChange} placeholder="Unit Number" className="unit-input" style={{ flex: 1 }} />
-            <input type="number" name="floor" value={filters.floor} onChange={handleFilterChange} placeholder="Floor" className="unit-input" style={{ flex: 1 }} />
-            <input type="number" name="beds" value={filters.beds} onChange={handleFilterChange} placeholder="Beds" className="unit-input" style={{ flex: 1 }} />
-            <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max Price" className="unit-input" style={{ flex: 1 }} />
+          <div className="second-row-of-filter-container">
+            <input type="number" name="unitNumber" value={filters.unitNumber} onChange={handleFilterChange} placeholder="Unit Number" className="unit-input"/>
+            <input type="number" name="floor" value={filters.floor} onChange={handleFilterChange} placeholder="Floor" className="unit-input"/>
+            <input type="number" name="beds" value={filters.beds} onChange={handleFilterChange} placeholder="Beds" className="unit-input"/>
+            <input type="number" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} placeholder="Max Price" className="unit-input"/>
           </div>
         )}
       </div>
@@ -215,13 +212,13 @@ const UnitManagement = () => {
                     <td>
                       {editingUnit === unit._id ? (
                         <>
-                          <button onClick={handleUpdate} className='action-button-edit'>Save</button>
-                          <button onClick={handleCancel} className='action-button-delete'>Cancel</button>
+                          <button onClick={handleUpdate} className='action-button-save'>Save</button>
+                          <button onClick={handleCancel} className='action-button-cancel'>Cancel</button>
                         </>
                       ) : (
                         <>
                           <button className='action-button-edit' onClick={() => handleEdit(unit)}>Edit</button>
-                          <button className='action-button-delete' onClick={() => handleDelete(unit._id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
+                          <button className='action-button-delete' onClick={() => handleDelete(unit._id)}>Delete</button>
                         </>
                       )}
                     </td>

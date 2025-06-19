@@ -136,9 +136,9 @@ const ManageUsers = () => {
               <td>{u.role}</td>
               <td>{propertyGroups.find(p => p._id === (u.propertyGroupId?._id || u.propertyGroupId))?.name || '-'}</td>
               <td>
-                <button onClick={() => openEdit(u)}>Edit</button>
+                <button onClick={() => openEdit(u)} className='modal-save-button'>Edit</button>
                 {u._id !== user._id && (
-                  <button onClick={() => handleDelete(u._id)} className="delete-btn">Delete</button>
+                  <button onClick={() => handleDelete(u._id)} className="modal-cancel-btn">Delete</button>
                 )}
               </td>
             </tr>
@@ -152,19 +152,19 @@ const ManageUsers = () => {
             <div className="heading">
               <h2>Edit User</h2>
             </div>
-            <label>Name</label>
+            <label>Name:</label>
             <input name="name" value={editData.name} onChange={handleEditChange} placeholder="Name" />
-            <label>Email</label>
+            <label>Email:</label>
             <input name="email" value={editData.email} onChange={handleEditChange} placeholder="Email" />
-            <label>Phone</label>
+            <label>Phone:</label>
             <input name="phone" value={editData.phone} onChange={handleEditChange} placeholder="Phone" />
-            <label>Role</label>
+            <label>Role:</label>
             <select name="role" value={editData.role} onChange={handleEditChange}>
               <option value="owner">Owner</option>
               <option value="frontoffice">Front Office</option>
               <option value="housekeeping">Housekeeping</option>
             </select>
-            <label>Property Assigned</label>
+            <label>Property Assigned:</label>
             <select name="propertyGroupId" value={editData.propertyGroupId} onChange={handleEditChange}>
               <option value="">No Property</option>
               {propertyGroups.map(pg => (

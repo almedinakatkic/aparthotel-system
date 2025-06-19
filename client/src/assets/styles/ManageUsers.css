@@ -231,6 +231,14 @@ h2 {
   color: white;
 }
 
+.modal-cancel-button {
+  margin-left: 0.5rem;
+}
+
+.modal-save-button, .modal-cancel-button {
+  width: 70px;
+}
+
 .modal button:nth-of-type(2) {
   background-color: #8f291d;
   color: white;

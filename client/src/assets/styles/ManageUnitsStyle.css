@@ -36,6 +36,7 @@
   transition: background-color 0.3s ease;
   margin-top: 10px;
   font-size: 16px;
+  margin-bottom: 1.5rem;
 }
 
 .unit-button:hover {
@@ -54,6 +55,25 @@
 
 .unit-input::placeholder {
   color: #1e1e2f
+}
+
+.unit-filter-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.first-row-of-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.second-row-of-filter-container {
+  display: flex;
+  gap: 1rem;
+  cursor: text;
 }
 
 .rooms-table-container {
@@ -109,7 +129,7 @@
   opacity: 0.85;
 }
 
-.action-button-edit, .action-button-delete {
+.action-button-edit, .action-button-delete, .action-button-save, .action-button-cancel {
   width: 70px;
 }
 
@@ -122,6 +142,18 @@
   background-color: #b30d0d;
   color: white;
   margin-left: 0.5rem;
+}
+
+.action-button-save {
+  background-color: #39623c;
+  color: white;
+  margin-bottom: 5px;
+  margin-right: 0.5rem;
+}
+
+.action-button-cancel {
+  background-color: #b30d0d;
+  color: white;
 }
 
 #propertySelect {
