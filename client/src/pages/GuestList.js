@@ -197,7 +197,7 @@ const GuestList = () => {
 
   return (
     <div className="booking-container">
-      <h1>Guest Management</h1>
+      <h1 style={{ color: "#193A6F" }}>Guest Management</h1>
       <div className="filter-container" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
         <input
           type="text"
