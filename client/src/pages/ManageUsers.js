@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import '../App.css';
-import '../assets/styles/ManageUsers.css';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import { useNavigate } from 'react-router-dom';
+import '../assets/styles/ManageUsers.css';
 
 const ManageUsers = () => {
   const { user, token } = useAuth();
@@ -94,14 +93,14 @@ const ManageUsers = () => {
       <button className="register-button" onClick={() => navigate('/register-user')}>+ Register New User</button>
 
       <div className="filters">
-        <select className="custom-select" name="role" value={filters.role} onChange={handleFilterChange}>
+        <select name="role" value={filters.role} onChange={handleFilterChange}>
           <option value="">Filter by Role</option>
           <option value="owner">Owner</option>
           <option value="frontoffice">Front Office</option>
           <option value="housekeeping">Housekeeping</option>
         </select>
 
-        <select className="custom-select" name="propertyGroupId" value={filters.propertyGroupId} onChange={handleFilterChange}>
+        <select name="propertyGroupId" value={filters.propertyGroupId} onChange={handleFilterChange}>
           <option value="">Filter by Property</option>
           {propertyGroups.map(pg => (
             <option key={pg._id} value={pg._id}>{pg.name}</option>
@@ -159,22 +158,19 @@ const ManageUsers = () => {
             <input name="email" value={editData.email} onChange={handleEditChange} placeholder="Email" />
             <label>Phone</label>
             <input name="phone" value={editData.phone} onChange={handleEditChange} placeholder="Phone" />
-
             <label>Role</label>
-            <select className="custom-select" name="role" value={editData.role} onChange={handleEditChange}>
+            <select name="role" value={editData.role} onChange={handleEditChange}>
               <option value="owner">Owner</option>
               <option value="frontoffice">Front Office</option>
               <option value="housekeeping">Housekeeping</option>
             </select>
-
             <label>Property Assigned</label>
-            <select className="custom-select" name="propertyGroupId" value={editData.propertyGroupId} onChange={handleEditChange}>
+            <select name="propertyGroupId" value={editData.propertyGroupId} onChange={handleEditChange}>
               <option value="">No Property</option>
               {propertyGroups.map(pg => (
                 <option key={pg._id} value={pg._id}>{pg.name}</option>
               ))}
             </select><br />
-
             <div className="buttons">
               <button className="modal-save-button" onClick={handleEditSubmit}>Save</button>
               <button className="modal-cancel-button" onClick={() => setEditingUser(null)}>Cancel</button>

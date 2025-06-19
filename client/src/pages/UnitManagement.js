@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import '../App.css'; // For custom-select styling
-import '../assets/styles/ManageUnitsStyle.css';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import '../assets/styles/ManageUnitsStyle.css';
 
 const UnitManagement = () => {
   const { user, token } = useAuth();
@@ -137,7 +136,7 @@ const UnitManagement = () => {
           </label>
           <select
             id="propertySelect"
-            className="custom-select"
+            className="unit-input"
             name="propertyGroupId"
             value={filters.propertyGroupId}
             onChange={handleFilterChange}
@@ -148,7 +147,6 @@ const UnitManagement = () => {
               <option key={pg._id} value={pg._id}>{pg.name}</option>
             ))}
           </select>
-
           {selectedPropertyType === 'apartment' && (
             <>
               <input
