@@ -28,12 +28,10 @@ const ownerRoutes = require('./routes/ownerRoutes');
 app.use('/api/owner', ownerRoutes);
 const taskRoutes = require('./routes/taskRoutes');
 app.use('/api/tasks', taskRoutes);
-
 const ownerNotesRoutes = require('./routes/ownerNotesRoutes');
 app.use('/api/owner', ownerNotesRoutes);
-
-
 const damageReportRoutes = require('./routes/damageReportRoutes');
+app.use('/api/financial-reports', require('./routes/financialReportRoutes'));
 app.use('/uploads', express.static('uploads'));
 app.use('/api/damage-reports', damageReportRoutes);
 

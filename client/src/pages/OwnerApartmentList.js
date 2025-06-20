@@ -91,7 +91,11 @@ const OwnerApartmentList = ({ refreshFlag }) => {
                   <td>{unit.pricePerNight} €</td>
                   <td>{unit.propertyGroupId?.name || 'N/A'}</td>
                   <td>{unit.propertyGroupId?.location || 'N/A'}</td>
-                  <td>{unit.propertyGroupId?.address || 'N/A'}</td>
+                  <td>
+                    {unit.propertyGroupId?.type === 'apartment'
+                      ? unit.address || 'N/A'
+                      : unit.propertyGroupId?.address || 'N/A'}
+                  </td>
                   <td>
                     <span className={`status ${unit.isBooked ? 'booked' : 'available'}`}>
                       {unit.isBooked ? 'Booked' : 'Available'}

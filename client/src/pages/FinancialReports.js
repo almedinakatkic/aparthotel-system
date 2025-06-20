@@ -101,9 +101,8 @@ const FinancialReports = () => {
 
         <div className='filter-row'>
           <div style={{ flex: '1 1 30%' }}>
-            <label htmlFor="property-select"><strong>Property:</strong></label><br />
+            <label><strong>Property:</strong></label><br />
             <select
-              id="property-select"
               value={selectedProperty}
               onChange={(e) => setSelectedProperty(e.target.value)}
               className="search-bar"
@@ -117,9 +116,8 @@ const FinancialReports = () => {
           </div>
 
           <div style={{ flex: '1 1 30%' }}>
-            <label htmlFor="month-select"><strong>Month:</strong></label><br />
+            <label><strong>Month:</strong></label><br />
             <select
-              id="month-select"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="search-bar"
@@ -132,9 +130,8 @@ const FinancialReports = () => {
           </div>
 
           <div style={{ flex: '1 1 30%' }}>
-            <label htmlFor="year-select"><strong>Year:</strong></label><br />
+            <label><strong>Year:</strong></label><br />
             <select
-              id="year-select"
               value={enteredYear}
               onChange={(e) => setEnteredYear(e.target.value)}
               className="search-bar"
@@ -171,13 +168,9 @@ const FinancialReports = () => {
             <label><strong>Distribution:</strong></label>
             <div className="distribution-grid">
               <div>
-                <p>Net Income: ${netIncome.toFixed(2)}</p>
-                <p>Company Share ({shares.companyShare}%): ${(
-                  netIncome * (shares.companyShare / 100)
-                ).toFixed(2)}</p>
-                <p>Owner Share ({shares.ownerShare}%): ${(
-                  netIncome * (shares.ownerShare / 100)
-                ).toFixed(2)}</p>
+                <p>Net Income: €{netIncome.toFixed(2)}</p>
+                <p>Company Share ({shares.companyShare}%): €{(netIncome * (shares.companyShare / 100)).toFixed(2)}</p>
+                <p>Owner Share ({shares.ownerShare}%): €{(netIncome * (shares.ownerShare / 100)).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -188,9 +181,7 @@ const FinancialReports = () => {
                 <FinancialReportPDF
                   report={{
                     ...report,
-                    expenses: {
-                      total: totalExpenses
-                    },
+                    expenses: { total: totalExpenses },
                     companyShare: shares.companyShare,
                     ownerShare: shares.ownerShare
                   }}
@@ -202,6 +193,38 @@ const FinancialReports = () => {
             >
               {({ loading }) => (loading ? 'Preparing PDF...' : 'Save as PDF')}
             </PDFDownloadLink>
+
+            <button
+              style={{ 
+                backgroundColor: "#193A6F",
+                color: "white",
+                width: "120px",
+                cursor: "pointer",
+                fontWeight: "bolder",
+                borderRadius: "5px",
+              }}
+              onClick={async () => {
+                try {
+                  await api.post('/financial-reports', {
+                    propertyGroupId: selectedProperty,
+                    month: selectedMonth,
+                    year: enteredYear,
+                    rentalIncome: report.rental,
+                    totalExpenses,
+                    netIncome,
+                    companyShare: shares.companyShare,
+                    ownerShare: shares.ownerShare
+                  }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  alert('Report sent to owner');
+                } catch (err) {
+                  alert(err.response?.data?.message || 'Failed to send report');
+                }
+              }}
+            >
+              Send
+            </button>
           </div>
         </>
       )}

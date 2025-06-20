@@ -21,7 +21,6 @@ const FinancialReportPDF = ({ report, totals }) => (
       <View style={styles.section}>
         <Text>Expenses:</Text>
         <View style={styles.row}>
-          <Text style={styles.label}>Total Expenses:</Text>
           <Text>${totals.totalExpenses.toFixed(2)}</Text>
         </View>
       </View>

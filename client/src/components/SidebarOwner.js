@@ -33,14 +33,6 @@ const SidebarOwner = () => (
           <span className="nav-text">My Apartments</span>
         </NavLink>
 
-        <NavLink 
-          to="/apartmentdetails"
-          className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
-        >
-                  <span className="nav-icon"><FontAwesomeIcon icon={faCubes} /></span>
-                  <span className="nav-text">Apartment Details</span>
-        </NavLink>
-
          <NavLink 
           to="/ownercalendar"
           className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
@@ -50,14 +42,12 @@ const SidebarOwner = () => (
         </NavLink>
 
         <NavLink 
-          to="/reportsowner"
+          to="/owner/reports"
           className={({ isActive }) => isActive ? 'nav-item active-nav-item' : 'nav-item'}
         >
           <span className="nav-icon"><FontAwesomeIcon icon={faChartLine} /></span>
           <span className="nav-text">My Report</span>
         </NavLink>
-
-
 
       </nav>
     </div>

@@ -64,7 +64,7 @@ const ResetUserPassword = () => {
             ) : (
               <div className="error-message-login">No link generated yet.</div>
             )}
-            <button onClick={() => handleRemove(email)} className="login-button" style={{ marginTop: '30px', width: '250px' }}>
+            <button onClick={() => handleRemove(email)} className="login-button-auth" style={{ marginTop: '30px', width: '250px' }}>
               Remove Request
             </button>
           </div>

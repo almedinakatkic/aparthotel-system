@@ -98,7 +98,7 @@ const ChangePassword = () => {
             {error && <div className="error-message">{error}</div>}
 
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-              <button type="submit" className="login-button">
+              <button type="submit" className="login-button-auth">
                 Update
               </button>
             </div>

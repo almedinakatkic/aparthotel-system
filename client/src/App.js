@@ -4,7 +4,6 @@ import HousekeepingDashboard from './components/HousekeepingDashboard';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
-import ApartmentDetails from './pages/ApartmentDetails';
 import BookingManagement from './pages/BookingManagement';
 import Calendar from './pages/Calendar';
 import ChangePassword from './pages/ChangePassword';
@@ -36,6 +35,8 @@ import ManageUsers from './pages/ManageUsers';
 import Reservations from './pages/Reservations';
 import HousekeepingTasks from './pages/HousekeepingTasks';
 import DamageReport from './pages/DamageReport'; 
+import ReceivedReports from './pages/ReceivedReports';
+import AllReports from './pages/AllReports';
 
 function AppContent() {
   const location = useLocation();
@@ -182,15 +183,6 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-
-            <Route
-              path="/apartmentdetails"
-              element={
-                <ProtectedRoute>
-                  <ApartmentDetails />
-                </ProtectedRoute>
-              }
-            />
             
              <Route
               path="/reservations"
@@ -282,6 +274,22 @@ function AppContent() {
               element={
                   <ProtectedRoute>
                     <ManageUsers />
+                  </ProtectedRoute>
+                } 
+            />
+            <Route 
+              path="/owner/reports" 
+              element={
+                  <ProtectedRoute>
+                    <ReceivedReports />
+                  </ProtectedRoute>
+                } 
+            />
+            <Route 
+              path="/history-reports" 
+              element={
+                  <ProtectedRoute>
+                    <AllReports />
                   </ProtectedRoute>
                 } 
             />

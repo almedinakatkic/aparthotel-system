@@ -137,7 +137,7 @@ const RoomManagement = () => {
 
   return (
     <div className="room-management-page">
-      <h1 className="section-title">Room Management</h1>
+      <h1 className="section-title" style={{ color: "#193A6F", fontWeight: 700 }}>Room Management</h1>
 
       <div className="filters-container-rooms">
         <div className="filter-row-rooms">
