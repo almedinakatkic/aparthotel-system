@@ -5,7 +5,7 @@ import '../assets/styles/dashboardStyle.css';
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [units, setUnits] = useState([]);
   const [damageReports, setDamageReports] = useState([]);
@@ -22,8 +22,44 @@ const Dashboard = () => {
           api.get('/units', { headers: { Authorization: `Bearer ${token}` } }),
           api.get('/damage-reports', { headers: { Authorization: `Bearer ${token}` } })
         ]);
-        setBookings(resBookings.data);
-        setUnits(resUnits.data);
+
+        // Filter bookings by user's property group
+        let filteredBookings = resBookings.data;
+        if (user?.propertyGroupId) {
+          filteredBookings = filteredBookings.filter(
+            b => b.propertyGroupId === user.propertyGroupId || 
+                 b.propertyGroupId?._id === user.propertyGroupId
+          );
+        }
+
+        // Process bookings to extend checkout if guest is still staying
+        const processedBookings = filteredBookings.map(booking => {
+          const checkInDate = new Date(booking.checkIn);
+          const checkOutDate = new Date(booking.checkOut);
+          const todayDate = new Date();
+          
+          if (checkInDate <= todayDate && checkOutDate.toISOString().slice(0, 10) === today) {
+            const newCheckOut = new Date(checkOutDate);
+            newCheckOut.setDate(newCheckOut.getDate() + 1);
+            return {
+              ...booking,
+              checkOut: newCheckOut.toISOString()
+            };
+          }
+          return booking;
+        });
+
+        // Filter units by user's property group
+        let filteredUnits = resUnits.data;
+        if (user?.propertyGroupId) {
+          filteredUnits = filteredUnits.filter(
+            u => u.propertyGroupId === user.propertyGroupId || 
+                 u.propertyGroupId?._id === user.propertyGroupId
+          );
+        }
+
+        setBookings(processedBookings);
+        setUnits(filteredUnits);
         setDamageReports(resReports.data);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
@@ -91,11 +127,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-
       <div className="room-status-section">
         <h3 className="section-heading">Upcoming Guest Activity (Next 7 Days)</h3>
         <div className="activity-blocks-horizontal">
-          {/* Check-ins */}
           <div className="status-block">
             <h4>Check-ins</h4>
             {(() => {
@@ -134,7 +168,6 @@ const Dashboard = () => {
             })()}
           </div>
 
-          {/* Check-outs */}
           <div className="status-block">
             <h4>Check-outs</h4>
             {(() => {
