@@ -7,7 +7,7 @@ const ReportsSelection = () => {
   const reportOptions = [
     { name: 'Financial Reports', path: '/financial-reports', icon: '💰' },
     { name: 'General Reports', path: '/general-reports', icon: '📊' },
-    { name: 'Reports History', path: '/history-reports', icon: '👔' },
+    { name: 'Reports History', path: '/history-reports', icon: '📄' },
   ];
 
   return (
